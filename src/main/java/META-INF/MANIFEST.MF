@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Main-Class: com.sophisticatedapps.archiving.documentarchiver.Launcher
+Class-Path: PDFViewerFX-0.7.jar javafx-web-15.0.1-mac.jar javafx-base-15
+ .0.1-mac.jar javafx-controls-15.0.1-mac.jar javafx-base-15.0.1.jar slf4
+ j-api-1.7.30.jar javafx-graphics-15.0.1-mac.jar javafx-web-15.0.1.jar j
+ avafx-graphics-15.0.1.jar javafx-media-15.0.1.jar javafx-controls-15.0.
+ 1.jar javafx-media-15.0.1-mac.jar commons-imaging-1.0-alpha2.jar
+
