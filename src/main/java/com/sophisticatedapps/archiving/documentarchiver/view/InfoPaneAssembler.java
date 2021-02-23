@@ -230,8 +230,8 @@ public class InfoPaneAssembler {
 
     private ListView<String> assembleExistingTagsListView() {
 
-        ObservableList<String> tmpOriginalList = FXCollections
-                .observableList(new ArrayList<>(Tags.getExistingTags(fileType)));
+        ObservableList<String> tmpOriginalList = FXCollections.observableList(
+                new ArrayList<>(Tags.getExistingTags(GlobalConstants.ARCHIVING_FOLDER, fileType)));
 
         FilteredList<String> tmpFilteredList = new FilteredList<>(tmpOriginalList);
 

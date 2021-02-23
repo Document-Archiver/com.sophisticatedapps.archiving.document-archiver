@@ -100,7 +100,7 @@ public class App extends Application {
                 // We have to wrap the result in a new List, since the result is not modifiable.
                 allFiles = new ArrayList<>(
                         Arrays.asList(Objects.requireNonNull(tmpFile.listFiles(File::isFile))));
-                if (allFiles.size() > 0) {
+                if (!allFiles.isEmpty()) {
                     currentFile = allFiles.get(0);
                 }
             }
@@ -168,7 +168,7 @@ public class App extends Application {
             FileChooser tmpFileChooser = new FileChooser();
             List<File> tmpFilesList = tmpFileChooser.showOpenMultipleDialog(aStage);
 
-            if ((tmpFilesList != null) && (tmpFilesList.size() > 0)) {
+            if ((tmpFilesList != null) && (!tmpFilesList.isEmpty())) {
 
                 // We have to wrap the result in a new List, since the result is not modifiable.
                 assembleAndSetSceneForExistingFile(aStage, (new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
@@ -189,7 +189,7 @@ public class App extends Application {
 
                 List<File> tmpFilesList = Arrays.asList(Objects.requireNonNull(tmpDirectory.listFiles(File::isFile)));
 
-                if (tmpFilesList.size() > 0) {
+                if (!tmpFilesList.isEmpty()) {
 
                     // We have to wrap the result in a new List, since the result is not modifiable.
                     assembleAndSetSceneForExistingFile(aStage, (new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
@@ -228,7 +228,7 @@ public class App extends Application {
                 FileUtil.moveFileToArchive(aCurrentFile, aDfp);
                 anAllFilesList.remove(aCurrentFile);
 
-                if (anAllFilesList.size() < 1) {
+                if (anAllFilesList.isEmpty()) {
 
                     assembleAndSetSceneForNonExistingFile(aPrimaryStage, "All done :-) Start over?");
                 }
@@ -260,9 +260,16 @@ public class App extends Application {
                 Thread.currentThread().getContextClassLoader().getResource("binder-icon.png");
         final java.awt.Image tmpAwtImage = Toolkit.getDefaultToolkit().getImage(imageResource);
 
-        // Set taskbar icon
-        final Taskbar taskbar = Taskbar.getTaskbar();
-        taskbar.setIconImage(tmpAwtImage);
+        // Set taskbar icon (may not be supported on all systems (e.g. Linux))
+        try {
+
+            final Taskbar taskbar = Taskbar.getTaskbar();
+            taskbar.setIconImage(tmpAwtImage);
+        }
+        catch (UnsupportedOperationException e) {
+
+            // never mind.
+        }
     }
 
     private static FileTypeEnum getFiletype(File aFile) {
