@@ -9,8 +9,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>DocumentArchiver</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -112,6 +111,53 @@
         <plugin>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
+        </plugin>
+        <!-- https://github.com/moditect/moditect -->
+        <!--
+        <plugin>
+          <groupId>org.moditect</groupId>
+          <artifactId>moditect-maven-plugin</artifactId>
+          <version>1.0.0.RC1</version>
+          <executions>
+            <execution>
+              <id>add-module-infos</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>add-module-info</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${project.build.directory}/modules</outputDirectory>
+                <modules>
+                  <module>
+                    <artifact>
+                      <groupId>com.github.Dansoftowner</groupId>
+                      <artifactId>PDFViewerFX</artifactId>
+                      <version>0.7</version>
+                    </artifact>
+                    <moduleInfoSource>
+                      module PDFViewerFX {
+                        requires jdk.jsobject;
+                        exports com.dansoftware.pdfdisplayer;
+                      }
+                    </moduleInfoSource>
+                  </module>
+                </modules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        -->
+        <!-- https://github.com/openjfx/javafx-maven-plugin -->
+        <plugin>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-maven-plugin</artifactId>
+          <version>0.0.5</version>
+          <configuration>
+            <!--
+            <jlinkExecutable>/usr/local/java/jdk11/bin/jlink</jlinkExecutable>
+            -->
+            <mainClass>com.sophisticatedapps.archiving.documentarchiver.App</mainClass>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
