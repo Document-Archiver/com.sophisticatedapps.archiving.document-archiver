@@ -14,33 +14,30 @@
  * limitations under the License.
  */
 
-package com.sophisticatedapps.archiving.documentarchiver.model;
+package com.sophisticatedapps.archiving.documentarchiver.util;
 
-import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.util.SortedSet;
+import java.io.IOException;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit test for "com.sophisticatedapps.archiving.documentarchiver.model.Tags".
+ * Unit test for "com.sophisticatedapps.archiving.documentarchiver.util.FileUtil".
  */
-class TagsTest {
+class FileUtilTest {
 
     /**
-     * Test if existing tags are being delivered correctly.
+     * Test if properties are being read correctly.
      */
     @Test
-    void testGetExistingTags() {
+    void testReadProperties() throws IOException {
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        File tmpDirectory = new File(classLoader.getResource("test-archiving-folder").getFile());
+        Properties tmpProperties = FileUtil.readProperties("file-archiver.properties");
 
-        SortedSet<String> tmpResult = Tags.getExistingTags(tmpDirectory, FileTypeEnum.TXT);
-
-        assertEquals("[bar, foo, fu, sna]", tmpResult.toString());
+        assertNotNull(tmpProperties);
+        assertEquals("~/Documents/DocumentArchiver", tmpProperties.getProperty("archiving.path"));
     }
 
 }

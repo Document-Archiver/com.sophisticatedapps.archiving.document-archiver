@@ -31,6 +31,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -157,7 +158,7 @@ public class App extends Application {
                 .assemble(aStage);
 
         aStage.setTitle("Archiving: ".concat(aFile.getPath()));
-        aStage.setScene(new Scene(tmpTriplePane));
+        placeNewRootPane(aStage, tmpTriplePane);
     }
 
     private static void assembleAndSetSceneForNonExistingFile(Stage aStage, String aMessage) {
@@ -206,12 +207,13 @@ public class App extends Application {
             }
         });
 
-        VBox tmpAllDonePane = new VBox(10);
-        tmpAllDonePane.setAlignment(Pos.CENTER);
-        tmpAllDonePane.getChildren().addAll(new Label(aMessage), tmpChooseFilesButton, tmpChooseDirectoryButton);
+        VBox tmpChooseFilesOrDirectoryPane = new VBox(10);
+        tmpChooseFilesOrDirectoryPane.setAlignment(Pos.CENTER);
+        tmpChooseFilesOrDirectoryPane.getChildren().addAll(
+                new Label(aMessage), tmpChooseFilesButton, tmpChooseDirectoryButton);
 
         aStage.setTitle("Choose file(s) or directory");
-        aStage.setScene(new Scene(tmpAllDonePane));
+        placeNewRootPane(aStage, tmpChooseFilesOrDirectoryPane);
     }
 
     private static TriplePaneAssembler.DocumentSelectedCallback assembleDocumentSelectedCallback() {
@@ -245,6 +247,20 @@ public class App extends Application {
             }
         };
     }
+
+    private static void placeNewRootPane(Stage aStage, Pane aPane) {
+
+        Scene tmpScene = aStage.getScene();
+
+        if (tmpScene != null) {
+
+            tmpScene.setRoot(aPane);
+        }
+        else {
+
+            aStage.setScene(new Scene(aPane));
+        }
+     }
 
     private static void placeIcons(Stage aStage) {
 

@@ -8,4 +8,6 @@ module DocumentArchiver {
     requires org.apache.commons.imaging;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
+    opens com.sophisticatedapps.archiving.documentarchiver.model;
+    opens com.sophisticatedapps.archiving.documentarchiver.util;
 }
