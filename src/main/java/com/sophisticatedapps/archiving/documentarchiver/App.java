@@ -19,6 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import com.sophisticatedapps.archiving.documentarchiver.view.MenuBarAssembler;
 import com.sophisticatedapps.archiving.documentarchiver.view.TriplePane;
 import com.sophisticatedapps.archiving.documentarchiver.view.TriplePaneAssembler;
 import javafx.application.Application;
@@ -30,7 +31,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -133,6 +136,7 @@ public class App extends Application {
             assembleAndSetSceneForNonExistingFile(aPrimaryStage, "Choose file(s) or directory.");
         }
 
+        aPrimaryStage.getProperties().put(GlobalConstants.HOST_SERVICES_PROPERTY_KEY, this.getHostServices());
         placeIcons(aPrimaryStage);
         aPrimaryStage.show();
     }
@@ -158,7 +162,7 @@ public class App extends Application {
                 .assemble(aStage);
 
         aStage.setTitle("Archiving: ".concat(aFile.getPath()));
-        placeNewRootPane(aStage, tmpTriplePane);
+        placeNewMainPane(aStage, tmpTriplePane);
     }
 
     private static void assembleAndSetSceneForNonExistingFile(Stage aStage, String aMessage) {
@@ -213,7 +217,7 @@ public class App extends Application {
                 new Label(aMessage), tmpChooseFilesButton, tmpChooseDirectoryButton);
 
         aStage.setTitle("Choose file(s) or directory");
-        placeNewRootPane(aStage, tmpChooseFilesOrDirectoryPane);
+        placeNewMainPane(aStage, tmpChooseFilesOrDirectoryPane);
     }
 
     private static TriplePaneAssembler.DocumentSelectedCallback assembleDocumentSelectedCallback() {
@@ -248,19 +252,29 @@ public class App extends Application {
         };
     }
 
-    private static void placeNewRootPane(Stage aStage, Pane aPane) {
+    private static void placeNewMainPane(Stage aStage, Pane aPane) {
 
         Scene tmpScene = aStage.getScene();
 
         if (tmpScene != null) {
 
-            tmpScene.setRoot(aPane);
+            BorderPane tmpBorderPane = (BorderPane)tmpScene.getRoot();
+            tmpBorderPane.setCenter(aPane);
         }
         else {
 
-            aStage.setScene(new Scene(aPane));
+            MenuBar tmpMenuBar = (new MenuBarAssembler())
+                    .openNewFileCallback(aCallbackStage -> assembleAndSetSceneForNonExistingFile(
+                            aCallbackStage, "Choose file(s) or directory."))
+                    .assemble(aStage);
+
+            BorderPane tmpBorderPane = new BorderPane();
+            tmpBorderPane.setTop(tmpMenuBar);
+            tmpBorderPane.setCenter(aPane);
+
+            aStage.setScene(new Scene(tmpBorderPane));
         }
-     }
+    }
 
     private static void placeIcons(Stage aStage) {
 

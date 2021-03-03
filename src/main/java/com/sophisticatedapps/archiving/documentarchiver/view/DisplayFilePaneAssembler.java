@@ -123,16 +123,22 @@ public class DisplayFilePaneAssembler {
 
     protected static class DisplayPDFNodeAssembler implements DisplayFileNodeAssembler {
 
+        private static final PDFDisplayer PDF_VIEWER = new PDFDisplayer();
+
+        static {
+
+            PDF_VIEWER.setSecondaryToolbarToggleVisibility(false);
+        }
+
         @Override
         public Node assemble(File aFile) {
 
-            PDFDisplayer tmpPDFViewer = new PDFDisplayer();
-
             try {
 
-                tmpPDFViewer.loadPDF(aFile);
-                return tmpPDFViewer.toNode();
-            } catch (Exception e) {
+                PDF_VIEWER.loadPDF(aFile);
+                return PDF_VIEWER.toNode();
+            }
+            catch (Exception e) {
 
                 throw (new RuntimeException("PDF could not be loaded."));
             }

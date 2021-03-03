@@ -34,6 +34,10 @@ public class GlobalConstants {
     public static final DateTimeFormatter FILENAME_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
 
+    public static final String HOST_SERVICES_PROPERTY_KEY = "hostServices";
+    public static final String WIKI_URL =
+            "https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki";
+
     private static final String PROPERTIES_FILE = "file-archiver.properties";
     public static final Properties APP_PROPERTIES;
     public static final File ARCHIVING_FOLDER;
