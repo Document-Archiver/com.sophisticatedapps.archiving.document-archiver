@@ -24,7 +24,8 @@ public enum FileTypeEnum {
 
     PDF("pdf", false), TXT("txt", false),
     JPG("jpg", true), PNG("png", true),
-    GIF("gif", true), UNSUPPORTED("misc", false);
+    GIF("gif", true), XML("xml", false),
+    UNSUPPORTED("misc", false);
 
     private static final Map<String, FileTypeEnum> LOOKUP = new HashMap<>();
     private final String fileExtension;

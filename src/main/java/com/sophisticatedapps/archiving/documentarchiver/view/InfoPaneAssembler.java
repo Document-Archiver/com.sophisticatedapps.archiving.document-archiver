@@ -20,6 +20,7 @@ import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.model.Tags;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
+import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -68,6 +69,7 @@ public class InfoPaneAssembler {
                 FileTypeEnum.JPG, JPGFileTimeAgent.class,
                 FileTypeEnum.PNG, GenericFileTimeAgent.class,
                 FileTypeEnum.GIF, GenericFileTimeAgent.class,
+                FileTypeEnum.XML, GenericFileTimeAgent.class,
                 FileTypeEnum.UNSUPPORTED, GenericFileTimeAgent.class);
     }
 
@@ -220,8 +222,7 @@ public class InfoPaneAssembler {
 
             if (tmpMatcher.find()) {
 
-                tmpDescriptionTextField.setText(
-                        tmpMatcher.group(1).replaceAll("[^A-Za-z0-9]+", " "));
+                tmpDescriptionTextField.setText(StringUtil.retrieveDescriptionSafeString(tmpMatcher.group(1)));
             }
         }
 
@@ -300,8 +301,7 @@ public class InfoPaneAssembler {
         });
         aTagsTextField.setOnKeyPressed(tmpKeyEvent -> {
             if (tmpKeyEvent.getCode().equals(KeyCode.ENTER)) {
-                String tmpNewTag =
-                        aTagsTextField.getText().replaceAll("[^A-Za-z0-9=-]", "-");
+                String tmpNewTag = StringUtil.retrieveTagNameSafeString(aTagsTextField.getText());
                 addToListIfNotContainedYet(aSelectedTagsListView.getItems(), tmpNewTag);
                 aTagsTextField.setText("");
             }

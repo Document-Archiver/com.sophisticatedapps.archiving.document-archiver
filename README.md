@@ -21,5 +21,8 @@ java -jar document-archiver-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 If you want to pass a certain file or a folder, you can run
 ```
-java -jar document-archiver-1.0-SNAPSHOT-jar-with-dependencies.jar #path-to-file-or folder#
+java -jar document-archiver-1.0-SNAPSHOT-jar-with-dependencies.jar #path-to-file-or-folder#
 ```
+## Quick Start
+Have a look at the Wiki for a Quick Start manual:
+https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start

@@ -34,7 +34,7 @@ class FileUtilTest {
     @Test
     void testReadProperties() throws IOException {
 
-        Properties tmpProperties = FileUtil.readProperties("file-archiver.properties");
+        Properties tmpProperties = FileUtil.readProperties("document-archiver.properties");
 
         assertNotNull(tmpProperties);
         assertEquals("~/Documents/DocumentArchiver", tmpProperties.getProperty("archiving.path"));

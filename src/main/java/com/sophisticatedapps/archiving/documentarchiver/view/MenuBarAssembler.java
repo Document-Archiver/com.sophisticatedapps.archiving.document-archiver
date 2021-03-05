@@ -17,10 +17,17 @@
 package com.sophisticatedapps.archiving.documentarchiver.view;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.Pair;
+
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Properties;
 
 public class MenuBarAssembler {
 
@@ -79,8 +86,43 @@ public class MenuBarAssembler {
 
         tmpAboutMenuItem.setOnAction(actionEvent -> {
 
-            Alert alert = new Alert(Alert.AlertType.NONE, "TODO", ButtonType.CLOSE);
-            alert.showAndWait();
+            PreferencesPane tmpPreferencesPane = (new PreferencesPaneAssembler().assemble());
+
+            Dialog<Pair<String, String>> tmpDialog = new Dialog<>();
+            tmpDialog.setTitle("Preferences");
+            tmpDialog.setHeaderText("Change your archiving folder and/or your quick description words.");
+
+            ButtonType tmpOkButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            tmpDialog.getDialogPane().getButtonTypes().addAll(tmpOkButtonType, ButtonType.CANCEL);
+
+            tmpDialog.setResultConverter(aDialogButton -> {
+                if (aDialogButton == tmpOkButtonType) {
+                    return (new Pair<>(tmpPreferencesPane.getArchivingFolderTextField().getText(),
+                            tmpPreferencesPane.getQuickDescriptionWordsTextArea().getText()));
+                }
+                return null;
+            });
+
+            tmpDialog.getDialogPane().setContent(tmpPreferencesPane);
+
+            Optional<Pair<String, String>> tmpResult = tmpDialog.showAndWait();
+
+            tmpResult.ifPresent(anResultPair -> {
+                Properties tmpProperties = new Properties();
+                tmpProperties.setProperty("archiving.path", anResultPair.getKey());
+                tmpProperties.setProperty("quick.description.words",
+                        StringUtil.cleanQuickDescriptionWordsString(anResultPair.getValue()));
+                try {
+                    FileUtil.writeProperties(GlobalConstants.PROPERTIES_FILE, tmpProperties);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                            "Preferences have been saved and will be active with the next start of DocumentArchiver.",
+                            ButtonType.CLOSE);
+                    alert.showAndWait();
+                }
+                catch (IOException e) {
+                    throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
+                }
+            });
         });
 
         return tmpAboutMenuItem;

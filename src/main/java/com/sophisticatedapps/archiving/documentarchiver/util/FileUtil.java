@@ -19,9 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver.util;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +31,12 @@ import java.util.Properties;
 public class FileUtil {
 
     /**
+     * Private constructor.
+     */
+    private FileUtil() {
+    }
+
+    /**
      * Read the given properties file and return the contained properties as object.
      *
      * @param   aFilename  Filename of the properties file
@@ -41,13 +45,56 @@ public class FileUtil {
      */
     public static Properties readProperties(String aFilename) throws IOException {
 
+        Properties tmpProperties = new Properties();
+
+        // Do we have an existing local properties directory?
+        File tmpLocalPropertiesDirectory = retrieveLocalPropertiesDirectory(false);
+
+        if (tmpLocalPropertiesDirectory.exists()) {
+
+            // Do we have a local properties file?
+            File tmpPropertiesFile = new File(tmpLocalPropertiesDirectory.getPath() + "/" + aFilename);
+
+            if (tmpPropertiesFile.exists()) {
+
+                try (BufferedInputStream tmpInputStream =
+                             new BufferedInputStream(new FileInputStream(tmpPropertiesFile))) {
+
+                    tmpProperties.load(tmpInputStream);
+                    return tmpProperties;
+                }
+            }
+        }
+
         try (BufferedInputStream tmpInputStream = new BufferedInputStream(Objects.requireNonNull(
                 Thread.currentThread().getContextClassLoader().getResourceAsStream(aFilename)))) {
 
-            Properties tmpProperties = new Properties();
             tmpProperties.load(tmpInputStream);
             return tmpProperties;
         }
+    }
+
+    public static void writeProperties(String aFilename, Properties aProperties) throws IOException {
+
+        File tmpPropertiesFile = new File(
+                retrieveLocalPropertiesDirectory(true).getPath() + "/" + aFilename);
+
+        try (FileOutputStream tmpOutputStream = new FileOutputStream(tmpPropertiesFile)) {
+
+            aProperties.store(tmpOutputStream, null);
+        }
+    }
+
+    private static File retrieveLocalPropertiesDirectory(boolean aCreateIfNotExisting) {
+
+        File tmpPropertiesDirectory = new File(System.getProperty("user.home").concat("/.documentarchiver"));
+
+        if ((!tmpPropertiesDirectory.exists()) && aCreateIfNotExisting) {
+
+            tmpPropertiesDirectory.mkdirs();
+        }
+
+        return tmpPropertiesDirectory;
     }
 
     public static void moveFileToArchive(File aFileToMove, DefinedFileProperties aDfp) throws Exception {
@@ -78,7 +125,7 @@ public class FileUtil {
         }
 
         tmpFilename.append("--");
-        tmpFilename.append(aDfp.getDescription().replaceAll("[^A-Za-z0-9]+", "-"));
+        tmpFilename.append(StringUtil.retrieveFilenameSafeString(aDfp.getDescription()));
         tmpFilename.append("__");
         tmpFilename.append(String.join("_", aDfp.getTags()));
         tmpFilename.append(".");

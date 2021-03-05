@@ -50,6 +50,7 @@ public class DisplayFilePaneAssembler {
                 FileTypeEnum.JPG, DisplayImageNodeAssembler.class,
                 FileTypeEnum.PNG, DisplayImageNodeAssembler.class,
                 FileTypeEnum.GIF, DisplayImageNodeAssembler.class,
+                FileTypeEnum.XML, DisplayTextNodeAssembler.class,
                 FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
     }
 
