@@ -16,28 +16,13 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
-import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
-import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
-import com.sophisticatedapps.archiving.documentarchiver.view.MenuBarAssembler;
-import com.sophisticatedapps.archiving.documentarchiver.view.TriplePane;
-import com.sophisticatedapps.archiving.documentarchiver.view.TriplePaneAssembler;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -47,36 +32,27 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class App extends Application {
 
-    private static final TriplePaneAssembler.TriplePanePrefWidthRatios TRIPLE_PANE_PREF_WIDTH_RATIOS =
-            new TriplePaneAssembler.TriplePanePrefWidthRatios(2, 5, 3);
-    private static final Insets SUB_PANES_INSETS = new Insets(10);
-    private static final double ELEMENT_SPACING = 5;
+    private static final Pattern PARAMETER_PATH_PATTERN = Pattern.compile(".*?/+(.*)");
 
-    private static final TriplePaneAssembler.DocumentSelectedCallback DOCUMENT_SELECTED_CALLBACK =
-            assembleDocumentSelectedCallback();
-    private static final TriplePaneAssembler.MoveDocumentCallBack MOVE_DOCUMENT_CALL_BACK =
-            assembleMoveDocumentCallBack();
+    private static List<File> filesFromArgs;
 
-    private static final Pattern PARAMETER_PATH_PATTERN =
-            Pattern.compile(".*?/+(.*)");
-
-    private static File currentFile;
-    private static List<File> allFiles;
-
+    /**
+     * Main method.
+     *
+     * @param   args    Command line arguments.
+     */
     public static void main(String[] args) {
 
         if (args.length > 0) {
 
-            String tmpOrgFilePath;
+            String tmpPath;
 
             Matcher tmpMatcher = PARAMETER_PATH_PATTERN.matcher(args[0]);
             if (tmpMatcher.find()) {
@@ -89,191 +65,72 @@ public class App extends Application {
                 catch (UnsupportedEncodingException e) {
                     throw (new RuntimeException("Could not decode path: ".concat(e.getMessage())));
                 }
-                tmpOrgFilePath = "/".concat(tmpFoundPath);
+                tmpPath = "/".concat(tmpFoundPath);
             }
             else {
                 throw (new RuntimeException("Invalid argument given: ".concat(args[0])));
             }
 
-            File tmpFile = new File(tmpOrgFilePath);
+            File tmpFile = new File(tmpPath);
             if(!tmpFile.exists()) {
-                throw (new RuntimeException("File does not exist: ".concat(tmpOrgFilePath)));
+                throw (new RuntimeException("File does not exist: ".concat(tmpPath)));
             }
 
             if (tmpFile.isDirectory()) {
                 // We have to wrap the result in a new List, since the result is not modifiable.
-                allFiles = new ArrayList<>(
+                filesFromArgs = new ArrayList<>(
                         Arrays.asList(Objects.requireNonNull(tmpFile.listFiles(File::isFile))));
-                if (!allFiles.isEmpty()) {
-                    currentFile = allFiles.get(0);
-                }
             }
             else {
-                currentFile = tmpFile;
-                allFiles = new ArrayList<>();
-                allFiles.add(currentFile);
+                filesFromArgs = new ArrayList<>();
+                filesFromArgs.add(tmpFile);
             }
         }
 
         launch(args);
     }
 
+    /**
+     * Application start method.
+     *
+     * @param   aPrimaryStage   The primary stage.
+     */
     @Override
     public void start(Stage aPrimaryStage) {
 
+        // Set dimensions
         Rectangle2D tmpBounds = Screen.getPrimary().getVisualBounds();
         aPrimaryStage.setX(tmpBounds.getMinX());
         aPrimaryStage.setY(tmpBounds.getMinY());
         aPrimaryStage.setWidth(tmpBounds.getWidth());
         aPrimaryStage.setHeight(tmpBounds.getHeight());
 
-        if (currentFile != null) {
+        // Set stage properties
+        ObservableMap<Object, Object> tmpStageProperties = aPrimaryStage.getProperties();
+        tmpStageProperties.put(GlobalConstants.HOST_SERVICES_PROPERTY_KEY, this.getHostServices());
 
-            assembleAndSetSceneForExistingFile(aPrimaryStage, allFiles, currentFile);
+        // Create root pane
+        BorderPane tmpRootPane =
+                (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", aPrimaryStage);
+
+        // Set files from args to stage properties
+        if ((filesFromArgs != null) && (!filesFromArgs.isEmpty())) {
+
+            tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, filesFromArgs);
+            tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, filesFromArgs.get(0));
         }
         else {
 
-            assembleAndSetSceneForNonExistingFile(aPrimaryStage, "Choose file(s) or directory.");
+            // Have to set null to trigger listeners
+            tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
         }
 
-        aPrimaryStage.getProperties().put(GlobalConstants.HOST_SERVICES_PROPERTY_KEY, this.getHostServices());
+        // Place icons
         placeIcons(aPrimaryStage);
+
+        // Show
+        aPrimaryStage.setScene(new Scene(tmpRootPane));
         aPrimaryStage.show();
-    }
-
-    private static void assembleAndSetSceneForExistingFile(Stage aStage, List<File> aFilesList, File aFile) {
-
-        assembleAndSetSceneForExistingFile(aStage, aFilesList, aFile, null);
-    }
-
-    private static void assembleAndSetSceneForExistingFile(Stage aStage, List<File> aFilesList, File aFile,
-                                                           DefinedFileProperties aDfp) {
-
-        TriplePane tmpTriplePane = (new TriplePaneAssembler())
-                .allFiles(aFilesList)
-                .currentFile(aFile)
-                .fileType(getFiletype(aFile))
-                .definedFileProperties(aDfp)
-                .prefWidthRatios(TRIPLE_PANE_PREF_WIDTH_RATIOS)
-                .subPanesPadding(SUB_PANES_INSETS)
-                .elementSpacing(ELEMENT_SPACING)
-                .documentSelectedCallback(DOCUMENT_SELECTED_CALLBACK)
-                .moveDocumentCallBack(MOVE_DOCUMENT_CALL_BACK)
-                .assemble(aStage);
-
-        aStage.setTitle("Archiving: ".concat(aFile.getPath()));
-        placeNewMainPane(aStage, tmpTriplePane);
-    }
-
-    private static void assembleAndSetSceneForNonExistingFile(Stage aStage, String aMessage) {
-
-        Button tmpChooseFilesButton = new Button("Choose file(s)");
-        tmpChooseFilesButton.setOnAction(actionEvent -> {
-
-            FileChooser tmpFileChooser = new FileChooser();
-            List<File> tmpFilesList = tmpFileChooser.showOpenMultipleDialog(aStage);
-
-            if ((tmpFilesList != null) && (!tmpFilesList.isEmpty())) {
-
-                // We have to wrap the result in a new List, since the result is not modifiable.
-                assembleAndSetSceneForExistingFile(aStage, (new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
-            }
-            else {
-
-                assembleAndSetSceneForNonExistingFile(aStage, "No file selected.");
-            }
-        });
-
-        Button tmpChooseDirectoryButton = new Button("Choose directory");
-        tmpChooseDirectoryButton.setOnAction(actionEvent -> {
-
-            DirectoryChooser tmpDirectoryChooser = new DirectoryChooser();
-            File tmpDirectory = tmpDirectoryChooser.showDialog(aStage);
-
-            if (tmpDirectory != null) {
-
-                List<File> tmpFilesList = Arrays.asList(Objects.requireNonNull(tmpDirectory.listFiles(File::isFile)));
-
-                if (!tmpFilesList.isEmpty()) {
-
-                    // We have to wrap the result in a new List, since the result is not modifiable.
-                    assembleAndSetSceneForExistingFile(aStage, (new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
-                }
-                else {
-
-                    assembleAndSetSceneForNonExistingFile(aStage,
-                            "Empty directory: ".concat(tmpDirectory.getPath()));
-                }
-            }
-            else {
-
-                assembleAndSetSceneForNonExistingFile(aStage, "No directory selected.");
-            }
-        });
-
-        VBox tmpChooseFilesOrDirectoryPane = new VBox(10);
-        tmpChooseFilesOrDirectoryPane.setAlignment(Pos.CENTER);
-        tmpChooseFilesOrDirectoryPane.getChildren().addAll(
-                new Label(aMessage), tmpChooseFilesButton, tmpChooseDirectoryButton);
-
-        aStage.setTitle("Choose file(s) or directory");
-        placeNewMainPane(aStage, tmpChooseFilesOrDirectoryPane);
-    }
-
-    private static TriplePaneAssembler.DocumentSelectedCallback assembleDocumentSelectedCallback() {
-
-        return App::assembleAndSetSceneForExistingFile;
-    }
-
-    private static TriplePaneAssembler.MoveDocumentCallBack assembleMoveDocumentCallBack() {
-
-        return (aPrimaryStage, anAllFilesList, aCurrentFile, aDfp, aTakeOverDescriptionAndTags) -> {
-
-            try {
-
-                FileUtil.moveFileToArchive(aCurrentFile, aDfp);
-                anAllFilesList.remove(aCurrentFile);
-
-                if (anAllFilesList.isEmpty()) {
-
-                    assembleAndSetSceneForNonExistingFile(aPrimaryStage, "All done :-) Start over?");
-                }
-                else {
-
-                    assembleAndSetSceneForExistingFile(aPrimaryStage, anAllFilesList, anAllFilesList.get(0),
-                            (aTakeOverDescriptionAndTags ? aDfp : null));
-                }
-            }
-            catch (Exception e) {
-
-                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.CLOSE);
-                alert.showAndWait();
-            }
-        };
-    }
-
-    private static void placeNewMainPane(Stage aStage, Pane aPane) {
-
-        Scene tmpScene = aStage.getScene();
-
-        if (tmpScene != null) {
-
-            BorderPane tmpBorderPane = (BorderPane)tmpScene.getRoot();
-            tmpBorderPane.setCenter(aPane);
-        }
-        else {
-
-            MenuBar tmpMenuBar = (new MenuBarAssembler())
-                    .openNewFileCallback(aCallbackStage -> assembleAndSetSceneForNonExistingFile(
-                            aCallbackStage, "Choose file(s) or directory."))
-                    .assemble(aStage);
-
-            BorderPane tmpBorderPane = new BorderPane();
-            tmpBorderPane.setTop(tmpMenuBar);
-            tmpBorderPane.setCenter(aPane);
-
-            aStage.setScene(new Scene(tmpBorderPane));
-        }
     }
 
     private static void placeIcons(Stage aStage) {
@@ -300,23 +157,6 @@ public class App extends Application {
 
             // never mind.
         }
-    }
-
-    private static FileTypeEnum getFiletype(File aFile) {
-
-        String tmpFileExtension = "";
-
-        // Get file Name first
-        String tmpFileName = aFile.getName();
-        final int tmpListIndexOfDot = tmpFileName.lastIndexOf(".");
-
-        // If fileName do not contain "." or starts with "." then it is not a valid file
-        if (tmpListIndexOfDot >= 1) {
-
-            tmpFileExtension = tmpFileName.substring(tmpListIndexOfDot + 1);
-        }
-
-        return FileTypeEnum.byFileExtension(tmpFileExtension.toLowerCase(), true);
     }
 
 }

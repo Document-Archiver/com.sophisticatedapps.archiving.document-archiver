@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+
+<MenuBar fx:id="menuBar" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController">
+  <menus>
+    <Menu mnemonicParsing="false" text="DocumentArchiver">
+      <items>
+        <MenuItem mnemonicParsing="false" onAction="#handleAboutMenuItemAction" text="About DocumentArchiver" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemAction" text="Preferences..." />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#handleQuitMenuItemAction" text="Quit DocumentArchiver" />
+      </items>
+    </Menu>
+    <Menu mnemonicParsing="false" text="File">
+      <items>
+        <MenuItem mnemonicParsing="false" onAction="#handleOpenFilesOrDirectoryMenuItemAction" text="Open File(s) Or Directory..." />
+      </items>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Help">
+      <items>
+        <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="DocumentArchiver Help" />
+      </items>
+    </Menu>
+  </menus>
+</MenuBar>

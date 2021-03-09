@@ -27,6 +27,12 @@ import java.util.regex.Pattern;
 
 public class GlobalConstants {
 
+    /**
+     * Private constructor.
+     */
+    private GlobalConstants() {
+    }
+
     public static final DateTimeFormatter ONLY_TIME_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HH:mm:ss");
     public static final DateTimeFormatter FILENAME_ONLY_DATE_DATE_TIME_FORMATTER =
@@ -35,6 +41,9 @@ public class GlobalConstants {
             DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
 
     public static final String HOST_SERVICES_PROPERTY_KEY = "hostServices";
+    public static final String ALL_DOCUMENTS_PROPERTY_KEY = "allDocuments";
+    public static final String CURRENT_DOCUMENT_PROPERTY_KEY = "currentDocument";
+
     public static final String WIKI_URL =
             "https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start";
 

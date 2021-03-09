@@ -18,6 +18,7 @@ package com.sophisticatedapps.archiving.documentarchiver.util;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
+import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -139,6 +140,23 @@ public class FileUtil {
         Path tmpSource = Paths.get(aFileToMove.getPath());
         Path tmpTarget = Paths.get(tmpNewFile.getPath());
         Files.move(tmpSource, tmpTarget);
+    }
+
+    public static FileTypeEnum getFiletype(File aFile) {
+
+        String tmpFileExtension = "";
+
+        // Get file Name first
+        String tmpFileName = aFile.getName();
+        final int tmpListIndexOfDot = tmpFileName.lastIndexOf(".");
+
+        // If fileName do not contain "." or starts with "." then it is not a valid file
+        if (tmpListIndexOfDot >= 1) {
+
+            tmpFileExtension = tmpFileName.substring(tmpListIndexOfDot + 1);
+        }
+
+        return FileTypeEnum.byFileExtension(tmpFileExtension.toLowerCase(), true);
     }
 
 }

@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package com.sophisticatedapps.archiving.documentarchiver.view;
+package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.BufferedInputStream;
@@ -36,12 +40,10 @@ import java.io.FileInputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-public class DisplayFilePaneAssembler {
+public class DisplayFilePaneController extends BaseController {
 
-    private static final Map<FileTypeEnum, Class<? extends DisplayFileNodeAssembler>> NODE_ASSEMBLER_BY_FILETYPE;
-
-    private File currentFile;
-    private FileTypeEnum fileType;
+    private static final Map<FileTypeEnum, Class<? extends DisplayFilePaneController.DisplayFileNodeAssembler>>
+            NODE_ASSEMBLER_BY_FILETYPE;
 
     static {
 
@@ -54,59 +56,57 @@ public class DisplayFilePaneAssembler {
                 FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
     }
 
-    public DisplayFilePaneAssembler currentFile(File aFile) {
+    @FXML
+    private Pane displayFilePane;
 
-        this.currentFile = aFile;
-        return this;
+    @Override
+    public void rampUp(Stage aStage) {
+
+        super.rampUp(aStage);
+
+        // Add listener
+        addCurrentDocumentChangedListener(aChange ->
+                handleCurrentDocumentChanged((File)aChange.getValueAdded()));
     }
 
-    public DisplayFilePaneAssembler fileType(FileTypeEnum aFileType) {
+    /**
+     * Method to call when the current document changed.
+     *
+     * @param   aNewCurrentDocument The new current document.
+     */
+    private void handleCurrentDocumentChanged(File aNewCurrentDocument) {
 
-        this.fileType = aFileType;
-        return this;
-    }
+        if (aNewCurrentDocument != null) {
 
-    public Pane assemble() {
+            try {
 
-        if (currentFile == null) {
+                Class<? extends DisplayFileNodeAssembler> tmpFileNodeAssemblerClass =
+                        NODE_ASSEMBLER_BY_FILETYPE.get(FileUtil.getFiletype(aNewCurrentDocument));
+                Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance()
+                        .assemble(aNewCurrentDocument, displayFilePane.getPrefWidth(), displayFilePane.getPrefHeight());
 
-            throw (new RuntimeException("currentFile not set."));
+                displayFilePane.getChildren().setAll(tmpFileDisplayNode);
+            }
+            catch (Exception e) {
+
+                throw (new RuntimeException("Could not assemble display file pane: ".concat(e.getMessage())));
+            }
         }
-        if (fileType == null) {
+        else {
 
-            throw (new RuntimeException("fileType not set."));
-        }
-
-        try {
-
-            Class<? extends DisplayFileNodeAssembler> tmpFileNodeAssemblerClass =
-                    NODE_ASSEMBLER_BY_FILETYPE.get(fileType);
-            Node tmpFileDisplayNode =
-                    tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance().assemble(currentFile);
-
-            StackPane tmpFileDisplayNodeWrapperPane = new StackPane();
-            tmpFileDisplayNodeWrapperPane.setAlignment(Pos.BASELINE_LEFT);
-            tmpFileDisplayNodeWrapperPane.setBackground(new Background(new BackgroundFill(Color.WHITE,
-                    CornerRadii.EMPTY , new Insets(5))));
-            tmpFileDisplayNodeWrapperPane.getChildren().add(tmpFileDisplayNode);
-
-            return (tmpFileDisplayNodeWrapperPane);
-        }
-        catch (Exception e) {
-
-            throw (new RuntimeException("Could not assemble display file pane: ".concat(e.getMessage())));
+            displayFilePane.getChildren().clear();
         }
     }
 
     private interface DisplayFileNodeAssembler {
 
-        Node assemble(File aFile);
+        Region assemble(File aFile, double aPrefWidth, double aPrefHeight);
     }
 
     protected static class DisplayUnsupportedFiletypeNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Node assemble(File aFile) {
+        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
 
             try {
                 Desktop.getDesktop().open(aFile);
@@ -132,12 +132,15 @@ public class DisplayFilePaneAssembler {
         }
 
         @Override
-        public Node assemble(File aFile) {
+        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
 
             try {
 
                 PDF_VIEWER.loadPDF(aFile);
-                return PDF_VIEWER.toNode();
+                WebView tmpWebView = (WebView)PDF_VIEWER.toNode();
+                tmpWebView.setPrefWidth(aPrefWidth);
+                tmpWebView.setPrefHeight(aPrefHeight);
+                return (new Pane(tmpWebView));
             }
             catch (Exception e) {
 
@@ -149,12 +152,12 @@ public class DisplayFilePaneAssembler {
     protected static class DisplayImageNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Node assemble(File aFile) {
+        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
 
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 
                 // Creating the image object
-                Image tmpImage = new Image(tmpInputStream);
+                javafx.scene.image.Image tmpImage = new Image(tmpInputStream);
 
                 // Creating the image view
                 ImageView tmpImageView = new ImageView();
@@ -165,10 +168,10 @@ public class DisplayFilePaneAssembler {
                 //Setting the image view parameters
                 tmpImageView.setX(10);
                 tmpImageView.setY(10);
-                tmpImageView.setFitWidth(575);
+                tmpImageView.setFitWidth(aPrefWidth);
                 tmpImageView.setPreserveRatio(true);
 
-                return tmpImageView;
+                return (new ScrollPane(tmpImageView));
             }
             catch (Exception e) {
 
@@ -180,7 +183,7 @@ public class DisplayFilePaneAssembler {
     protected static class DisplayTextNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Node assemble(File aFile) {
+        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
 
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 
@@ -204,7 +207,7 @@ public class DisplayFilePaneAssembler {
                 tmpTextView.setX(10);
                 tmpTextView.setY(10);
 
-                return tmpTextView;
+                return (new Pane(tmpTextView));
             }
             catch (Exception e) {
 

@@ -26,6 +26,12 @@ public class StringUtil {
     private static final Pattern FILENAME_PATTERN = Pattern.compile("[^\\p{Sc}\\p{So}\\p{Mn}ء-يÀ-ÿa-zA-Z0-9\\p{script=Han}]+");
     private static final Pattern COMMA_PATTERN = Pattern.compile(",");
 
+    /**
+     * Private constructor.
+     */
+    private StringUtil() {
+    }
+
     public static String retrieveDescriptionSafeString(String aString) {
 
         return DESCRIPTION_PATTERN.matcher(String.valueOf(aString)).replaceAll(" ").trim();

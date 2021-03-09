@@ -46,6 +46,12 @@
           <artifactId>javafx-web</artifactId>
           <version>15.0.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-fxml -->
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-fxml</artifactId>
+          <version>15.0.1</version>
+        </dependency>
       </dependencies>
     </profile>
 
@@ -132,6 +138,22 @@
             <exclusion>
               <groupId>org.openjfx</groupId>
               <artifactId>javafx-graphics</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-fxml</artifactId>
+          <version>15.0.1</version>
+          <classifier>mac</classifier>
+          <exclusions>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-fxml</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-controls</artifactId>
             </exclusion>
           </exclusions>
         </dependency>
@@ -224,6 +246,22 @@
             </exclusion>
           </exclusions>
         </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-fxml</artifactId>
+          <version>15.0.1</version>
+          <classifier>linux</classifier>
+          <exclusions>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-fxml</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-controls</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
       </dependencies>
     </profile>
 
@@ -313,6 +351,22 @@
             </exclusion>
           </exclusions>
         </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-fxml</artifactId>
+          <version>15.0.1</version>
+          <classifier>win</classifier>
+          <exclusions>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-fxml</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-controls</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
       </dependencies>
     </profile>
   </profiles>
@@ -340,6 +394,23 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.fxml</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/test/java</directory>
+        <includes>
+          <include>**/*.fxml</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+      </resource>
+    </resources>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
