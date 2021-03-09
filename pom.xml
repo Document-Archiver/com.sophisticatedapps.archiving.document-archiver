@@ -404,12 +404,14 @@
       <version>3.13.2</version>
       <scope>test</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.testfx</groupId>
       <artifactId>openjfx-monocle</artifactId>
       <version>jdk-11+26</version>
       <scope>test</scope>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
