@@ -100,7 +100,10 @@ public class FileUtil {
 
     public static void moveFileToArchive(File aFileToMove, DefinedFileProperties aDfp) throws Exception {
 
-        String tmpSubDirectory = "/" + aDfp.getFileType().getFileExtension() + "/" + aDfp.getDate().getYear();
+        String tmpFileExtension = getFileExtension(aFileToMove);
+        FileTypeEnum tmpFileType = FileTypeEnum.byFileExtension(tmpFileExtension, true);
+
+        String tmpSubDirectory = "/" + tmpFileType.getGroupingFolder() + "/" + aDfp.getDate().getYear();
         File tmpTargetDirectory = new File(GlobalConstants.ARCHIVING_FOLDER.getPath().concat(tmpSubDirectory));
 
         if (!tmpTargetDirectory.exists()) {
@@ -130,7 +133,7 @@ public class FileUtil {
         tmpFilename.append("__");
         tmpFilename.append(String.join("_", aDfp.getTags()));
         tmpFilename.append(".");
-        tmpFilename.append(aDfp.getFileType().getFileExtension());
+        tmpFilename.append(tmpFileExtension);
 
         File tmpNewFile = new File(tmpTargetDirectory.getPath().concat(tmpFilename.toString()));
         if (tmpNewFile.exists()) {
@@ -142,7 +145,7 @@ public class FileUtil {
         Files.move(tmpSource, tmpTarget);
     }
 
-    public static FileTypeEnum getFiletype(File aFile) {
+    public static String getFileExtension(File aFile) {
 
         String tmpFileExtension = "";
 
@@ -156,7 +159,12 @@ public class FileUtil {
             tmpFileExtension = tmpFileName.substring(tmpListIndexOfDot + 1);
         }
 
-        return FileTypeEnum.byFileExtension(tmpFileExtension.toLowerCase(), true);
+        return tmpFileExtension;
+    }
+
+    public static FileTypeEnum getFiletype(File aFile) {
+
+        return FileTypeEnum.byFileExtension(getFileExtension(aFile), true);
     }
 
 }

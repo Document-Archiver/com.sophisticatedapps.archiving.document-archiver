@@ -107,7 +107,7 @@ public class MenuBarController extends BaseController {
     @FXML
     private void handleOpenFilesOrDirectoryMenuItemAction(ActionEvent anActionEvent) {
 
-        stage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
+        setNewAllDocumentsAndCurrentFile(null, null);
     }
 
     @FXML

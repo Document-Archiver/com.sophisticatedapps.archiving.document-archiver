@@ -43,8 +43,7 @@ public class FXMLUtil {
 
         try {
 
-            FXMLLoader tmpRegionLoader = new FXMLLoader();
-            tmpRegionLoader.setLocation(App.class.getResource(aFxmlResource));
+            FXMLLoader tmpRegionLoader = new FXMLLoader(App.class.getResource(aFxmlResource));
 
             Region tmpRegion = tmpRegionLoader.load();
             BaseController tmpBaseController = tmpRegionLoader.getController();

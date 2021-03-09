@@ -52,6 +52,7 @@ public class DisplayFilePaneController extends BaseController {
                 FileTypeEnum.JPG, DisplayImageNodeAssembler.class,
                 FileTypeEnum.PNG, DisplayImageNodeAssembler.class,
                 FileTypeEnum.GIF, DisplayImageNodeAssembler.class,
+                FileTypeEnum.HEIC, DisplayUnsupportedFiletypeNodeAssembler.class,
                 FileTypeEnum.XML, DisplayTextNodeAssembler.class,
                 FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
     }

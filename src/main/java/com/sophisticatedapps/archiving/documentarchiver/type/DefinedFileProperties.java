@@ -26,17 +26,15 @@ public class DefinedFileProperties {
     String timeInformation;
     String description;
     List<String> tags;
-    FileTypeEnum fileType;
 
     public DefinedFileProperties(LocalDate aDate, boolean anUtilizeTimeInformation, String aTimeInformation,
-                                 String aDescription, List<String> aTagsList, FileTypeEnum aFileType) {
+                                 String aDescription, List<String> aTagsList) {
 
         this.date = aDate;
         this.utilizeTimeInformation = anUtilizeTimeInformation;
         this.timeInformation = aTimeInformation;
         this.description = aDescription;
         this.tags = aTagsList;
-        this.fileType = aFileType;
     }
 
     public LocalDate getDate() {
@@ -57,10 +55,6 @@ public class DefinedFileProperties {
 
     public List<String> getTags() {
         return tags;
-    }
-
-    public FileTypeEnum getFileType() {
-        return fileType;
     }
 
 }

@@ -22,13 +22,18 @@ import java.util.Map;
 
 public enum FileTypeEnum {
 
-    PDF("pdf", false), TXT("txt", false),
-    JPG("jpg", true), PNG("png", true),
-    GIF("gif", true), XML("xml", false),
-    UNSUPPORTED("misc", false);
+    PDF("pdf", "pdfs",false),
+    TXT("txt", "texts", false),
+    JPG("jpg", "images", true),
+    PNG("png", "images", true),
+    GIF("gif", "images", true),
+    HEIC("heic", "images", true),
+    XML("xml", "texts", false),
+    UNSUPPORTED("misc", "misc", false);
 
     private static final Map<String, FileTypeEnum> LOOKUP = new HashMap<>();
     private final String fileExtension;
+    private final String groupingFolder;
     private final boolean utilizeTimeInformationDefault;
 
     static {
@@ -43,11 +48,13 @@ public enum FileTypeEnum {
      * Initializes a FileType with a given file extension.
      *
      * @param   aFileExtension                      File extension to apply to the instance.
+     * @param   aGroupingFolder                     Name of the subfolder within the archiving folder.
      * @param   anUtilizeTimeInformationDefault     If time information should be utilized by default.
      */
-    FileTypeEnum(String aFileExtension, boolean anUtilizeTimeInformationDefault) {
+    FileTypeEnum(String aFileExtension, String aGroupingFolder, boolean anUtilizeTimeInformationDefault) {
 
         this.fileExtension = aFileExtension;
+        this.groupingFolder = aGroupingFolder;
         this.utilizeTimeInformationDefault = anUtilizeTimeInformationDefault;
     }
 
@@ -59,6 +66,16 @@ public enum FileTypeEnum {
     public String getFileExtension() {
 
         return fileExtension;
+    }
+
+    /**
+     * Get the grouping folder of the enum instance.
+     *
+     * @return  Grouping folder of the enum instance.
+     */
+    public String getGroupingFolder() {
+
+        return groupingFolder;
     }
 
     /**
@@ -82,7 +99,7 @@ public enum FileTypeEnum {
     public static FileTypeEnum byFileExtension(String aFileExtension, boolean aReturnUnsupportedIfNotFound)
             throws IllegalArgumentException {
 
-        FileTypeEnum tmpResult = LOOKUP.get(aFileExtension);
+        FileTypeEnum tmpResult = LOOKUP.get(aFileExtension.toLowerCase());
 
         if (tmpResult == null) {
 

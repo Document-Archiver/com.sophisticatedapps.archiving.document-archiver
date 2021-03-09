@@ -64,6 +64,7 @@ public class InfoPaneController extends BaseController {
                 FileTypeEnum.JPG, JPGFileTimeAgent.class,
                 FileTypeEnum.PNG, GenericFileTimeAgent.class,
                 FileTypeEnum.GIF, GenericFileTimeAgent.class,
+                FileTypeEnum.HEIC, GenericFileTimeAgent.class,
                 FileTypeEnum.XML, GenericFileTimeAgent.class,
                 FileTypeEnum.UNSUPPORTED, GenericFileTimeAgent.class);
     }
@@ -288,8 +289,7 @@ public class InfoPaneController extends BaseController {
 
         DefinedFileProperties tmpDfp = new DefinedFileProperties(datePicker.getValue(),
                 utilizeTimeInformationCheckBox.isSelected(), timeInformationTextField.getText(),
-                descriptionTextField.getText().trim(), selectedTagsListView.getItems(),
-                FileUtil.getFiletype(tmpCurrentDocument));
+                descriptionTextField.getText().trim(), selectedTagsListView.getItems());
 
         try {
 
