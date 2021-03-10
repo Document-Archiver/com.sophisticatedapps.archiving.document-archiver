@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver.svg)](https://travis-ci.com/github/Document-Archiver/com.sophisticatedapps.archiving.document-archiver)
+[![Coverage Status](https://coveralls.io/repos/github/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/badge.svg?branch=master)](https://coveralls.io/github/Document-Archiver/com.sophisticatedapps.archiving.document-archiver?branch=master)
 
 # Document Archiver
 

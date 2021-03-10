@@ -8,6 +8,6 @@
    <children>
       <Label text="Choose file(s) or directory." />
       <Button fx:id="chooseFilesButton" mnemonicParsing="false" onAction="#handleChooseFilesButtonAction" text="Choose file(s)" />
-      <Button mnemonicParsing="false" onAction="#handleChooseDirectoryButtonAction" text="Choose directory" />
+      <Button fx:id="chooseDirectoryButton" mnemonicParsing="false" onAction="#handleChooseDirectoryButtonAction" text="Choose directory" />
    </children>
 </VBox>

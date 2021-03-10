@@ -24,7 +24,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.List;
 
-public class BaseController {
+public abstract class BaseController {
 
     protected Stage stage;
 
@@ -73,7 +73,7 @@ public class BaseController {
         addListenerForProperty(aMapChangeListener, GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY);
     }
 
-    protected void setNewAllDocumentsAndCurrentFile(List<File> anAllDocumentsList, File aCurrentDocument) {
+    protected void setNewAllDocumentsAndCurrentDocument(List<File> anAllDocumentsList, File aCurrentDocument) {
 
         ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
         tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, anAllDocumentsList);
@@ -86,7 +86,7 @@ public class BaseController {
         tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, anAllDocumentsList);
     }
 
-    protected void setNewCurrentFile(File aCurrentDocument) {
+    protected void setNewCurrentDocument(File aCurrentDocument) {
 
         ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
         tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aCurrentDocument);

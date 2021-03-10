@@ -301,7 +301,7 @@ public class InfoPaneController extends BaseController {
             // Trigger listeners by first setting the all documents List to null.
             setNewAllDocuments(null);
 
-            setNewAllDocumentsAndCurrentFile(tmpAllDocuments,
+            setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
                     (tmpAllDocuments.isEmpty() ? null : tmpAllDocuments.get(0)));
         }
         catch (Exception e) {

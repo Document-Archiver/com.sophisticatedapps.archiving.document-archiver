@@ -19,6 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -86,7 +87,12 @@ public class DisplayFilePaneController extends BaseController {
                 Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance()
                         .assemble(aNewCurrentDocument, displayFilePane.getPrefWidth(), displayFilePane.getPrefHeight());
 
-                displayFilePane.getChildren().setAll(tmpFileDisplayNode);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        displayFilePane.getChildren().setAll(tmpFileDisplayNode);
+                    }
+                });
             }
             catch (Exception e) {
 

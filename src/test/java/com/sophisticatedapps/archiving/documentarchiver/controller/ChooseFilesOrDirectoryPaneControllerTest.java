@@ -35,19 +35,21 @@ import java.io.IOException;
 class ChooseFilesOrDirectoryPaneControllerTest {
 
     private VBox chooseFilesOrDirectoryPane;
-    private Stage mainstage;
-    ChooseFilesOrDirectoryPaneController controller;
+    ChooseFilesOrDirectoryPaneController chooseFilesOrDirectoryPaneController;
 
+    /**
+     * Will be called with {@code @Before} semantics, i. e. before each test method.
+     *
+     * @param aStage - Will be injected by the test runner.
+     */
     @Start
     public void start(Stage aStage) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(App.class.getResource("view/ChooseFilesOrDirectoryPane.fxml"));
 
         this.chooseFilesOrDirectoryPane = loader.load();
-        this.controller = loader.getController();
-        this.controller.rampUp(aStage);
-
-        this.mainstage = aStage;
+        this.chooseFilesOrDirectoryPaneController = loader.getController();
+        this.chooseFilesOrDirectoryPaneController.rampUp(aStage);
 
         aStage.setScene(new Scene(chooseFilesOrDirectoryPane));
         aStage.show();
@@ -55,14 +57,29 @@ class ChooseFilesOrDirectoryPaneControllerTest {
     }
 
     /**
-     * @param robot - Will be injected by the test runner.
+     * @param aFxRobot - Will be injected by the test runner.
      */
     @Test
-    public void testHandleChooseFilesButtonAction(FxRobot aFxRobot) {
+    void testHandleChooseFilesButtonAction(FxRobot aFxRobot) {
 
         Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
         Assertions.assertThat(tmpChooseFilesButton).hasText("Choose file(s)");
         aFxRobot.clickOn(tmpChooseFilesButton);
+
+        // TODO - refactor the controller to get the FileChooser via dependency injection. Then:
+        // FileChooser mockedChooser = Mockito.mock(FileChooser.class)
+        // when(mockedChooser.showOpenDialog(any(Window.class)).thenReturn(someFile);
+    }
+
+    /**
+     * @param aFxRobot - Will be injected by the test runner.
+     */
+    @Test
+    void testHandleChooseDirectoryButtonAction(FxRobot aFxRobot) {
+
+        Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
+        Assertions.assertThat(tmpChooseDirectoryButton).hasText("Choose directory");
+        aFxRobot.clickOn(tmpChooseDirectoryButton);
     }
 
 }

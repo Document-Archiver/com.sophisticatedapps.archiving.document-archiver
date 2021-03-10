@@ -40,7 +40,7 @@ public class ChooseFilesOrDirectoryPaneController extends BaseController {
         if ((tmpFilesList != null) && (!tmpFilesList.isEmpty())) {
 
             // We have to wrap the result in a new List, since the result is not modifiable.
-            setNewAllDocumentsAndCurrentFile((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
+            setNewAllDocumentsAndCurrentDocument((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
         }
     }
 
@@ -57,7 +57,7 @@ public class ChooseFilesOrDirectoryPaneController extends BaseController {
             if (!tmpFilesList.isEmpty()) {
 
                 // We have to wrap the result in a new List, since the result is not modifiable.
-                setNewAllDocumentsAndCurrentFile((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
+                setNewAllDocumentsAndCurrentDocument((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
             }
             else {
 

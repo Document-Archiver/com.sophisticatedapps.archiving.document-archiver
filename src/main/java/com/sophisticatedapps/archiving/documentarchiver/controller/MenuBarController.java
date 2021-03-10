@@ -107,7 +107,7 @@ public class MenuBarController extends BaseController {
     @FXML
     private void handleOpenFilesOrDirectoryMenuItemAction(ActionEvent anActionEvent) {
 
-        setNewAllDocumentsAndCurrentFile(null, null);
+        setNewAllDocumentsAndCurrentDocument(null, null);
     }
 
     @FXML
