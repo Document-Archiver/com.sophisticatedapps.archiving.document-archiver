@@ -39,8 +39,11 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class BaseControllerTest {
 
-    private static final File CURRENT_DOCUMENT = new File("/");
-    private static final List<File> ALL_DOCUMENTS = Collections.singletonList(CURRENT_DOCUMENT);
+    private static final File TEST_TEXT_FILE = (new File(ChooseFilesOrDirectoryPaneControllerTest.class
+            .getClassLoader().getResource("test.txt").getFile()));
+    private static final File TEST_TEXT_FILE2 = (new File(ChooseFilesOrDirectoryPaneControllerTest.class
+            .getClassLoader().getResource("test2.txt").getFile()));
+    private static final List<File> ALL_DOCUMENTS = Collections.singletonList(TEST_TEXT_FILE);
 
     private BaseController baseController;
 
@@ -55,18 +58,18 @@ class BaseControllerTest {
     @Start
     public void start(Stage aStage) {
 
+        aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, ALL_DOCUMENTS);
+        aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, TEST_TEXT_FILE);
+
         baseController = new BaseController(){};
         baseController.rampUp(aStage);
-
-        aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, ALL_DOCUMENTS);
-        aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, CURRENT_DOCUMENT);
     }
 
     @Test
     void getCurrentDocument() {
 
         final File tmpCurrentDocument = baseController.getCurrentDocument();
-        assertSame(CURRENT_DOCUMENT, tmpCurrentDocument);
+        assertSame(TEST_TEXT_FILE, tmpCurrentDocument);
     }
 
     @Test
@@ -83,7 +86,7 @@ class BaseControllerTest {
         baseController.addListenerForProperty(mapChangeListener, GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY);
 
         // Change all documents value
-        baseController.setNewCurrentDocument(new File(System.getProperty("user.home")));
+        baseController.setNewCurrentDocument(TEST_TEXT_FILE2);
 
         // Verify listener was called
         verify(mapChangeListener,
@@ -97,7 +100,7 @@ class BaseControllerTest {
         baseController.addAllDocumentsChangedListener(mapChangeListener);
 
         // Change all documents value
-        baseController.setNewAllDocuments(Collections.singletonList(new File(System.getProperty("user.home"))));
+        baseController.setNewAllDocuments(Collections.singletonList(TEST_TEXT_FILE2));
 
         // Verify listener was called
         verify(mapChangeListener,
@@ -111,7 +114,7 @@ class BaseControllerTest {
         baseController.addCurrentDocumentChangedListener(mapChangeListener);
 
         // Change all documents value
-        baseController.setNewCurrentDocument(new File(System.getProperty("user.home")));
+        baseController.setNewCurrentDocument(TEST_TEXT_FILE2);
 
         // Verify listener was called
         verify(mapChangeListener,
@@ -121,18 +124,17 @@ class BaseControllerTest {
     @Test
     void setNewAllDocumentsAndCurrentDocument() {
 
-        File tmpNewCurrentDocument = new File(System.getProperty("user.home"));
-        List<File> tmpNewAllDocuments = Collections.singletonList(tmpNewCurrentDocument);
+        List<File> tmpNewAllDocuments = Collections.singletonList(TEST_TEXT_FILE2);
 
-        baseController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
-        assertSame(tmpNewCurrentDocument, baseController.getCurrentDocument());
+        baseController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, TEST_TEXT_FILE2);
+        assertSame(TEST_TEXT_FILE2, baseController.getCurrentDocument());
         assertSame(tmpNewAllDocuments, baseController.getAllDocuments());
     }
 
     @Test
     void setNewAllDocuments() {
 
-        List<File> tmpNewAllDocuments = Collections.singletonList(new File(System.getProperty("user.home")));
+        List<File> tmpNewAllDocuments = Collections.singletonList(TEST_TEXT_FILE2);
 
         baseController.setNewAllDocuments(tmpNewAllDocuments);
         assertSame(tmpNewAllDocuments, baseController.getAllDocuments());
@@ -141,10 +143,8 @@ class BaseControllerTest {
     @Test
     void setNewCurrentDocument() {
 
-        File tmpNewCurrentDocument = new File(System.getProperty("user.home"));
-
-        baseController.setNewCurrentDocument(tmpNewCurrentDocument);
-        assertSame(tmpNewCurrentDocument, baseController.getCurrentDocument());
+        baseController.setNewCurrentDocument(TEST_TEXT_FILE2);
+        assertSame(TEST_TEXT_FILE2, baseController.getCurrentDocument());
     }
 
 }

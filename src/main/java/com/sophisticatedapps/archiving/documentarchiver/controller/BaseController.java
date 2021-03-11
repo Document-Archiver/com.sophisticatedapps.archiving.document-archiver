@@ -73,23 +73,23 @@ public abstract class BaseController {
         addListenerForProperty(aMapChangeListener, GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY);
     }
 
-    protected void setNewAllDocumentsAndCurrentDocument(List<File> anAllDocumentsList, File aCurrentDocument) {
+    protected void setNewAllDocumentsAndCurrentDocument(List<File> aNewAllDocumentsList, File aNewCurrentDocument) {
 
         ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
-        tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, anAllDocumentsList);
-        tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aCurrentDocument);
+        tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aNewAllDocumentsList);
+        tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
     }
 
-    protected void setNewAllDocuments(List<File> anAllDocumentsList) {
+    protected void setNewAllDocuments(List<File> aNewAllDocumentsList) {
 
         ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
-        tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, anAllDocumentsList);
+        tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aNewAllDocumentsList);
     }
 
-    protected void setNewCurrentDocument(File aCurrentDocument) {
+    protected void setNewCurrentDocument(File aNewCurrentDocument) {
 
         ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
-        tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aCurrentDocument);
+        tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
     }
 
 }
