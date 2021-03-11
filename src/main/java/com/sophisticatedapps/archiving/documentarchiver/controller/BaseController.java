@@ -22,22 +22,60 @@ import javafx.collections.ObservableMap;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseController {
 
+    private final List<MapChangeListener<Object, Object>> stagePropertiesListenersList = new ArrayList<>();
+
     protected Stage stage;
 
+    /**
+     * Initialize the controller.
+     *
+     * @param   aStage  JavaFX stage.
+     */
     public void rampUp(Stage aStage) {
 
         this.stage = aStage;
     }
 
+    /**
+     * Cleanup.
+     */
+    public void rampDown() {
+
+        ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
+
+        // Remove all added Listeners
+        for (MapChangeListener<Object, Object> tmpCurrentListener : stagePropertiesListenersList) {
+
+            tmpStageProperties.removeListener(tmpCurrentListener);
+        }
+
+        // Clear our List of Listeners
+        stagePropertiesListenersList.clear();
+
+        // Release stage
+        this.stage = null;
+    }
+
+    /**
+     * Get the current document (from stage properties).
+     *
+     * @return  Current document as File object.
+     */
     protected File getCurrentDocument() {
 
         return (File)stage.getProperties().get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY);
     }
 
+    /**
+     * Get the current all-documents List (from stage properties).
+     *
+     * @return  Current all-documents List.
+     */
     protected List<File> getAllDocuments() {
 
         return (List<File>)stage.getProperties().get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY);
@@ -51,9 +89,8 @@ public abstract class BaseController {
      */
     protected void addListenerForProperty(MapChangeListener<Object, Object> aMapChangeListener, String aProperty) {
 
-        ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
-
-        tmpStageProperties.addListener((MapChangeListener<Object, Object>) aChange -> {
+        // Create a wrapper, which will only trigger the given Listener when the given property has changed.
+        MapChangeListener<Object, Object> tmpListenerWrapper = ((MapChangeListener<Object, Object>) aChange -> {
 
             // Current document changed?
             if (aChange.getKey().equals(aProperty)) {
@@ -61,6 +98,12 @@ public abstract class BaseController {
                 aMapChangeListener.onChanged(aChange);
             }
         });
+
+        // Add the wrapper listener to our List of added Listeners
+        stagePropertiesListenersList.add(tmpListenerWrapper);
+
+        // Add it to the stage properties.
+        stage.getProperties().addListener(tmpListenerWrapper);
     }
 
     protected void addAllDocumentsChangedListener(MapChangeListener<Object, Object> aMapChangeListener) {

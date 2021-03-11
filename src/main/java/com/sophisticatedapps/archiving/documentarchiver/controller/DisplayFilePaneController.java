@@ -67,8 +67,7 @@ public class DisplayFilePaneController extends BaseController {
         super.rampUp(aStage);
 
         // Add listener
-        addCurrentDocumentChangedListener(aChange ->
-                handleCurrentDocumentChanged((File)aChange.getValueAdded()));
+        addCurrentDocumentChangedListener(aChange -> handleCurrentDocumentChanged((File)aChange.getValueAdded()));
     }
 
     /**

@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.collections.MapChangeListener;
 import javafx.stage.Stage;
@@ -30,7 +31,9 @@ import org.testfx.framework.junit5.Start;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -39,10 +42,10 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class BaseControllerTest {
 
-    private static final File TEST_TEXT_FILE = (new File(ChooseFilesOrDirectoryPaneControllerTest.class
-            .getClassLoader().getResource("test.txt").getFile()));
-    private static final File TEST_TEXT_FILE2 = (new File(ChooseFilesOrDirectoryPaneControllerTest.class
-            .getClassLoader().getResource("test2.txt").getFile()));
+    private static final File TEST_TEXT_FILE = (new File(Objects.requireNonNull(App.class
+            .getClassLoader().getResource("test.txt")).getFile()));
+    private static final File TEST_TEXT_FILE2 = (new File(Objects.requireNonNull(App.class
+            .getClassLoader().getResource("test2.txt")).getFile()));
     private static final List<File> ALL_DOCUMENTS = Collections.singletonList(TEST_TEXT_FILE);
 
     private BaseController baseController;
@@ -66,6 +69,16 @@ class BaseControllerTest {
     }
 
     @Test
+    void testRampDown() {
+
+        // Ramp down
+        baseController.rampDown();
+
+        // Stage should be set to NULL now
+        assertNull(baseController.stage);
+    }
+
+    @Test
     void getCurrentDocument() {
 
         final File tmpCurrentDocument = baseController.getCurrentDocument();
@@ -85,7 +98,7 @@ class BaseControllerTest {
         // Add listener
         baseController.addListenerForProperty(mapChangeListener, GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY);
 
-        // Change all documents value
+        // Change current document value
         baseController.setNewCurrentDocument(TEST_TEXT_FILE2);
 
         // Verify listener was called
@@ -113,7 +126,7 @@ class BaseControllerTest {
         // Add listener
         baseController.addCurrentDocumentChangedListener(mapChangeListener);
 
-        // Change all documents value
+        // Change current document value
         baseController.setNewCurrentDocument(TEST_TEXT_FILE2);
 
         // Verify listener was called
