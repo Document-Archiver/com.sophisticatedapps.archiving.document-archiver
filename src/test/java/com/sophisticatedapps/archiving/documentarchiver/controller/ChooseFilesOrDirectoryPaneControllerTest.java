@@ -16,24 +16,17 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
-import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(ApplicationExtension.class)
 class ChooseFilesOrDirectoryPaneControllerTest {
 
+    /*
     private static final File TEST_TEXT_FILE = (new File(ChooseFilesOrDirectoryPaneControllerTest.class
             .getClassLoader().getResource("test.txt").getFile()));
     private static final File TEST_PDF_FILE = (new File(ChooseFilesOrDirectoryPaneControllerTest.class
@@ -43,6 +36,8 @@ class ChooseFilesOrDirectoryPaneControllerTest {
 
     private ChooseFilesOrDirectoryPaneController chooseFilesOrDirectoryPaneController;
     private VBox chooseFilesOrDirectoryPane;
+
+     */
 
     /**
      * Will be called with {@code @Before} semantics, i. e. before each test method.
@@ -78,6 +73,7 @@ class ChooseFilesOrDirectoryPaneControllerTest {
     //@Test
     void xtestHandleChooseFilesButtonAction(FxRobot aFxRobot) throws IOException {
 
+        /*
         System.out.println(">>> " + chooseFilesOrDirectoryPaneController.fileChooser);
 
         Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
@@ -87,6 +83,8 @@ class ChooseFilesOrDirectoryPaneControllerTest {
         // Not same, since List will be wrapped into a new List.
         assertEquals(DOCUMENTS_LIST, chooseFilesOrDirectoryPaneController.getAllDocuments());
         assertSame(DOCUMENTS_LIST.get(0), chooseFilesOrDirectoryPaneController.getCurrentDocument());
+
+         */
     }
 
     /**
@@ -95,6 +93,7 @@ class ChooseFilesOrDirectoryPaneControllerTest {
     //@Test
     void xtestHandleChooseDirectoryButtonAction(FxRobot aFxRobot) throws IOException {
 
+        /*
         System.out.println(">>> " + chooseFilesOrDirectoryPaneController.directoryChooser);
 
         Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
@@ -105,6 +104,8 @@ class ChooseFilesOrDirectoryPaneControllerTest {
         assertEquals(2, tmpChosenDocuments.size());
         assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE));
         assertTrue(tmpChosenDocuments.contains(TEST_PDF_FILE));
+        
+         */
     }
 
 }
