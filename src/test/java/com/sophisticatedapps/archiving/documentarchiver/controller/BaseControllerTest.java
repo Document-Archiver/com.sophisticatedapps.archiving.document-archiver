@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.collections.MapChangeListener;
 import javafx.stage.Stage;
@@ -31,7 +31,6 @@ import org.testfx.framework.junit5.Start;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -40,13 +39,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(ApplicationExtension.class)
 @ExtendWith(MockitoExtension.class)
-class BaseControllerTest {
-
-    private static final File TEST_TEXT_FILE = (new File(Objects.requireNonNull(App.class
-            .getClassLoader().getResource("test.txt")).getFile()));
-    private static final File TEST_TEXT_FILE2 = (new File(Objects.requireNonNull(App.class
-            .getClassLoader().getResource("test2.txt")).getFile()));
-    private static final List<File> ALL_DOCUMENTS = Collections.singletonList(TEST_TEXT_FILE);
+class BaseControllerTest extends BaseTest {
 
     private BaseController baseController;
 
@@ -61,7 +54,7 @@ class BaseControllerTest {
     @Start
     public void start(Stage aStage) {
 
-        aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, ALL_DOCUMENTS);
+        aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, DOCUMENTS_LIST);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, TEST_TEXT_FILE);
 
         baseController = new BaseController(){};
@@ -89,7 +82,7 @@ class BaseControllerTest {
     void getAllDocuments() {
 
         final List<File> tmpAllDocuments = baseController.getAllDocuments();
-        assertSame(ALL_DOCUMENTS, tmpAllDocuments);
+        assertSame(DOCUMENTS_LIST, tmpAllDocuments);
     }
 
     @Test

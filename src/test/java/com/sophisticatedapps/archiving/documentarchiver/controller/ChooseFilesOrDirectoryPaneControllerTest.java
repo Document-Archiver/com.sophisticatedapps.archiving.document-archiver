@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -33,22 +34,14 @@ import org.testfx.framework.junit5.Start;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(ApplicationExtension.class)
-class ChooseFilesOrDirectoryPaneControllerTest {
-
-    private static final File TEST_TEXT_FILE = (new File(Objects.requireNonNull(App.class
-            .getClassLoader().getResource("test.txt")).getFile()));
-    private static final File TEST_PDF_FILE = (new File(Objects.requireNonNull(App.class
-            .getClassLoader().getResource("test.pdf")).getFile()));
-    private static final File RESOURCES_DIRECTORY = TEST_TEXT_FILE.getParentFile();
-    private static final List<File> DOCUMENTS_LIST = Collections.singletonList(TEST_TEXT_FILE);
+class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
 
     private VBox chooseFilesOrDirectoryPane;
     private ChooseFilesOrDirectoryPaneController chooseFilesOrDirectoryPaneController;
@@ -84,7 +77,7 @@ class ChooseFilesOrDirectoryPaneControllerTest {
      * @param aFxRobot - Will be injected by the test runner.
      */
     @Test
-    void testHandleChooseFilesButtonAction(FxRobot aFxRobot) throws IOException, InterruptedException {
+    void testHandleChooseFilesButtonAction(FxRobot aFxRobot) {
 
         Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
         Assertions.assertThat(tmpChooseFilesButton).hasText("Choose file(s)");
@@ -100,7 +93,7 @@ class ChooseFilesOrDirectoryPaneControllerTest {
      * @param aFxRobot - Will be injected by the test runner.
      */
     @Test
-    void testHandleChooseDirectoryButtonAction(FxRobot aFxRobot) throws IOException {
+    void testHandleChooseDirectoryButtonAction(FxRobot aFxRobot) {
 
         Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
         Assertions.assertThat(tmpChooseDirectoryButton).hasText("Choose directory");

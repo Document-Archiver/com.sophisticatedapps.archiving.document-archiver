@@ -42,16 +42,16 @@ public class DocumentsPaneController extends BaseController {
             @Override
             protected void updateItem(File aFile, boolean anEmpty) {
 
-                super.updateItem(aFile, anEmpty);
+            super.updateItem(aFile, anEmpty);
 
-                if (anEmpty || (aFile == null)) {
+            if (anEmpty || (aFile == null)) {
 
-                    setText(null);
-                }
-                else {
+                setText(null);
+            }
+            else {
 
-                    setText(aFile.getName());
-                }
+                setText(aFile.getName());
+            }
             }
         });
 

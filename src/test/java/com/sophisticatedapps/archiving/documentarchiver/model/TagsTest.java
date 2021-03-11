@@ -20,6 +20,7 @@ import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.SortedSet;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +37,8 @@ class TagsTest {
     void testGetExistingTags() {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        File tmpDirectory = new File(classLoader.getResource("test-archiving-folder").getFile());
+        File tmpDirectory = new File(Objects.requireNonNull(classLoader
+                .getResource("test-archiving-folder")).getFile());
 
         SortedSet<String> tmpResult = Tags.getExistingTags(tmpDirectory, FileTypeEnum.TXT);
 

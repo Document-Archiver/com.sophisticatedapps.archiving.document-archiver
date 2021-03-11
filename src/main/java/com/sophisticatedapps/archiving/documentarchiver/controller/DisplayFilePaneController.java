@@ -86,12 +86,7 @@ public class DisplayFilePaneController extends BaseController {
                 Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance()
                         .assemble(aNewCurrentDocument, displayFilePane.getPrefWidth(), displayFilePane.getPrefHeight());
 
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        displayFilePane.getChildren().setAll(tmpFileDisplayNode);
-                    }
-                });
+                Platform.runLater(() -> displayFilePane.getChildren().setAll(tmpFileDisplayNode));
             }
             catch (Exception e) {
 

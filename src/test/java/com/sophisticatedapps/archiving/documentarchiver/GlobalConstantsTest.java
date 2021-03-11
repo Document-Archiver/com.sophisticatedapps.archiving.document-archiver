@@ -28,7 +28,7 @@ class GlobalConstantsTest {
      * Test if the properties are being loaded correctly.
      */
     @Test
-    public void testIfPropertiesCorrectlyLoaded() {
+    void testIfPropertiesCorrectlyLoaded() {
 
         String tmpExpectedPath =
                 System.getProperty("user.home").concat("/Documents/DocumentArchiver");

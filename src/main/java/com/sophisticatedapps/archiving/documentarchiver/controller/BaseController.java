@@ -90,7 +90,7 @@ public abstract class BaseController {
     protected void addListenerForProperty(MapChangeListener<Object, Object> aMapChangeListener, String aProperty) {
 
         // Create a wrapper, which will only trigger the given Listener when the given property has changed.
-        MapChangeListener<Object, Object> tmpListenerWrapper = ((MapChangeListener<Object, Object>) aChange -> {
+        MapChangeListener<Object, Object> tmpListenerWrapper = (aChange -> {
 
             // Current document changed?
             if (aChange.getKey().equals(aProperty)) {

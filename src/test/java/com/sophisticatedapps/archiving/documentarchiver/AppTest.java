@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.App".
  */
-public class AppTest {
+class AppTest {
 
     /**
      * Test if parameter gets checked correctly.
      */
     @Test
-    public void testParameterCheck() {
+    void testParameterCheck() {
 
         Throwable tmpException = assertThrows(RuntimeException.class, () -> {
             App.main(new String[]{ "/foo/bar" });

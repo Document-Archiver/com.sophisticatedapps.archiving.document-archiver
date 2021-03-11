@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -31,9 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -42,12 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(ApplicationExtension.class)
-class DisplayFilePaneControllerTest {
-
-    private static final File TEST_TEXT_FILE = (new File(Objects.requireNonNull(App.class
-            .getClassLoader().getResource("test.txt")).getFile()));
-    private static final File TEST_PNG_FILE = (new File(Objects.requireNonNull(App.class
-            .getClassLoader().getResource("binder-icon.png")).getFile()));
+class DisplayFilePaneControllerTest extends BaseTest {
 
     private Pane displayFilePane;
     private DisplayFilePaneController displayFilePaneController;
