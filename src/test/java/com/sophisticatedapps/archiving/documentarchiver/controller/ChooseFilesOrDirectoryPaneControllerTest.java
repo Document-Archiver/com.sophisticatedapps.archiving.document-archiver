@@ -16,22 +16,13 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.testfx.api.FxRobot;
 import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
-import org.testfx.framework.junit5.Start;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,8 +30,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(ApplicationExtension.class)
 class ChooseFilesOrDirectoryPaneControllerTest {
@@ -63,6 +52,7 @@ class ChooseFilesOrDirectoryPaneControllerTest {
     //@Start
     public void xstart(Stage aStage) throws IOException {
 
+        /*
         ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
         when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(DOCUMENTS_LIST);
@@ -79,6 +69,7 @@ class ChooseFilesOrDirectoryPaneControllerTest {
         aStage.setScene(new Scene(chooseFilesOrDirectoryPane));
         aStage.show();
         aStage.toFront();
+         */
     }
 
     /**
