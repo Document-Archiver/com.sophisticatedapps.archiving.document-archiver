@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.model;
 
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.model.Tags".
  */
-class TagsTest {
+class TagsTest extends BaseTest {
 
     /**
      * Test if existing tags are being delivered correctly.
@@ -36,11 +37,7 @@ class TagsTest {
     @Test
     void testGetExistingTags() {
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        File tmpDirectory = new File(Objects.requireNonNull(classLoader
-                .getResource("test-archiving-folder")).getFile());
-
-        SortedSet<String> tmpResult = Tags.getExistingTags(tmpDirectory, FileTypeEnum.TXT);
+        SortedSet<String> tmpResult = Tags.getExistingTags(TEST_ARCHIVING_FOLDER, FileTypeEnum.TXT);
 
         assertEquals("[bar, foo, fu, sna]", tmpResult.toString());
     }

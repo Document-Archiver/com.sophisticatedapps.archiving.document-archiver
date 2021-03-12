@@ -8,3 +8,6 @@ jdk: openjdk11
 
 services:
   - xvfb
+
+after_success:
+  - mvn clean test coveralls:report

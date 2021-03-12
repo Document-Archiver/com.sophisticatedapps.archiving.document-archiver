@@ -170,7 +170,7 @@ public class InfoPaneController extends BaseController {
      *
      * @param   aNewValue   Value after change.
      */
-    private void handleDatePickerValueChanged(boolean aNewValue) {
+    protected void handleDatePickerValueChanged(boolean aNewValue) {
 
         // Without this, manual set dates are not taken over
         if (!aNewValue) {
@@ -192,7 +192,7 @@ public class InfoPaneController extends BaseController {
      *
      * @param   aNewValue   Value after change.
      */
-    private void handleUtilizeTimeInformationCheckBoxValueChanged(boolean aNewValue) {
+    protected void handleUtilizeTimeInformationCheckBoxValueChanged(boolean aNewValue) {
 
         timeInformationTextField.setDisable(!aNewValue);
     }
@@ -203,7 +203,7 @@ public class InfoPaneController extends BaseController {
      *
      * @param   aNewValue   Value after change.
      */
-    private void handleQuickDescriptionWordsComboBoxValueChanged(String aNewValue) {
+    protected void handleQuickDescriptionWordsComboBoxValueChanged(String aNewValue) {
 
         descriptionTextField.setText(aNewValue + " " + descriptionTextField.getText());
     }
@@ -214,7 +214,7 @@ public class InfoPaneController extends BaseController {
      *
      * @param   aNewValue   Value after change.
      */
-    private void handleTagsTextFieldTextChanged(String aNewValue) {
+    protected void handleTagsTextFieldTextChanged(String aNewValue) {
 
         FilteredList<String> tmpFilteredList = (FilteredList<String>)existingTagsListView.getItems();
 
@@ -230,7 +230,7 @@ public class InfoPaneController extends BaseController {
     }
 
     @FXML
-    private void handleTagsTextFieldKeyPressed(KeyEvent aKeyEvent) {
+    protected void handleTagsTextFieldKeyPressed(KeyEvent aKeyEvent) {
 
         if (aKeyEvent.getCode().equals(KeyCode.ENTER)) {
 
@@ -250,7 +250,7 @@ public class InfoPaneController extends BaseController {
     }
 
     @FXML
-    private void handleExistingTagsListViewClicked(MouseEvent anActionEvent) {
+    protected void handleExistingTagsListViewClicked() {
 
         String tmpSelectedItem = existingTagsListView.getSelectionModel().getSelectedItem();
         addToListIfNotContainedYet(selectedTagsListView.getItems(), tmpSelectedItem);
@@ -259,7 +259,7 @@ public class InfoPaneController extends BaseController {
     }
 
     @FXML
-    private void handleExistingTagsListViewKeyPressed(KeyEvent aKeyEvent) {
+    protected void handleExistingTagsListViewKeyPressed(KeyEvent aKeyEvent) {
 
         if (aKeyEvent.getCode().equals(KeyCode.UP)) {
 
@@ -271,19 +271,19 @@ public class InfoPaneController extends BaseController {
         else if (aKeyEvent.getCode().equals(KeyCode.ENTER)) {
 
             // Same as if clicked.
-            handleExistingTagsListViewClicked(null);
+            handleExistingTagsListViewClicked();
         }
     }
 
     @FXML
-    private void handleSelectedTagsListViewClicked(MouseEvent anActionEvent) {
+    protected void handleSelectedTagsListViewClicked() {
 
         String tmpSelectedItem = selectedTagsListView.getSelectionModel().getSelectedItem();
         selectedTagsListView.getItems().remove(tmpSelectedItem);
     }
 
     @FXML
-    private void handleSubmitButtonAction(ActionEvent anActionEvent) {
+    protected void handleSubmitButtonAction() {
 
         File tmpCurrentDocument = getCurrentDocument();
 

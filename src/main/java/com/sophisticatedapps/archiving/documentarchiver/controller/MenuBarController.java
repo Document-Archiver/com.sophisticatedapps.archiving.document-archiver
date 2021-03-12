@@ -38,14 +38,14 @@ import java.util.Properties;
 public class MenuBarController extends BaseController {
 
     @FXML
-    private void handleAboutMenuItemAction(ActionEvent anActionEvent) {
+    protected void handleAboutMenuItemAction(ActionEvent anActionEvent) {
 
         Alert tmpAlert = new Alert(Alert.AlertType.NONE, "Copyright 2021 by Stephan Sann", ButtonType.CLOSE);
         tmpAlert.showAndWait();
     }
 
     @FXML
-    private void handlePreferencesMenuItemAction(ActionEvent anActionEvent) {
+    protected void handlePreferencesMenuItemAction(ActionEvent anActionEvent) {
 
         try {
 
@@ -99,19 +99,19 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
-    private void handleQuitMenuItemAction(ActionEvent anActionEvent) {
+    protected void handleQuitMenuItemAction(ActionEvent anActionEvent) {
 
         Platform.exit();
     }
 
     @FXML
-    private void handleOpenFilesOrDirectoryMenuItemAction(ActionEvent anActionEvent) {
+    protected void handleOpenFilesOrDirectoryMenuItemAction(ActionEvent anActionEvent) {
 
         setNewAllDocumentsAndCurrentDocument(null, null);
     }
 
     @FXML
-    private void handleHelpMenuItemAction(ActionEvent anActionEvent) {
+    protected void handleHelpMenuItemAction(ActionEvent anActionEvent) {
 
         HostServices tmpHostServices =
                 (HostServices)stage.getProperties().get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY);

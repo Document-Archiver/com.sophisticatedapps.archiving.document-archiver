@@ -97,7 +97,7 @@ public class DocumentsPaneController extends BaseController {
     }
 
     @FXML
-    private void handleDocumentsListViewClicked(MouseEvent anActionEvent) {
+    protected void handleDocumentsListViewClicked() {
 
         setNewCurrentDocument(documentsListView.getSelectionModel().getSelectedItem());
     }

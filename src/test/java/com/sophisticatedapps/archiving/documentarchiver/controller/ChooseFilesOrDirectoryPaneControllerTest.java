@@ -19,16 +19,11 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.testfx.api.FxRobot;
-import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
@@ -43,7 +38,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(ApplicationExtension.class)
 class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
 
-    private VBox chooseFilesOrDirectoryPane;
     private ChooseFilesOrDirectoryPaneController chooseFilesOrDirectoryPaneController;
 
     /**
@@ -54,56 +48,99 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
     @Start
     public void start(Stage aStage) throws IOException {
 
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/ChooseFilesOrDirectoryPane.fxml"));
+        loader.load();
+        chooseFilesOrDirectoryPaneController = loader.getController();
+        chooseFilesOrDirectoryPaneController.rampUp(aStage);
+    }
+
+    /**
+     * Test "handleChooseFilesButtonAction" with selection of multiple files.
+     */
+    @Test
+    void testHandleChooseFilesButtonAction() {
+
         ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
         when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(DOCUMENTS_LIST);
+
+        chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
+        chooseFilesOrDirectoryPaneController.handleChooseFilesButtonAction();
+
+        // Not same, since List will be wrapped into a new List.
+        assertEquals(DOCUMENTS_LIST, chooseFilesOrDirectoryPaneController.getAllDocuments());
+        assertSame(DOCUMENTS_LIST.get(0), chooseFilesOrDirectoryPaneController.getCurrentDocument());
+    }
+
+    /**
+     * Test "handleChooseFilesButtonAction" with cancelation of the file chooser.
+     */
+    @Test
+    void testHandleChooseFilesButtonAction_with_cancel() {
+
+        ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
+                Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
+        when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(null);
+
+        chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
+        chooseFilesOrDirectoryPaneController.handleChooseFilesButtonAction();
+
+        assertNull(chooseFilesOrDirectoryPaneController.getAllDocuments());
+        assertNull(chooseFilesOrDirectoryPaneController.getCurrentDocument());
+    }
+
+    /**
+     * Test "handleChooseDirectoryButtonAction" with selection of a non-empty folder.
+     */
+    @Test
+    void testHandleChooseDirectoryButtonAction() {
+
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
-        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(RESOURCES_DIRECTORY);
+        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_RESOURCES_DIRECTORY);
 
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/ChooseFilesOrDirectoryPane.fxml"));
-        chooseFilesOrDirectoryPane = loader.load();
-        chooseFilesOrDirectoryPaneController = loader.getController();
-        chooseFilesOrDirectoryPaneController.rampUp(aStage);
-        chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
         chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
+        chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
 
-        aStage.setScene(new Scene(chooseFilesOrDirectoryPane));
-        aStage.show();
-        aStage.toFront();
+        List<File> tmpChosenDocuments = chooseFilesOrDirectoryPaneController.getAllDocuments();
+        assertEquals(3, tmpChosenDocuments.size());
+        assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE));
+        assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE2));
+        assertTrue(tmpChosenDocuments.contains(TEST_PDF_FILE));
     }
 
     /**
-     * @param aFxRobot - Will be injected by the test runner.
+     * Test "handleChooseDirectoryButtonAction" with cancelation of the directory chooser.
      */
     @Test
-    void testHandleChooseFilesButtonAction(FxRobot aFxRobot) {
+    void testHandleChooseDirectoryButtonAction_with_cancel() {
 
-        Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
-        Assertions.assertThat(tmpChooseFilesButton).hasText("Choose file(s)");
-        aFxRobot.clickOn(tmpChooseFilesButton);
+        ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
+                Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
+        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(null);
 
-        // TODO - make this work within Maven tests (currently the Button listener doesn't get triggered there)
-        // Not same, since List will be wrapped into a new List.
-        //assertEquals(DOCUMENTS_LIST, chooseFilesOrDirectoryPaneController.getAllDocuments());
-        //assertSame(DOCUMENTS_LIST.get(0), chooseFilesOrDirectoryPaneController.getCurrentDocument());
+        chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
+        chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
+
+        assertNull(chooseFilesOrDirectoryPaneController.getAllDocuments());
+        assertNull(chooseFilesOrDirectoryPaneController.getCurrentDocument());
     }
 
     /**
-     * @param aFxRobot - Will be injected by the test runner.
+     * Test "handleChooseDirectoryButtonAction" with selection of an empty folder.
      */
     @Test
-    void testHandleChooseDirectoryButtonAction(FxRobot aFxRobot) {
+    void testHandleChooseDirectoryButtonAction_with_empty_folder() {
 
-        Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
-        Assertions.assertThat(tmpChooseDirectoryButton).hasText("Choose directory");
-        aFxRobot.clickOn(tmpChooseDirectoryButton);
+        ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
+                Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
+        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_ARCHIVING_FOLDER);
 
-        // TODO - make this work within Maven tests (currently the Button listener doesn't get triggered there)
-        //List<File> tmpChosenDocuments = chooseFilesOrDirectoryPaneController.getAllDocuments();
-        //assertEquals(3, tmpChosenDocuments.size());
-        //assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE));
-        //assertTrue(tmpChosenDocuments.contains(TEST_PDF_FILE));
+        chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
+        chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
+
+        assertNull(chooseFilesOrDirectoryPaneController.getAllDocuments());
+        assertNull(chooseFilesOrDirectoryPaneController.getCurrentDocument());
     }
 
 }

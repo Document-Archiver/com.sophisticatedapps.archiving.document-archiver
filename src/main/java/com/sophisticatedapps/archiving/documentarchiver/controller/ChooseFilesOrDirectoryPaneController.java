@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -36,7 +36,7 @@ public class ChooseFilesOrDirectoryPaneController extends BaseController {
     protected DaDirectoryChooser directoryChooser = new DaDirectoryChooser();
 
     @FXML
-    private void handleChooseFilesButtonAction(ActionEvent anActionEvent) {
+    protected void handleChooseFilesButtonAction() {
 
         List<File> tmpFilesList = fileChooser.showOpenMultipleDialog(stage);
 
@@ -45,10 +45,14 @@ public class ChooseFilesOrDirectoryPaneController extends BaseController {
             // We have to wrap the result in a new List, since the result is not modifiable.
             setNewAllDocumentsAndCurrentDocument((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
         }
+        else {
+
+            setNewAllDocumentsAndCurrentDocument(null, null);
+        }
     }
 
     @FXML
-    private void handleChooseDirectoryButtonAction(ActionEvent anActionEvent) {
+    protected void handleChooseDirectoryButtonAction() {
 
         File tmpDirectory = directoryChooser.showDialog(stage);
 
@@ -63,10 +67,19 @@ public class ChooseFilesOrDirectoryPaneController extends BaseController {
             }
             else {
 
-                Alert tmpAlert = new Alert(Alert.AlertType.WARNING,
-                        "The chosen directory doesn't contain files.", ButtonType.CLOSE);
-                tmpAlert.showAndWait();
+                setNewAllDocumentsAndCurrentDocument(null, null);
+
+                Platform.runLater(() -> {
+
+                    Alert tmpAlert = new Alert(Alert.AlertType.WARNING,
+                            "The chosen directory doesn't contain files.", ButtonType.CLOSE);
+                    tmpAlert.showAndWait();
+                });
             }
+        }
+        else {
+
+            setNewAllDocumentsAndCurrentDocument(null, null);
         }
     }
 

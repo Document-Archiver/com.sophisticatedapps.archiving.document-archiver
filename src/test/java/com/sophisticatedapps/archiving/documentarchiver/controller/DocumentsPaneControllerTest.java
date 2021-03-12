@@ -18,8 +18,10 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
+import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -27,7 +29,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,6 +52,9 @@ class DocumentsPaneControllerTest extends BaseTest {
     @Start
     public void start(Stage aStage) throws IOException {
 
+        aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
+        aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
+
         FXMLLoader loader = new FXMLLoader(App.class.getResource("view/DocumentsPane.fxml"));
         documentsPane = loader.load();
         documentsPaneController = loader.getController();
@@ -62,6 +69,47 @@ class DocumentsPaneControllerTest extends BaseTest {
     void testHandleAllDocumentsChanged() {
 
         documentsPaneController.setNewAllDocuments(DOCUMENTS_LIST);
+
+        // Get documents ListView
+        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
+        assertNotNull(tmpDocumentsListView);
+
+        List<File> tmpDocumentsList = tmpDocumentsListView.getItems();
+        assertTrue(tmpDocumentsList.contains(TEST_TEXT_FILE));
+        assertTrue(tmpDocumentsList.contains(TEST_TEXT_FILE2));
+        assertTrue(tmpDocumentsList.contains(TEST_PDF_FILE));
+    }
+
+    @Test
+    void testHandleCurrentDocumentChanged() {
+
+        documentsPaneController.setNewAllDocumentsAndCurrentDocument(DOCUMENTS_LIST, TEST_TEXT_FILE2);
+
+        // Get documents ListView
+        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
+        assertNotNull(tmpDocumentsListView);
+
+        assertSame(TEST_TEXT_FILE2, tmpDocumentsListView.getFocusModel().getFocusedItem());
+        assertSame(TEST_TEXT_FILE2, tmpDocumentsListView.getSelectionModel().getSelectedItem());
+    }
+
+    @Test
+    void testHandleDocumentsListViewClicked() {
+
+        documentsPaneController.setNewAllDocumentsAndCurrentDocument(DOCUMENTS_LIST, TEST_TEXT_FILE2);
+
+        // Get documents ListView
+        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
+        assertNotNull(tmpDocumentsListView);
+
+        // Set selection to PDF file
+        tmpDocumentsListView.getSelectionModel().select(2);
+
+        // "Click"
+        documentsPaneController.handleDocumentsListViewClicked();
+
+        // Now the PDF file should be the current document.
+        assertSame(TEST_PDF_FILE, documentsPaneController.getCurrentDocument());
     }
 
 }

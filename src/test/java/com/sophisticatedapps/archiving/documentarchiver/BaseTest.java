@@ -18,14 +18,13 @@ package com.sophisticatedapps.archiving.documentarchiver;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Base class for tests.
  */
-public class BaseTest {
+public abstract class BaseTest {
 
     protected static final File TEST_TEXT_FILE = (new File(Objects.requireNonNull(App.class
             .getClassLoader().getResource("test.txt")).getFile()));
@@ -38,6 +37,8 @@ public class BaseTest {
 
     protected static final List<File> DOCUMENTS_LIST = Arrays.asList(TEST_TEXT_FILE, TEST_TEXT_FILE2, TEST_PDF_FILE);
 
-    protected static final File RESOURCES_DIRECTORY = TEST_TEXT_FILE.getParentFile();
+    protected static final File TEST_RESOURCES_DIRECTORY = TEST_TEXT_FILE.getParentFile();
+    protected static final File TEST_ARCHIVING_FOLDER = new File(Objects.requireNonNull(App.class
+            .getClassLoader().getResource("test-archiving-folder")).getFile());
 
 }
