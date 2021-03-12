@@ -9,5 +9,12 @@ jdk: openjdk11
 services:
   - xvfb
 
-after_success:
-  - mvn clean cobertura:cobertura coveralls:report
+sudo: false
+install: true
+
+addons:
+  sonarcloud:
+    organization: "document-archiver"
+
+script:
+  - mvn clean verify sonar:sonar
