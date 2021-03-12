@@ -17,4 +17,4 @@ addons:
     organization: "document-archiver"
 
 script:
-  - mvn clean verify sonar:sonar
+  - mvn clean jacoco:prepare-agent test jacoco:report sonar:sonar

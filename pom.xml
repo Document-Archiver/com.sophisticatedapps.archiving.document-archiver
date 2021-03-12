@@ -15,6 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>9</maven.compiler.source>
     <maven.compiler.target>9</maven.compiler.target>
+    <argLine>--add-exports javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</argLine>
   </properties>
 
   <repositories>
@@ -475,11 +476,6 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
-          <configuration>
-            <argLine>
-              --add-exports javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
-            </argLine>
-          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
@@ -595,6 +591,7 @@
             </execution>
             <execution>
               <id>report</id>
+              <phase>test</phase>
               <goals>
                 <goal>report</goal>
               </goals>
