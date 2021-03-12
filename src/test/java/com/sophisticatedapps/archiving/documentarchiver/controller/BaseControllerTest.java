@@ -127,6 +127,8 @@ class BaseControllerTest extends BaseTest {
         // Change current document value
         baseController.setNewCurrentDocument(TEST_TEXT_FILE2);
 
+        WaitForAsyncUtils.waitForFxEvents();
+
         // Verify listener was called
         verify(mapChangeListener,
                 Mockito.times(1)).onChanged(any(MapChangeListener.Change.class));
