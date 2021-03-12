@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,6 +71,8 @@ class DocumentsPaneControllerTest extends BaseTest {
 
         documentsPaneController.setNewAllDocuments(DOCUMENTS_LIST);
 
+        WaitForAsyncUtils.waitForFxEvents();
+
         // Get documents ListView
         ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
         assertNotNull(tmpDocumentsListView);
@@ -85,6 +88,8 @@ class DocumentsPaneControllerTest extends BaseTest {
 
         documentsPaneController.setNewAllDocumentsAndCurrentDocument(DOCUMENTS_LIST, TEST_TEXT_FILE2);
 
+        WaitForAsyncUtils.waitForFxEvents();
+
         // Get documents ListView
         ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
         assertNotNull(tmpDocumentsListView);
@@ -98,6 +103,8 @@ class DocumentsPaneControllerTest extends BaseTest {
 
         documentsPaneController.setNewAllDocumentsAndCurrentDocument(DOCUMENTS_LIST, TEST_TEXT_FILE2);
 
+        WaitForAsyncUtils.waitForFxEvents();
+
         // Get documents ListView
         ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
         assertNotNull(tmpDocumentsListView);
@@ -107,6 +114,8 @@ class DocumentsPaneControllerTest extends BaseTest {
 
         // "Click"
         documentsPaneController.handleDocumentsListViewClicked();
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Now the PDF file should be the current document.
         assertSame(TEST_PDF_FILE, documentsPaneController.getCurrentDocument());

@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.stage.Stage;
@@ -118,21 +119,30 @@ public abstract class BaseController {
 
     protected void setNewAllDocumentsAndCurrentDocument(List<File> aNewAllDocumentsList, File aNewCurrentDocument) {
 
-        ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
-        tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aNewAllDocumentsList);
-        tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
+        Platform.runLater(() -> {
+
+            ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
+            tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aNewAllDocumentsList);
+            tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
+        });
     }
 
     protected void setNewAllDocuments(List<File> aNewAllDocumentsList) {
 
-        ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
-        tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aNewAllDocumentsList);
+        Platform.runLater(() -> {
+
+            ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
+            tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aNewAllDocumentsList);
+        });
     }
 
     protected void setNewCurrentDocument(File aNewCurrentDocument) {
 
-        ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
-        tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
+        Platform.runLater(() -> {
+
+            ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
+            tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
+        });
     }
 
 }

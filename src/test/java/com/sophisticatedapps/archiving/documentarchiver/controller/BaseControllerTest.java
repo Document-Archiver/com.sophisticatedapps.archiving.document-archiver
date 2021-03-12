@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.util.Collections;
@@ -94,6 +95,8 @@ class BaseControllerTest extends BaseTest {
         // Change current document value
         baseController.setNewCurrentDocument(TEST_TEXT_FILE2);
 
+        WaitForAsyncUtils.waitForFxEvents();
+
         // Verify listener was called
         verify(mapChangeListener,
                 Mockito.times(1)).onChanged(any(MapChangeListener.Change.class));
@@ -107,6 +110,8 @@ class BaseControllerTest extends BaseTest {
 
         // Change all documents value
         baseController.setNewAllDocuments(Collections.singletonList(TEST_TEXT_FILE2));
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Verify listener was called
         verify(mapChangeListener,
@@ -133,6 +138,9 @@ class BaseControllerTest extends BaseTest {
         List<File> tmpNewAllDocuments = Collections.singletonList(TEST_TEXT_FILE2);
 
         baseController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, TEST_TEXT_FILE2);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
         assertSame(TEST_TEXT_FILE2, baseController.getCurrentDocument());
         assertSame(tmpNewAllDocuments, baseController.getAllDocuments());
     }
@@ -143,6 +151,9 @@ class BaseControllerTest extends BaseTest {
         List<File> tmpNewAllDocuments = Collections.singletonList(TEST_TEXT_FILE2);
 
         baseController.setNewAllDocuments(tmpNewAllDocuments);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
         assertSame(tmpNewAllDocuments, baseController.getAllDocuments());
     }
 
@@ -150,6 +161,9 @@ class BaseControllerTest extends BaseTest {
     void setNewCurrentDocument() {
 
         baseController.setNewCurrentDocument(TEST_TEXT_FILE2);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
         assertSame(TEST_TEXT_FILE2, baseController.getCurrentDocument());
     }
 

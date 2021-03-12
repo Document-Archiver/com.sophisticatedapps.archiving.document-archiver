@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +72,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
         chooseFilesOrDirectoryPaneController.handleChooseFilesButtonAction();
 
+        WaitForAsyncUtils.waitForFxEvents();
+
         // Not same, since List will be wrapped into a new List.
         assertEquals(DOCUMENTS_LIST, chooseFilesOrDirectoryPaneController.getAllDocuments());
         assertSame(DOCUMENTS_LIST.get(0), chooseFilesOrDirectoryPaneController.getCurrentDocument());
@@ -79,8 +82,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
     /**
      * Test "handleChooseFilesButtonAction" with cancelation of the file chooser.
      */
-    //@Test
-    void xtestHandleChooseFilesButtonAction_with_cancel() {
+    @Test
+    void testHandleChooseFilesButtonAction_with_cancel() {
 
         ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
@@ -89,6 +92,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
         chooseFilesOrDirectoryPaneController.handleChooseFilesButtonAction();
 
+        WaitForAsyncUtils.waitForFxEvents();
+
         assertNull(chooseFilesOrDirectoryPaneController.getAllDocuments());
         assertNull(chooseFilesOrDirectoryPaneController.getCurrentDocument());
     }
@@ -96,8 +101,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
     /**
      * Test "handleChooseDirectoryButtonAction" with selection of a non-empty folder.
      */
-    //@Test
-    void xtestHandleChooseDirectoryButtonAction() {
+    @Test
+    void testHandleChooseDirectoryButtonAction() {
 
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
@@ -105,6 +110,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
 
         chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
         chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         List<File> tmpChosenDocuments = chooseFilesOrDirectoryPaneController.getAllDocuments();
         assertEquals(3, tmpChosenDocuments.size());
@@ -116,8 +123,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
     /**
      * Test "handleChooseDirectoryButtonAction" with cancelation of the directory chooser.
      */
-    //@Test
-    void xtestHandleChooseDirectoryButtonAction_with_cancel() {
+    @Test
+    void testHandleChooseDirectoryButtonAction_with_cancel() {
 
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
@@ -126,6 +133,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
         chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
 
+        WaitForAsyncUtils.waitForFxEvents();
+
         assertNull(chooseFilesOrDirectoryPaneController.getAllDocuments());
         assertNull(chooseFilesOrDirectoryPaneController.getCurrentDocument());
     }
@@ -133,8 +142,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
     /**
      * Test "handleChooseDirectoryButtonAction" with selection of an empty folder.
      */
-    //@Test
-    void xtestHandleChooseDirectoryButtonAction_with_empty_folder() {
+    @Test
+    void testHandleChooseDirectoryButtonAction_with_empty_folder() {
 
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
@@ -142,6 +151,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
 
         chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
         chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         assertNull(chooseFilesOrDirectoryPaneController.getAllDocuments());
         assertNull(chooseFilesOrDirectoryPaneController.getCurrentDocument());
