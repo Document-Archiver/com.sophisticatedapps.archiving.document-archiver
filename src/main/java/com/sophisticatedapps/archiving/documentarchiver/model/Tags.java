@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.model;
 
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
+import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 
 import java.io.File;
 import java.util.Collections;
@@ -37,12 +38,11 @@ public class Tags {
     private static final Pattern FIND_TAGS_IN_FILENAME_PATTERN =
             Pattern.compile(".*__(.+)\\..+");
 
-    public static SortedSet<String> getExistingTags(File anArchivingFolder, FileTypeEnum aFileType) {
+    public static SortedSet<String> getExistingTags(FileTypeEnum aFileType) {
 
         SortedSet<String> tmpReturn = new TreeSet<>();
 
-        File tmpFileTypeDirectory = new File(
-                anArchivingFolder.getPath() + "/" + aFileType.getFileTypeGroup().getGroupingFolder());
+        File tmpFileTypeDirectory = DirectoryUtil.getGroupingFolder(aFileType.getFileTypeGroup());
 
         // Check if folder is created yet (may not be the case before first archiving)
         if (tmpFileTypeDirectory.exists()) {

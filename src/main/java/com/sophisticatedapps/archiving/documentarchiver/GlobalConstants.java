@@ -49,7 +49,7 @@ public class GlobalConstants {
 
     public static final String PROPERTIES_FILE = "document-archiver.properties";
     public static final Properties APP_PROPERTIES;
-    public static final File ARCHIVING_FOLDER;
+    public static final File ARCHIVING_ROOT_FOLDER;
 
     private static final Pattern HOME_DIR_PATTERN = Pattern.compile("^~(.*)$");
 
@@ -64,7 +64,7 @@ public class GlobalConstants {
             if (tmpMatcher.find()) {
                 tmpArchivingFolderPath = System.getProperty("user.home").concat(tmpMatcher.group(1));
             }
-            ARCHIVING_FOLDER = new File(tmpArchivingFolderPath);
+            ARCHIVING_ROOT_FOLDER = new File(tmpArchivingFolderPath);
         }
         catch (IOException e) {
 

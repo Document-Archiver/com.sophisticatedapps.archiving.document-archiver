@@ -54,7 +54,7 @@ public class FileUtil {
         if (tmpLocalPropertiesDirectory.exists()) {
 
             // Do we have a local properties file?
-            File tmpPropertiesFile = new File(tmpLocalPropertiesDirectory.getPath() + "/" + aFilename);
+            File tmpPropertiesFile = new File(tmpLocalPropertiesDirectory, aFilename);
 
             if (tmpPropertiesFile.exists()) {
 
@@ -77,8 +77,7 @@ public class FileUtil {
 
     public static void writeProperties(String aFilename, Properties aProperties) throws IOException {
 
-        File tmpPropertiesFile = new File(
-                retrieveLocalPropertiesDirectory(true).getPath() + "/" + aFilename);
+        File tmpPropertiesFile = new File(retrieveLocalPropertiesDirectory(true), aFilename);
 
         try (FileOutputStream tmpOutputStream = new FileOutputStream(tmpPropertiesFile)) {
 
@@ -98,23 +97,20 @@ public class FileUtil {
         return tmpPropertiesDirectory;
     }
 
-    public static void moveFileToArchive(File aFileToMove, DefinedFileProperties aDfp) throws Exception {
+    public static void moveFileToArchive(File aFileToMove, DefinedFileProperties aDfp) throws IOException {
 
         String tmpFileExtension = getFileExtension(aFileToMove);
         FileTypeEnum tmpFileType = FileTypeEnum.byFileExtension(tmpFileExtension, true);
 
-        String tmpSubDirectory =
-                "/" + tmpFileType.getFileTypeGroup().getGroupingFolder() + "/" + aDfp.getDate().getYear();
-        File tmpTargetDirectory = new File(GlobalConstants.ARCHIVING_FOLDER.getPath().concat(tmpSubDirectory));
+        File tmpTargetDirectory =
+                DirectoryUtil.getArchivingFolder(tmpFileType.getFileTypeGroup(), aDfp.getDate().getYear());
 
-        if (!tmpTargetDirectory.exists()) {
-            if (!tmpTargetDirectory.mkdirs()) {
-                throw (new Exception("Target folder could not be created."));
-            }
+        if (!tmpTargetDirectory.exists() && (!tmpTargetDirectory.mkdirs())) {
+
+            throw (new IOException("Target folder could not be created."));
         }
 
         StringBuilder tmpFilename = new StringBuilder();
-        tmpFilename.append("/");
 
         if (aDfp.isUtilizeTimeInformation()) {
 
@@ -136,9 +132,9 @@ public class FileUtil {
         tmpFilename.append(".");
         tmpFilename.append(tmpFileExtension);
 
-        File tmpNewFile = new File(tmpTargetDirectory.getPath().concat(tmpFilename.toString()));
+        File tmpNewFile = new File(tmpTargetDirectory, tmpFilename.toString());
         if (tmpNewFile.exists()) {
-            throw new Exception("File with name '" + tmpNewFile.getPath() + "' exists!");
+            throw new IOException("File with name '" + tmpNewFile.getPath() + "' exists!");
         }
 
         Path tmpSource = Paths.get(aFileToMove.getPath());

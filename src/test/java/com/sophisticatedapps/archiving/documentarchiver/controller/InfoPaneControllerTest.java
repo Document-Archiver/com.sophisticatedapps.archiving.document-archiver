@@ -19,24 +19,30 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
+import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,6 +51,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(ApplicationExtension.class)
 class InfoPaneControllerTest extends BaseTest {
+
+    @TempDir
+    File tempDir;
 
     private Pane infoPane;
     private InfoPaneController infoPaneController;
@@ -150,5 +159,53 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     // TODO - test remaining methods
+
+    @Test
+    void testHandleSubmitButtonAction() throws IOException {
+
+        DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
+        File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
+        List<File> tmpNewAllDocuments = new ArrayList<>();
+        tmpNewAllDocuments.add(tmpNewCurrentDocument);
+
+        // Write some stuff to the new file
+        try (FileWriter tmpFileWriter = new FileWriter(tmpNewCurrentDocument)) {
+            tmpFileWriter.write("snafu");
+        }
+
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        tmpSelectedTagsListView.getItems().addAll("Java", "Swift");
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // "Click" submit
+        Button tmpSubmitButton = (Button)infoPane.lookup("#submitButton");
+        tmpSubmitButton.getOnAction().handle(null);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // File should be moved, so not be existing on the original path any more.
+        assertFalse(tmpNewCurrentDocument.exists());
+
+        // File should exist in (test) archiving folder
+        LocalDate tmpFileDate = ((DatePicker)infoPane.lookup("#datePicker")).getValue();
+        String tmpDateString = GlobalConstants.FILENAME_ONLY_DATE_DATE_TIME_FORMATTER.format(tmpFileDate);
+        String tmpDescription = ((TextField)infoPane.lookup("#descriptionTextField")).getText();
+
+        File tmpArchivingFolder =
+                DirectoryUtil.getArchivingFolder(FileTypeGroupEnum.TEXTS, tmpFileDate.getYear());
+        File tmpTargetFile = new File(tmpArchivingFolder,
+                (tmpDateString + "--" + tmpDescription + "__Java_Swift.txt"));
+
+        assertTrue(tmpTargetFile.exists());
+
+        // Cleanup
+        tmpTargetFile.delete();
+        DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
+    }
 
 }

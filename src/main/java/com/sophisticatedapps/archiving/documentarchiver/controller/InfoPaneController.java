@@ -22,6 +22,7 @@ import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperti
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -40,6 +41,7 @@ import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -191,7 +193,7 @@ public class InfoPaneController extends BaseController {
             }
 
             ObservableList<String> tmpOriginalExistingTagsList = FXCollections.observableList(
-                    new ArrayList<>(Tags.getExistingTags(GlobalConstants.ARCHIVING_FOLDER, tmpFileType)));
+                    new ArrayList<>(Tags.getExistingTags(tmpFileType)));
             FilteredList<String> tmpFilteredExistingTagsList = new FilteredList<>(tmpOriginalExistingTagsList);
             existingTagsListView.setItems(tmpFilteredExistingTagsList);
         }
@@ -271,14 +273,11 @@ public class InfoPaneController extends BaseController {
             addToListIfNotContainedYet(selectedTagsListView.getItems(), tmpNewTag);
             tagsTextField.setText("");
         }
-        else if (aKeyEvent.getCode().equals(KeyCode.DOWN)) {
+        else if (aKeyEvent.getCode().equals(KeyCode.DOWN) && (!existingTagsListView.getItems().isEmpty())) {
 
-            if (!existingTagsListView.getItems().isEmpty()) {
-
-                existingTagsListView.requestFocus();
-                existingTagsListView.getFocusModel().focus(0);
-                existingTagsListView.getSelectionModel().select(0);
-            }
+            existingTagsListView.requestFocus();
+            existingTagsListView.getFocusModel().focus(0);
+            existingTagsListView.getSelectionModel().select(0);
         }
     }
 
@@ -337,10 +336,13 @@ public class InfoPaneController extends BaseController {
             setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
                     (tmpAllDocuments.isEmpty() ? null : tmpAllDocuments.get(0)));
         }
-        catch (Exception e) {
+        catch (IOException e) {
 
-            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.CLOSE);
-            alert.showAndWait();
+            Platform.runLater(() -> {
+
+                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.CLOSE);
+                alert.showAndWait();
+            });
         }
     }
 

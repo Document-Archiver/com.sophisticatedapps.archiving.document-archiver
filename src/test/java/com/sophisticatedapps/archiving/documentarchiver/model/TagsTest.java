@@ -17,7 +17,9 @@
 package com.sophisticatedapps.archiving.documentarchiver.model;
 
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
+import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
+import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.SortedSet;
@@ -35,9 +37,13 @@ class TagsTest extends BaseTest {
     @Test
     void testGetExistingTags() {
 
-        SortedSet<String> tmpResult = Tags.getExistingTags(TEST_ARCHIVING_FOLDER, FileTypeEnum.TXT);
+        DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
+
+        SortedSet<String> tmpResult = Tags.getExistingTags(FileTypeEnum.TXT);
 
         assertEquals("[bar, foo, fu, sna]", tmpResult.toString());
+
+        DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
     }
 
 }
