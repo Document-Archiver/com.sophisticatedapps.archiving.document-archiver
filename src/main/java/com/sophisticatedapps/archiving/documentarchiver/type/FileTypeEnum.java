@@ -22,18 +22,18 @@ import java.util.Map;
 
 public enum FileTypeEnum {
 
-    PDF("pdf", "pdfs",false),
-    TXT("txt", "texts", false),
-    JPG("jpg", "images", true),
-    PNG("png", "images", true),
-    GIF("gif", "images", true),
-    HEIC("heic", "images", true),
-    XML("xml", "texts", false),
-    UNSUPPORTED("misc", "misc", false);
+    PDF("pdf", FileTypeGroupEnum.PDFS,false),
+    TXT("txt", FileTypeGroupEnum.TEXTS, false),
+    JPG("jpg", FileTypeGroupEnum.IMAGES, true),
+    PNG("png", FileTypeGroupEnum.IMAGES, true),
+    GIF("gif", FileTypeGroupEnum.IMAGES, true),
+    HEIC("heic", FileTypeGroupEnum.IMAGES, true),
+    XML("xml", FileTypeGroupEnum.TEXTS, false),
+    UNSUPPORTED("misc", FileTypeGroupEnum.MISC, false);
 
     private static final Map<String, FileTypeEnum> LOOKUP = new HashMap<>();
     private final String fileExtension;
-    private final String groupingFolder;
+    private final FileTypeGroupEnum fileTypeGroup;
     private final boolean utilizeTimeInformationDefault;
 
     static {
@@ -48,13 +48,13 @@ public enum FileTypeEnum {
      * Initializes a FileType with a given file extension.
      *
      * @param   aFileExtension                      File extension to apply to the instance.
-     * @param   aGroupingFolder                     Name of the subfolder within the archiving folder.
+     * @param   aFileTypeGroup                      File type group to apply to the instance.
      * @param   anUtilizeTimeInformationDefault     If time information should be utilized by default.
      */
-    FileTypeEnum(String aFileExtension, String aGroupingFolder, boolean anUtilizeTimeInformationDefault) {
+    FileTypeEnum(String aFileExtension, FileTypeGroupEnum aFileTypeGroup, boolean anUtilizeTimeInformationDefault) {
 
         this.fileExtension = aFileExtension;
-        this.groupingFolder = aGroupingFolder;
+        this.fileTypeGroup = aFileTypeGroup;
         this.utilizeTimeInformationDefault = anUtilizeTimeInformationDefault;
     }
 
@@ -69,13 +69,13 @@ public enum FileTypeEnum {
     }
 
     /**
-     * Get the grouping folder of the enum instance.
+     * Get the file type group of the enum instance.
      *
-     * @return  Grouping folder of the enum instance.
+     * @return  File type group of the enum instance.
      */
-    public String getGroupingFolder() {
+    public FileTypeGroupEnum getFileTypeGroup() {
 
-        return groupingFolder;
+        return fileTypeGroup;
     }
 
     /**

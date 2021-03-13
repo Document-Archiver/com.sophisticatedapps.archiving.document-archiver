@@ -42,7 +42,7 @@ public class Tags {
         SortedSet<String> tmpReturn = new TreeSet<>();
 
         File tmpFileTypeDirectory = new File(
-                anArchivingFolder.getPath() + "/" + aFileType.getGroupingFolder());
+                anArchivingFolder.getPath() + "/" + aFileType.getFileTypeGroup().getGroupingFolder());
 
         // Check if folder is created yet (may not be the case before first archiving)
         if (tmpFileTypeDirectory.exists()) {

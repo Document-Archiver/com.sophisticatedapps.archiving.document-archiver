@@ -20,8 +20,11 @@ import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -40,6 +43,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(ApplicationExtension.class)
 class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
 
+    private VBox chooseFilesOrDirectoryPane;
     private ChooseFilesOrDirectoryPaneController chooseFilesOrDirectoryPaneController;
 
     /**
@@ -54,9 +58,15 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLLoader loader = new FXMLLoader(App.class.getResource("view/ChooseFilesOrDirectoryPane.fxml"));
-        loader.load();
+        chooseFilesOrDirectoryPane = loader.load();
         chooseFilesOrDirectoryPaneController = loader.getController();
         chooseFilesOrDirectoryPaneController.rampUp(aStage);
+    }
+
+    @AfterEach
+    public void cleanUpEach(){
+
+        chooseFilesOrDirectoryPaneController.rampDown();
     }
 
     /**
@@ -68,9 +78,10 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
         when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(DOCUMENTS_LIST);
-
         chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
-        chooseFilesOrDirectoryPaneController.handleChooseFilesButtonAction();
+
+        Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
+        tmpChooseFilesButton.getOnAction().handle(null);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -88,9 +99,10 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
         when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(null);
-
         chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
-        chooseFilesOrDirectoryPaneController.handleChooseFilesButtonAction();
+
+        Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
+        tmpChooseFilesButton.getOnAction().handle(null);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -107,9 +119,10 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
         when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_RESOURCES_DIRECTORY);
-
         chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
-        chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
+
+        Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
+        tmpChooseDirectoryButton.getOnAction().handle(null);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -129,9 +142,10 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
         when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(null);
-
         chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
-        chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
+
+        Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
+        tmpChooseDirectoryButton.getOnAction().handle(null);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -148,9 +162,10 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
         when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_ARCHIVING_FOLDER);
-
         chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
-        chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
+
+        Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
+        tmpChooseDirectoryButton.getOnAction().handle(null);
 
         WaitForAsyncUtils.waitForFxEvents();
 

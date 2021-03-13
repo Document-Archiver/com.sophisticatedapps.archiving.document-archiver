@@ -22,15 +22,16 @@ import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperti
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.imaging.Imaging;
@@ -56,6 +57,10 @@ public class InfoPaneController extends BaseController {
             Pattern.compile(".*/(.*?)\\.[A-Za-z0-9]+?");
 
     private static final Map<FileTypeEnum, Class<? extends FileTimeAgent>> TIME_AGENTS_BY_FILETYPE;
+
+    private final List<ChangeListener<Boolean>> datePickerFocusedPropertyListenersList = new ArrayList<>();
+    private final List<ChangeListener<Boolean>> utilizeTimeInformationCheckBoxSelectedPropertyListenersList =
+            new ArrayList<>();
 
     static {
 
@@ -111,14 +116,42 @@ public class InfoPaneController extends BaseController {
         // Add listener
         addCurrentDocumentChangedListener(aChange ->
                 handleCurrentDocumentChanged((File)aChange.getValueAdded()));
-        datePicker.focusedProperty().addListener((aChangedValue, anOldValue, aNewValue) ->
-                handleDatePickerValueChanged(aNewValue));
-        utilizeTimeInformationCheckBox.selectedProperty().addListener((anObservable, anOldValue, aNewValue) ->
-                handleUtilizeTimeInformationCheckBoxValueChanged(aNewValue));
+
+        final ChangeListener<Boolean> tmpDatePickerFocusedPropertyListener =
+                ((aChangedValue, anOldValue, aNewValue) -> handleDatePickerValueChanged(aNewValue));
+        datePickerFocusedPropertyListenersList.add(tmpDatePickerFocusedPropertyListener);
+        datePicker.focusedProperty().addListener(tmpDatePickerFocusedPropertyListener);
+
+        final ChangeListener<Boolean> tmpUticbSelectedPropertyListener =
+                ((anObservable, anOldValue, aNewValue) ->
+                        handleUtilizeTimeInformationCheckBoxValueChanged(aNewValue));
+        utilizeTimeInformationCheckBoxSelectedPropertyListenersList.add(tmpUticbSelectedPropertyListener);
+        utilizeTimeInformationCheckBox.selectedProperty().addListener(tmpUticbSelectedPropertyListener);
+
         quickDescriptionWordsComboBox.valueProperty().addListener((aChangedValue, anOldValue, aNewValue) ->
                 handleQuickDescriptionWordsComboBoxValueChanged(aNewValue));
+
         tagsTextField.textProperty().addListener((anObservable, anOldValue, aNewValue) ->
                 handleTagsTextFieldTextChanged(aNewValue));
+    }
+
+    @Override
+    public void rampDown() {
+
+        super.rampDown();
+
+        // Remove all added Listeners
+        ReadOnlyBooleanProperty tmpDatePickerFocusedProperty = datePicker.focusedProperty();
+        for (ChangeListener<Boolean> tmpCurrentListener : datePickerFocusedPropertyListenersList) {
+            tmpDatePickerFocusedProperty.removeListener(tmpCurrentListener);
+        }
+        datePickerFocusedPropertyListenersList.clear();
+
+        BooleanProperty tmpUticbSelectedProperty = utilizeTimeInformationCheckBox.selectedProperty();
+        for (ChangeListener<Boolean> tmpCurrentListener : utilizeTimeInformationCheckBoxSelectedPropertyListenersList) {
+            tmpUticbSelectedProperty.removeListener(tmpCurrentListener);
+        }
+        utilizeTimeInformationCheckBoxSelectedPropertyListenersList.clear();
     }
 
     /**

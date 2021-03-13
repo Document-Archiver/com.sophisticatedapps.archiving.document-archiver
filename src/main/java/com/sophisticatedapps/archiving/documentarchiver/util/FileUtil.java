@@ -103,7 +103,8 @@ public class FileUtil {
         String tmpFileExtension = getFileExtension(aFileToMove);
         FileTypeEnum tmpFileType = FileTypeEnum.byFileExtension(tmpFileExtension, true);
 
-        String tmpSubDirectory = "/" + tmpFileType.getGroupingFolder() + "/" + aDfp.getDate().getYear();
+        String tmpSubDirectory =
+                "/" + tmpFileType.getFileTypeGroup().getGroupingFolder() + "/" + aDfp.getDate().getYear();
         File tmpTargetDirectory = new File(GlobalConstants.ARCHIVING_FOLDER.getPath().concat(tmpSubDirectory));
 
         if (!tmpTargetDirectory.exists()) {

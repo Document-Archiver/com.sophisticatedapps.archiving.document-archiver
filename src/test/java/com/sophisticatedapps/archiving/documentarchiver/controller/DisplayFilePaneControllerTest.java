@@ -18,15 +18,16 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
+import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
@@ -54,14 +55,19 @@ class DisplayFilePaneControllerTest extends BaseTest {
     @Start
     public void start(Stage aStage) throws IOException {
 
+        aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
+        aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
+
         FXMLLoader loader = new FXMLLoader(App.class.getResource("view/DisplayFilePane.fxml"));
         displayFilePane = loader.load();
         displayFilePaneController = loader.getController();
         displayFilePaneController.rampUp(aStage);
+    }
 
-        aStage.setScene(new Scene(displayFilePane));
-        aStage.show();
-        aStage.toFront();
+    @AfterEach
+    public void cleanUpEach(){
+
+        displayFilePaneController.rampDown();
     }
 
     @Test
@@ -78,9 +84,6 @@ class DisplayFilePaneControllerTest extends BaseTest {
         Pane tmpWrapperPane = (Pane)tmpDisplayPaneChildren.get(0);
         Text tmpText = (Text)tmpWrapperPane.getChildren().get(0);
         assertEquals("Simple text for testing.", tmpText.getText());
-
-        // Cleanup
-        displayFilePaneController.rampDown();
     }
 
     @Test
@@ -96,9 +99,6 @@ class DisplayFilePaneControllerTest extends BaseTest {
         // Now there should be a ScrollView on our display file Pane.
         ScrollPane tmpWrapperPane = (ScrollPane)tmpDisplayPaneChildren.get(0);
         assertSame(ImageView.class, tmpWrapperPane.getContent().getClass());
-
-        // Cleanup
-        displayFilePaneController.rampDown();
     }
 
 }

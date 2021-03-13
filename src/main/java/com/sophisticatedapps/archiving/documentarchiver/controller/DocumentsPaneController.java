@@ -20,7 +20,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -32,6 +31,7 @@ public class DocumentsPaneController extends BaseController {
     private ListView<File> documentsListView;
 
     @Override
+    @SuppressWarnings("unchecked")
     public void rampUp(Stage aStage) {
 
         super.rampUp(aStage);
@@ -42,16 +42,16 @@ public class DocumentsPaneController extends BaseController {
             @Override
             protected void updateItem(File aFile, boolean anEmpty) {
 
-            super.updateItem(aFile, anEmpty);
+                super.updateItem(aFile, anEmpty);
 
-            if (anEmpty || (aFile == null)) {
+                if (anEmpty || (aFile == null)) {
 
-                setText(null);
-            }
-            else {
+                    setText(null);
+                }
+                else {
 
-                setText(aFile.getName());
-            }
+                    setText(aFile.getName());
+                }
             }
         });
 

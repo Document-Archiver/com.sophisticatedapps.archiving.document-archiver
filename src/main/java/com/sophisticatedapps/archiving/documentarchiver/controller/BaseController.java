@@ -77,6 +77,7 @@ public abstract class BaseController {
      *
      * @return  Current all-documents List.
      */
+    @SuppressWarnings("unchecked")
     protected List<File> getAllDocuments() {
 
         return (List<File>)stage.getProperties().get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY);

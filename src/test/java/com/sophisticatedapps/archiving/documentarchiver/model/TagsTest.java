@@ -20,11 +20,9 @@ import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.util.Objects;
 import java.util.SortedSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.model.Tags".

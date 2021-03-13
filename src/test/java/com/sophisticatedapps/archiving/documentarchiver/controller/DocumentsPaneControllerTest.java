@@ -20,10 +20,10 @@ import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
@@ -60,10 +60,12 @@ class DocumentsPaneControllerTest extends BaseTest {
         documentsPane = loader.load();
         documentsPaneController = loader.getController();
         documentsPaneController.rampUp(aStage);
+    }
 
-        aStage.setScene(new Scene(documentsPane));
-        aStage.show();
-        aStage.toFront();
+    @AfterEach
+    public void cleanUpEach(){
+
+        documentsPaneController.rampDown();
     }
 
     @Test
@@ -74,6 +76,7 @@ class DocumentsPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Get documents ListView
+        @SuppressWarnings("unchecked")
         ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
         assertNotNull(tmpDocumentsListView);
 
@@ -91,6 +94,7 @@ class DocumentsPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Get documents ListView
+        @SuppressWarnings("unchecked")
         ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
         assertNotNull(tmpDocumentsListView);
 
@@ -106,6 +110,7 @@ class DocumentsPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Get documents ListView
+        @SuppressWarnings("unchecked")
         ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
         assertNotNull(tmpDocumentsListView);
 

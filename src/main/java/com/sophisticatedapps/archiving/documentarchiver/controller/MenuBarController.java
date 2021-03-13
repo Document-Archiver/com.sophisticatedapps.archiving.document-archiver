@@ -21,7 +21,6 @@ import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import javafx.application.HostServices;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -38,14 +37,14 @@ import java.util.Properties;
 public class MenuBarController extends BaseController {
 
     @FXML
-    protected void handleAboutMenuItemAction(ActionEvent anActionEvent) {
+    protected void handleAboutMenuItemAction() {
 
         Alert tmpAlert = new Alert(Alert.AlertType.NONE, "Copyright 2021 by Stephan Sann", ButtonType.CLOSE);
         tmpAlert.showAndWait();
     }
 
     @FXML
-    protected void handlePreferencesMenuItemAction(ActionEvent anActionEvent) {
+    protected void handlePreferencesMenuItemAction() {
 
         try {
 
@@ -99,19 +98,19 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
-    protected void handleQuitMenuItemAction(ActionEvent anActionEvent) {
+    protected void handleQuitMenuItemAction() {
 
         Platform.exit();
     }
 
     @FXML
-    protected void handleOpenFilesOrDirectoryMenuItemAction(ActionEvent anActionEvent) {
+    protected void handleOpenFilesOrDirectoryMenuItemAction() {
 
         setNewAllDocumentsAndCurrentDocument(null, null);
     }
 
     @FXML
-    protected void handleHelpMenuItemAction(ActionEvent anActionEvent) {
+    protected void handleHelpMenuItemAction() {
 
         HostServices tmpHostServices =
                 (HostServices)stage.getProperties().get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY);
