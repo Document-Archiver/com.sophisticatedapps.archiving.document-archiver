@@ -48,8 +48,8 @@ public class GlobalConstants {
             "https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start";
 
     public static final String PROPERTIES_FILE = "document-archiver.properties";
-    public static final Properties APP_PROPERTIES;
     public static final File ARCHIVING_ROOT_FOLDER;
+    public static final String QUICK_DESCRIPTION_WORDS;
 
     private static final Pattern HOME_DIR_PATTERN = Pattern.compile("^~(.*)$");
 
@@ -57,14 +57,16 @@ public class GlobalConstants {
 
         try {
 
-            APP_PROPERTIES = FileUtil.readProperties(PROPERTIES_FILE);
+            Properties tmpProperties = FileUtil.readProperties(PROPERTIES_FILE);
 
-            String tmpArchivingFolderPath = APP_PROPERTIES.getProperty("archiving.path");
+            String tmpArchivingFolderPath = tmpProperties.getProperty("archiving.path");
             Matcher tmpMatcher = HOME_DIR_PATTERN.matcher(tmpArchivingFolderPath);
             if (tmpMatcher.find()) {
                 tmpArchivingFolderPath = System.getProperty("user.home").concat(tmpMatcher.group(1));
             }
             ARCHIVING_ROOT_FOLDER = new File(tmpArchivingFolderPath);
+
+            QUICK_DESCRIPTION_WORDS = tmpProperties.getProperty("quick.description.words");
         }
         catch (IOException e) {
 

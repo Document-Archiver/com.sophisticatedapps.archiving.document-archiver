@@ -50,13 +50,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class InfoPaneController extends BaseController {
-
-    private static final Pattern FIND_DESCRIPTION_IN_FILENAME_PATTERN =
-            Pattern.compile(".*/(.*?)\\.[A-Za-z0-9]+?");
 
     private static final Map<FileTypeEnum, Class<? extends FileTimeAgent>> TIME_AGENTS_BY_FILETYPE;
 
@@ -112,8 +107,7 @@ public class InfoPaneController extends BaseController {
         datePicker.setConverter(new DatePickerStringConverter());
 
         // Set values
-        quickDescriptionWordsComboBox.getItems().addAll(
-                GlobalConstants.APP_PROPERTIES.getProperty("quick.description.words").split(","));
+        quickDescriptionWordsComboBox.getItems().addAll(GlobalConstants.QUICK_DESCRIPTION_WORDS.split(","));
 
         // Add listener
         addCurrentDocumentChangedListener(aChange ->
@@ -184,11 +178,7 @@ public class InfoPaneController extends BaseController {
             // (Re-)set description TextField and selected tags ListView?
             if (!takeOverDescriptionAndTagsCheckBox.isSelected()) {
 
-                Matcher tmpMatcher = FIND_DESCRIPTION_IN_FILENAME_PATTERN.matcher(aNewCurrentDocument.getPath());
-                if (tmpMatcher.find()) {
-                    descriptionTextField.setText(StringUtil.retrieveDescriptionSafeString(tmpMatcher.group(1)));
-                }
-
+                descriptionTextField.setText(FileUtil.getFileNameWithoutExtension(aNewCurrentDocument));
                 selectedTagsListView.getItems().clear();
             }
 

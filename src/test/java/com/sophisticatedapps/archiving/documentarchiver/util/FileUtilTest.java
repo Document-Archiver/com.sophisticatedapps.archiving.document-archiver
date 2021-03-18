@@ -16,8 +16,10 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -26,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.util.FileUtil".
  */
-class FileUtilTest {
+class FileUtilTest extends BaseTest {
 
     /**
      * Test if properties are being read correctly.
@@ -38,6 +40,47 @@ class FileUtilTest {
 
         assertNotNull(tmpProperties);
         assertEquals("~/Documents/DocumentArchiver", tmpProperties.getProperty("archiving.path"));
+    }
+
+    /**
+     * Test "getFileNameWithoutExtension".
+     */
+    @Test
+    void testGetFileNameWithoutExtension() {
+
+        File tmpFile = new File(TEST_RESOURCES_DIRECTORY, "Screen Shot 2021-02-25 at 16.22.44.png");
+        assertEquals("Screen Shot 2021-02-25 at 16.22.44", FileUtil.getFileNameWithoutExtension(tmpFile));
+    }
+
+    /**
+     * Test "getFileNameWithoutExtension" with a file that doesn't have an extension.
+     */
+    @Test
+    void testGetFileNameWithoutExtension_with_file_without_extension() {
+
+        File tmpFile = new File(TEST_RESOURCES_DIRECTORY, "FooBar");
+        assertEquals("FooBar", FileUtil.getFileNameWithoutExtension(tmpFile));
+    }
+
+    /**
+     * Test "getFileExtension".
+     */
+    @Test
+    void testGetFileExtension() {
+
+        assertEquals("txt", FileUtil.getFileExtension(TEST_TEXT_FILE));
+        assertEquals("pdf", FileUtil.getFileExtension(TEST_PDF_FILE));
+        assertEquals("png", FileUtil.getFileExtension(TEST_PNG_FILE));
+    }
+
+    /**
+     * Test "getFileExtension" with a file that doesn't have an extension.
+     */
+    @Test
+    void testGetFileExtension_with_file_without_extension() {
+
+        File tmpFile = new File(TEST_RESOURCES_DIRECTORY, "FooBar");
+        assertEquals("", FileUtil.getFileExtension(tmpFile));
     }
 
 }

@@ -34,7 +34,6 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -174,6 +173,7 @@ class InfoPaneControllerTest extends BaseTest {
         }
 
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
+        @SuppressWarnings("unchecked")
         ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
 
         WaitForAsyncUtils.waitForFxEvents();

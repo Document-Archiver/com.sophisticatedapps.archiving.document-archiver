@@ -564,9 +564,6 @@
           <artifactId>javafx-maven-plugin</artifactId>
           <version>0.0.5</version>
           <configuration>
-            <!--
-            <jlinkExecutable>/usr/local/java/jdk11/bin/jlink</jlinkExecutable>
-            -->
             <mainClass>com.sophisticatedapps.archiving.documentarchiver.App</mainClass>
           </configuration>
         </plugin>

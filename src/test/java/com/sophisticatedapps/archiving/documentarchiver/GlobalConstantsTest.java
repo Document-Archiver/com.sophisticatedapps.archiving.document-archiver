@@ -33,6 +33,8 @@ class GlobalConstantsTest {
         String tmpExpectedPath =
                 System.getProperty("user.home").concat("/Documents/DocumentArchiver");
         assertEquals(tmpExpectedPath, GlobalConstants.ARCHIVING_ROOT_FOLDER.getPath());
+
+        assertEquals("please set in preferences", GlobalConstants.QUICK_DESCRIPTION_WORDS);
     }
 
 }

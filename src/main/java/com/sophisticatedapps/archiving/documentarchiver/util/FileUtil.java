@@ -142,18 +142,32 @@ public class FileUtil {
         Files.move(tmpSource, tmpTarget);
     }
 
+    public static String getFileNameWithoutExtension(File aFile) {
+
+        // Get file Name first
+        String tmpFileName = aFile.getName();
+        final int tmpLastIndexOfDot = tmpFileName.lastIndexOf(".");
+
+        if (tmpLastIndexOfDot >= 1) {
+
+            return tmpFileName.substring(0, tmpLastIndexOfDot);
+        }
+
+        return tmpFileName;
+    }
+
     public static String getFileExtension(File aFile) {
 
         String tmpFileExtension = "";
 
         // Get file Name first
         String tmpFileName = aFile.getName();
-        final int tmpListIndexOfDot = tmpFileName.lastIndexOf(".");
+        final int tmpLastIndexOfDot = tmpFileName.lastIndexOf(".");
 
         // If fileName do not contain "." or starts with "." then it is not a valid file
-        if (tmpListIndexOfDot >= 1) {
+        if (tmpLastIndexOfDot >= 1) {
 
-            tmpFileExtension = tmpFileName.substring(tmpListIndexOfDot + 1);
+            tmpFileExtension = tmpFileName.substring(tmpLastIndexOfDot + 1);
         }
 
         return tmpFileExtension;
