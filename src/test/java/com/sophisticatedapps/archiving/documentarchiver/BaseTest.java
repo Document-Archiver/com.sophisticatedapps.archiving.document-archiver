@@ -16,6 +16,10 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import javafx.event.EventType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +36,10 @@ public abstract class BaseTest {
             .getClassLoader().getResource("test2.txt")).getFile()));
     protected static final File TEST_PDF_FILE = (new File(Objects.requireNonNull(App.class
             .getClassLoader().getResource("test.pdf")).getFile()));
+    protected static final File TEST_JPG_FILE = (new File(Objects.requireNonNull(App.class
+            .getClassLoader().getResource("test.jpg")).getFile()));
+    protected static final File TEST_JPG_FILE2 = (new File(Objects.requireNonNull(App.class
+            .getClassLoader().getResource("test2.jpg")).getFile()));
     protected static final File TEST_PNG_FILE = (new File(Objects.requireNonNull(App.class
             .getClassLoader().getResource("binder-icon.png")).getFile()));
 
@@ -40,5 +48,13 @@ public abstract class BaseTest {
     protected static final File TEST_RESOURCES_DIRECTORY = TEST_TEXT_FILE.getParentFile();
     protected static final File TEST_ARCHIVING_FOLDER = new File(Objects.requireNonNull(App.class
             .getClassLoader().getResource("test-archiving-folder")).getFile());
+
+    protected static final EventType<KeyEvent> MOCK_EVENT_TYPE = new EventType<>("MockEventType");
+    protected static final KeyEvent MOCK_KEY_EVENT_WITH_CODE_ENTER = new KeyEvent(MOCK_EVENT_TYPE,
+            "\r", "enter key", KeyCode.ENTER,false,false, false, false);
+    protected static final KeyEvent MOCK_KEY_EVENT_WITH_CODE_DOWN = new KeyEvent(MOCK_EVENT_TYPE,
+            "↓", "down key", KeyCode.DOWN,false,false, false, false);
+    protected static final KeyEvent MOCK_KEY_EVENT_WITH_CODE_UP = new KeyEvent(MOCK_EVENT_TYPE,
+            "↑", "up key", KeyCode.UP,false,false, false, false);
 
 }

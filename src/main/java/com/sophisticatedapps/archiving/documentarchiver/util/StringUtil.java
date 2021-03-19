@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 public class StringUtil {
 
+    public static final String EMPTY_STRING = "";
     private static final Pattern DESCRIPTION_PATTERN = Pattern.compile("[^\\p{Sc}\\p{So}\\p{Mn}ء-يÀ-ÿa-zA-Z0-9\\p{script=Han}-]+");
     private static final Pattern TAG_NAME_PATTERN = Pattern.compile("[^\\p{Sc}\\p{So}\\p{Mn}ء-يÀ-ÿa-zA-Z0-9\\p{script=Han}=-]+");
     private static final Pattern FILENAME_PATTERN = Pattern.compile("[^\\p{Sc}\\p{So}\\p{Mn}ء-يÀ-ÿa-zA-Z0-9\\p{script=Han}]+");

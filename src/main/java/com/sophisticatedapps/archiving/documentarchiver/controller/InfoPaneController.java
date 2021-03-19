@@ -48,6 +48,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -103,8 +104,9 @@ public class InfoPaneController extends BaseController {
 
         super.rampUp(aStage);
 
-        // Set converter
+        // Set converter, filter, etc.
         datePicker.setConverter(new DatePickerStringConverter());
+        setNewExistingTagsToListView(Collections.emptyList());
 
         // Set values
         quickDescriptionWordsComboBox.getItems().addAll(GlobalConstants.QUICK_DESCRIPTION_WORDS.split(","));
@@ -182,10 +184,7 @@ public class InfoPaneController extends BaseController {
                 selectedTagsListView.getItems().clear();
             }
 
-            ObservableList<String> tmpOriginalExistingTagsList = FXCollections.observableList(
-                    new ArrayList<>(Tags.getExistingTags(tmpFileType)));
-            FilteredList<String> tmpFilteredExistingTagsList = new FilteredList<>(tmpOriginalExistingTagsList);
-            existingTagsListView.setItems(tmpFilteredExistingTagsList);
+            setNewExistingTagsToListView(new ArrayList<>(Tags.getExistingTags(tmpFileType)));
         }
     }
 
@@ -336,6 +335,12 @@ public class InfoPaneController extends BaseController {
         }
     }
 
+    protected void setNewExistingTagsToListView(List<String> aNewExistingTagsList) {
+
+        ObservableList<String> tmpObservableList = FXCollections.observableList(aNewExistingTagsList);
+        existingTagsListView.setItems(new FilteredList<>(tmpObservableList));
+    }
+
     private void addToListIfNotContainedYet(List<String> aList, String aString) {
 
         if (!aList.contains(aString)) {
@@ -347,20 +352,19 @@ public class InfoPaneController extends BaseController {
     /**
      * StringConverter for DatePickers.
      */
-    private static class DatePickerStringConverter extends StringConverter<LocalDate> {
+    protected static class DatePickerStringConverter extends StringConverter<LocalDate> {
 
-        private static final DateTimeFormatter DATE_TIME_FORMATTER =
-                DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
 
         @Override
         public String toString(LocalDate aLocalDate) {
 
-            if(aLocalDate==null) {
+            if (aLocalDate == null) {
 
-                return "";
+                return StringUtil.EMPTY_STRING;
             }
 
-            return DATE_TIME_FORMATTER.format(aLocalDate);
+            return GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER.format(aLocalDate);
         }
 
         @Override
@@ -371,7 +375,7 @@ public class InfoPaneController extends BaseController {
                 return null;
             }
 
-            return LocalDate.parse(aDateString, DATE_TIME_FORMATTER);
+            return LocalDate.parse(aDateString, GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER);
         }
     }
 

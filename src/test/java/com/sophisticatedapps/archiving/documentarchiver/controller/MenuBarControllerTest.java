@@ -17,30 +17,32 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.PreferencesPaneController".
+ * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController".
  */
 @ExtendWith(ApplicationExtension.class)
-class PreferencesPaneControllerTest {
+class MenuBarControllerTest extends BaseTest {
 
-    private VBox preferencesPane;
-    private PreferencesPaneController preferencesPaneController;
+    //private MenuBar menuBar;
+    private MenuBarController menuBarController;
 
     /**
      * Will be called with {@code @Before} semantics, i. e. before each test method.
@@ -53,38 +55,52 @@ class PreferencesPaneControllerTest {
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/PreferencesPane.fxml"));
-        preferencesPane = loader.load();
-        preferencesPaneController = loader.getController();
-        preferencesPaneController.rampUp(aStage);
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/MenuBar.fxml"));
+        //menuBar =
+        loader.load();
+        menuBarController = loader.getController();
+        menuBarController.rampUp(aStage);
     }
 
     @AfterEach
     public void cleanUpEach() {
 
-        preferencesPaneController.rampDown();
+        menuBarController.rampDown();
 
-        preferencesPane = null;
-        preferencesPaneController = null;
+        //menuBar = null;
+        menuBarController = null;
+    }
+
+    //@Test
+    void handleAboutMenuItemAction() {
+    }
+
+    //@Test
+    void handlePreferencesMenuItemAction() {
+    }
+
+    //@Test
+    void handleQuitMenuItemAction() {
     }
 
     @Test
-    void getArchivingFolder() {
+    void handleOpenFilesOrDirectoryMenuItemAction() {
 
-        TextField tmpArchivingFolderTextField = (TextField)preferencesPane.lookup("#archivingFolderTextField");
-        tmpArchivingFolderTextField.setText("/foobar");
+        List<File> tmpNewAllDocuments = Collections.singletonList(TEST_TEXT_FILE2);
+        menuBarController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, TEST_TEXT_FILE2);
 
-        assertEquals("/foobar", preferencesPaneController.getArchivingFolder());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        menuBarController.handleOpenFilesOrDirectoryMenuItemAction();
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertNull(menuBarController.getAllDocuments());
+        assertNull(menuBarController.getCurrentDocument());
     }
 
-    @Test
-    void getQuickDescriptionWords() {
-
-        TextArea tmpQuickDescriptionWordsTextArea =
-                (TextArea)preferencesPane.lookup("#quickDescriptionWordsTextArea");
-        tmpQuickDescriptionWordsTextArea.setText("foo, bar, snafu");
-
-        assertEquals("foo,bar,snafu", preferencesPaneController.getQuickDescriptionWords());
+    //@Test
+    void handleHelpMenuItemAction() {
     }
 
 }

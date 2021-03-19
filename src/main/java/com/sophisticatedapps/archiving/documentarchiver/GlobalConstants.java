@@ -33,6 +33,8 @@ public class GlobalConstants {
     private GlobalConstants() {
     }
 
+    public static final DateTimeFormatter DD_MM_YYYY_DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy");
     public static final DateTimeFormatter ONLY_TIME_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HH:mm:ss");
     public static final DateTimeFormatter FILENAME_ONLY_DATE_DATE_TIME_FORMATTER =

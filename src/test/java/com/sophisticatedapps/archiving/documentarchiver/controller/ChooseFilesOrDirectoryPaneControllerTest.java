@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,21 +65,24 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
     }
 
     @AfterEach
-    public void cleanUpEach(){
+    public void cleanUpEach() {
 
         chooseFilesOrDirectoryPaneController.rampDown();
+
+        chooseFilesOrDirectoryPane = null;
+        chooseFilesOrDirectoryPaneController = null;
     }
 
     /**
      * Test "handleChooseFilesButtonAction" with selection of multiple files.
      */
     @Test
-    void testHandleChooseFilesButtonAction() {
+    void testHandleChooseFilesButtonAction() throws IllegalAccessException {
 
         ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
         when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(DOCUMENTS_LIST);
-        chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
+        FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "fileChooser", tmpMockedFileChooser, true);
 
         Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
         tmpChooseFilesButton.getOnAction().handle(null);
@@ -94,12 +98,12 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
      * Test "handleChooseFilesButtonAction" with cancelation of the file chooser.
      */
     @Test
-    void testHandleChooseFilesButtonAction_with_cancel() {
+    void testHandleChooseFilesButtonAction_with_cancel() throws IllegalAccessException {
 
         ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
         when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(null);
-        chooseFilesOrDirectoryPaneController.fileChooser = tmpMockedFileChooser;
+        FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "fileChooser", tmpMockedFileChooser, true);
 
         Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
         tmpChooseFilesButton.getOnAction().handle(null);
@@ -114,12 +118,13 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
      * Test "handleChooseDirectoryButtonAction" with selection of a non-empty folder.
      */
     @Test
-    void testHandleChooseDirectoryButtonAction() {
+    void testHandleChooseDirectoryButtonAction() throws IllegalAccessException {
 
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
         when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_RESOURCES_DIRECTORY);
-        chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
+        FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "directoryChooser",
+                tmpMockedDirectoryChooser, true);
 
         Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
         tmpChooseDirectoryButton.getOnAction().handle(null);
@@ -127,22 +132,25 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         List<File> tmpChosenDocuments = chooseFilesOrDirectoryPaneController.getAllDocuments();
-        assertEquals(3, tmpChosenDocuments.size());
+        assertEquals(5, tmpChosenDocuments.size());
         assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE));
         assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE2));
         assertTrue(tmpChosenDocuments.contains(TEST_PDF_FILE));
+        assertTrue(tmpChosenDocuments.contains(TEST_JPG_FILE));
+        assertTrue(tmpChosenDocuments.contains(TEST_JPG_FILE2));
     }
 
     /**
      * Test "handleChooseDirectoryButtonAction" with cancelation of the directory chooser.
      */
     @Test
-    void testHandleChooseDirectoryButtonAction_with_cancel() {
+    void testHandleChooseDirectoryButtonAction_with_cancel() throws IllegalAccessException {
 
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
         when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(null);
-        chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
+        FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "directoryChooser",
+                tmpMockedDirectoryChooser, true);
 
         Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
         tmpChooseDirectoryButton.getOnAction().handle(null);
@@ -157,12 +165,13 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
      * Test "handleChooseDirectoryButtonAction" with selection of an empty folder.
      */
     @Test
-    void testHandleChooseDirectoryButtonAction_with_empty_folder() {
+    void testHandleChooseDirectoryButtonAction_with_empty_folder() throws IllegalAccessException {
 
         ChooseFilesOrDirectoryPaneController.DaDirectoryChooser tmpMockedDirectoryChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaDirectoryChooser.class);
         when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_ARCHIVING_FOLDER);
-        chooseFilesOrDirectoryPaneController.directoryChooser = tmpMockedDirectoryChooser;
+        FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "directoryChooser",
+                tmpMockedDirectoryChooser, true);
 
         Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
         tmpChooseDirectoryButton.getOnAction().handle(null);

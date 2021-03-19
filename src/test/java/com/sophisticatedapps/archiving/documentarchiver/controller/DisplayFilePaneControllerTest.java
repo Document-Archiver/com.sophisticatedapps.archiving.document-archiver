@@ -65,9 +65,12 @@ class DisplayFilePaneControllerTest extends BaseTest {
     }
 
     @AfterEach
-    public void cleanUpEach(){
+    public void cleanUpEach() {
 
         displayFilePaneController.rampDown();
+
+        displayFilePane = null;
+        displayFilePaneController = null;
     }
 
     @Test

@@ -21,10 +21,12 @@ import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +43,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,9 +78,12 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @AfterEach
-    public void cleanUpEach(){
+    public void cleanUpEach() {
 
         infoPaneController.rampDown();
+
+        infoPane = null;
+        infoPaneController = null;
     }
 
     @Test
@@ -157,7 +163,143 @@ class InfoPaneControllerTest extends BaseTest {
         assertEquals("foo bar", tmpDescriptionTextField.getText());
     }
 
-    // TODO - test remaining methods
+    @Test
+    void testHandleTagsTextFieldTextChanged() {
+
+        // We have to prefill the List of existing tags
+        infoPaneController.setNewExistingTagsToListView(Arrays.asList("iPhone", "iPad", "iMac"));
+
+        // Now the existing tags ListView should have 3 "visible" tags.
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpExistingTagsListView = (ListView<String>)infoPane.lookup("#existingTagsListView");
+        assertEquals(3, tmpExistingTagsListView.getItems().size());
+
+        // Put some text into the tags TextField (which will trigger the Listener and will be used for filtering)
+        TextField tmpTagsTextField = (TextField)infoPane.lookup("#tagsTextField");
+        tmpTagsTextField.setText("iP");
+
+        // Now the existing tags ListView should have 2 "visible" tags.
+        assertEquals(2, tmpExistingTagsListView.getItems().size());
+
+        // Clear the tags TextField, and there should be 3 "visible" tags again.
+        tmpTagsTextField.setText("");
+        assertEquals(3, tmpExistingTagsListView.getItems().size());
+    }
+
+    @Test
+    void testHandleTagsTextFieldKeyPressed_enter() {
+
+        TextField tmpTagsTextField = (TextField)infoPane.lookup("#tagsTextField");
+        tmpTagsTextField.setText("CoolNewTag");
+        tmpTagsTextField.getOnKeyPressed().handle(MOCK_KEY_EVENT_WITH_CODE_ENTER);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
+        assertTrue(tmpSelectedTagsListView.getItems().contains("CoolNewTag"));
+    }
+
+    @Test
+    void testHandleTagsTextFieldKeyPressed_down() {
+
+        // We have to prefill the List of existing tags
+        infoPaneController.setNewExistingTagsToListView(Arrays.asList("foo", "bar"));
+
+        // Trigger the key event.
+        TextField tmpTagsTextField = (TextField)infoPane.lookup("#tagsTextField");
+        tmpTagsTextField.getOnKeyPressed().handle(MOCK_KEY_EVENT_WITH_CODE_DOWN);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpExistingTagsListView = (ListView<String>)infoPane.lookup("#existingTagsListView");
+        assertEquals("foo", tmpExistingTagsListView.getFocusModel().getFocusedItem());
+        assertEquals("foo", tmpExistingTagsListView.getSelectionModel().getSelectedItem());
+    }
+
+    @Test
+    void testHandleExistingTagsListViewClicked() {
+
+        // Put some text into the tags TextField (which has to be cleared)
+        TextField tmpTagsTextField = (TextField)infoPane.lookup("#tagsTextField");
+        tmpTagsTextField.setText("Some random text");
+
+        // We have to prefill the List of existing tags
+        infoPaneController.setNewExistingTagsToListView(Arrays.asList("Java", "Swift", "PHP"));
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
+        assertEquals(0, tmpSelectedTagsListView.getItems().size());
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpExistingTagsListView = (ListView<String>)infoPane.lookup("#existingTagsListView");
+        tmpExistingTagsListView.getSelectionModel().select(1);
+        tmpExistingTagsListView.getOnMouseClicked().handle(null);
+
+        assertEquals(1, tmpSelectedTagsListView.getItems().size());
+        assertEquals("Swift", tmpSelectedTagsListView.getItems().get(0));
+        assertEquals("", tmpTagsTextField.getText());
+    }
+
+    @Test
+    void testHandleExistingTagsListViewKeyPressed_enter() {
+
+        // Put some text into the tags TextField (which has to be cleared)
+        TextField tmpTagsTextField = (TextField)infoPane.lookup("#tagsTextField");
+        tmpTagsTextField.setText("Some random text");
+
+        // We have to prefill the List of existing tags
+        infoPaneController.setNewExistingTagsToListView(Arrays.asList("iOS", "macOS", "tvOS"));
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
+        assertEquals(0, tmpSelectedTagsListView.getItems().size());
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpExistingTagsListView = (ListView<String>)infoPane.lookup("#existingTagsListView");
+        tmpExistingTagsListView.getSelectionModel().select(1);
+        tmpExistingTagsListView.getOnKeyPressed().handle(MOCK_KEY_EVENT_WITH_CODE_ENTER);
+
+        assertEquals(1, tmpSelectedTagsListView.getItems().size());
+        assertEquals("macOS", tmpSelectedTagsListView.getItems().get(0));
+        assertEquals("", tmpTagsTextField.getText());
+    }
+
+    @Test
+    void testHandleExistingTagsListViewKeyPressed_up() throws IllegalAccessException {
+
+        // Exchange controller's tags TextField with a mocked one
+        MockTextField tmpMockedTagsTextField = new MockTextField();
+        FieldUtils.writeField(infoPaneController, "tagsTextField", tmpMockedTagsTextField, true);
+
+        // We have to prefill the List of existing tags
+        infoPaneController.setNewExistingTagsToListView(Arrays.asList("Kenya", "Tanzania"));
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpExistingTagsListView = (ListView<String>)infoPane.lookup("#existingTagsListView");
+        tmpExistingTagsListView.getSelectionModel().select(0);
+        tmpExistingTagsListView.getOnKeyPressed().handle(MOCK_KEY_EVENT_WITH_CODE_UP);
+
+        // Verify focus was requested by (mocked) tags TextField
+        assertEquals(1, tmpMockedTagsTextField.getTimesFocusRequested());
+    }
+
+    @Test
+    void testHandleSelectedTagsListViewClicked() {
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
+        tmpSelectedTagsListView.getItems().setAll("Mouse", "Keyboard");
+        assertEquals(2, tmpSelectedTagsListView.getItems().size());
+
+        // Click.
+        tmpSelectedTagsListView.getSelectionModel().select(0);
+        tmpSelectedTagsListView.getOnMouseClicked().handle(null);
+
+        assertEquals(1, tmpSelectedTagsListView.getItems().size());
+        assertEquals("Keyboard", tmpSelectedTagsListView.getItems().get(0));
+    }
 
     @Test
     void testHandleSubmitButtonAction() throws IOException {
@@ -204,8 +346,89 @@ class InfoPaneControllerTest extends BaseTest {
         assertTrue(tmpTargetFile.exists());
 
         // Cleanup
-        tmpTargetFile.delete();
+        assertTrue(tmpTargetFile.delete());
         DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
+    }
+
+    @Test
+    void testDatePickerStringConverterToString() {
+
+        InfoPaneController.DatePickerStringConverter tmpDatePickerStringConverter =
+                new InfoPaneController.DatePickerStringConverter();
+
+        LocalDate tmpLocalDate = LocalDate.now();
+
+        assertEquals(GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER.format(tmpLocalDate),
+                tmpDatePickerStringConverter.toString(tmpLocalDate));
+        assertEquals(StringUtil.EMPTY_STRING, tmpDatePickerStringConverter.toString(null));
+    }
+
+    @Test
+    void testDatePickerStringConverterFromString() {
+
+        InfoPaneController.DatePickerStringConverter tmpDatePickerStringConverter =
+                new InfoPaneController.DatePickerStringConverter();
+
+        LocalDate tmpLocalDate = LocalDate.now();
+
+        assertEquals(tmpLocalDate, tmpDatePickerStringConverter
+                .fromString(GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER.format(tmpLocalDate)));
+        assertNull(tmpDatePickerStringConverter.fromString(null));
+        assertNull(tmpDatePickerStringConverter.fromString(StringUtil.EMPTY_STRING));
+    }
+
+    @Test
+    void testGenericFileTimeAgentDetermineFileTime() throws IOException {
+
+        // We will need the test file's date and time
+        BasicFileAttributes tmpFileAttributes = Files
+                .readAttributes(Paths.get(TEST_TEXT_FILE.getPath()), BasicFileAttributes.class);
+        LocalDateTime tmpExpectedFileDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(
+                tmpFileAttributes.creationTime().toMillis()), ZoneId.systemDefault());
+
+        InfoPaneController.GenericFileTimeAgent tmpGenericFileTimeAgent = new InfoPaneController.GenericFileTimeAgent();
+        LocalDateTime tmpFileDateTime = tmpGenericFileTimeAgent.determineFileTime(TEST_TEXT_FILE);
+
+        assertEquals(tmpExpectedFileDateTime, tmpFileDateTime);
+    }
+
+    @Test
+    void testJPGFileTimeAgentDetermineFileTime() {
+
+        InfoPaneController.JPGFileTimeAgent tmpJPGFileTimeAgent = new InfoPaneController.JPGFileTimeAgent();
+        LocalDateTime tmpFileDateTime = tmpJPGFileTimeAgent.determineFileTime(TEST_JPG_FILE);
+
+        assertEquals(23, tmpFileDateTime.getDayOfMonth());
+        assertEquals(Month.JANUARY, tmpFileDateTime.getMonth());
+        assertEquals(2021, tmpFileDateTime.getYear());
+    }
+
+    @Test
+    void testJPGFileTimeAgentDetermineFileTime_no_exif_data() {
+
+        InfoPaneController.JPGFileTimeAgent tmpJPGFileTimeAgent = new InfoPaneController.JPGFileTimeAgent();
+        LocalDateTime tmpFileDateTime = tmpJPGFileTimeAgent.determineFileTime(TEST_JPG_FILE2);
+
+        InfoPaneController.GenericFileTimeAgent tmpGenericFileTimeAgent = new InfoPaneController.GenericFileTimeAgent();
+        LocalDateTime tmpExpectedFileDateTime = tmpGenericFileTimeAgent.determineFileTime(TEST_JPG_FILE2);
+
+        assertEquals(tmpExpectedFileDateTime, tmpFileDateTime);
+    }
+
+    private static class MockTextField extends TextField {
+
+        private int timesFocusRequested = 0;
+
+        @Override
+        public void requestFocus() {
+
+            timesFocusRequested++;
+        }
+
+        public int getTimesFocusRequested() {
+
+            return timesFocusRequested;
+        }
     }
 
 }

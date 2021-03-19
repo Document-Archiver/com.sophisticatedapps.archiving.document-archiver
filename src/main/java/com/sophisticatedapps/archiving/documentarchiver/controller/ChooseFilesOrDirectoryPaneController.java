@@ -32,8 +32,8 @@ import java.util.Objects;
 
 public class ChooseFilesOrDirectoryPaneController extends BaseController {
 
-    protected DaFileChooser fileChooser = new DaFileChooser();
-    protected DaDirectoryChooser directoryChooser = new DaDirectoryChooser();
+    private DaFileChooser fileChooser = new DaFileChooser();
+    private DaDirectoryChooser directoryChooser = new DaDirectoryChooser();
 
     @FXML
     protected void handleChooseFilesButtonAction() {

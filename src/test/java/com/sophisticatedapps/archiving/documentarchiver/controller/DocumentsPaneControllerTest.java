@@ -63,9 +63,12 @@ class DocumentsPaneControllerTest extends BaseTest {
     }
 
     @AfterEach
-    public void cleanUpEach(){
+    public void cleanUpEach() {
 
         documentsPaneController.rampDown();
+
+        documentsPane = null;
+        documentsPaneController = null;
     }
 
     @Test
