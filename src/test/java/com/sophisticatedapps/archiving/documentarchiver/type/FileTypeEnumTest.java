@@ -16,7 +16,6 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.type;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

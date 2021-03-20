@@ -20,7 +20,6 @@ import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import javafx.application.HostServices;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -36,11 +35,13 @@ import java.util.Properties;
 
 public class MenuBarController extends BaseController {
 
+    private static Alert aboutAlert =
+            new Alert(Alert.AlertType.NONE, "Copyright 2021 by Stephan Sann", ButtonType.CLOSE);
+
     @FXML
     protected void handleAboutMenuItemAction() {
 
-        Alert tmpAlert = new Alert(Alert.AlertType.NONE, "Copyright 2021 by Stephan Sann", ButtonType.CLOSE);
-        tmpAlert.showAndWait();
+        aboutAlert.showAndWait();
     }
 
     @FXML
@@ -100,7 +101,7 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleQuitMenuItemAction() {
 
-        Platform.exit();
+        stage.hide();
     }
 
     @FXML

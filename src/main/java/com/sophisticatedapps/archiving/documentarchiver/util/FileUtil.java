@@ -31,6 +31,9 @@ import java.util.Properties;
 
 public class FileUtil {
 
+    private static File localPropertiesDirectory =
+            new File(System.getProperty("user.home").concat("/.documentarchiver"));
+
     /**
      * Private constructor.
      */
@@ -85,16 +88,14 @@ public class FileUtil {
         }
     }
 
-    private static File retrieveLocalPropertiesDirectory(boolean aCreateIfNotExisting) {
+    protected static File retrieveLocalPropertiesDirectory(boolean aCreateIfNotExisting) {
 
-        File tmpPropertiesDirectory = new File(System.getProperty("user.home").concat("/.documentarchiver"));
+        if ((!localPropertiesDirectory.exists()) && aCreateIfNotExisting) {
 
-        if ((!tmpPropertiesDirectory.exists()) && aCreateIfNotExisting) {
-
-            tmpPropertiesDirectory.mkdirs();
+            localPropertiesDirectory.mkdirs();
         }
 
-        return tmpPropertiesDirectory;
+        return localPropertiesDirectory;
     }
 
     public static void moveFileToArchive(File aFileToMove, DefinedFileProperties aDfp) throws IOException {

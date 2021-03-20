@@ -31,6 +31,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
@@ -47,6 +48,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.DocumentsPaneController".
@@ -270,7 +272,7 @@ class InfoPaneControllerTest extends BaseTest {
     void testHandleExistingTagsListViewKeyPressed_up() throws IllegalAccessException {
 
         // Exchange controller's tags TextField with a mocked one
-        MockTextField tmpMockedTagsTextField = new MockTextField();
+        TextField tmpMockedTagsTextField = Mockito.mock(TextField.class);
         FieldUtils.writeField(infoPaneController, "tagsTextField", tmpMockedTagsTextField, true);
 
         // We have to prefill the List of existing tags
@@ -282,7 +284,7 @@ class InfoPaneControllerTest extends BaseTest {
         tmpExistingTagsListView.getOnKeyPressed().handle(MOCK_KEY_EVENT_WITH_CODE_UP);
 
         // Verify focus was requested by (mocked) tags TextField
-        assertEquals(1, tmpMockedTagsTextField.getTimesFocusRequested());
+        verify(tmpMockedTagsTextField, Mockito.times(1)).requestFocus();
     }
 
     @Test
@@ -413,22 +415,6 @@ class InfoPaneControllerTest extends BaseTest {
         LocalDateTime tmpExpectedFileDateTime = tmpGenericFileTimeAgent.determineFileTime(TEST_JPG_FILE2);
 
         assertEquals(tmpExpectedFileDateTime, tmpFileDateTime);
-    }
-
-    private static class MockTextField extends TextField {
-
-        private int timesFocusRequested = 0;
-
-        @Override
-        public void requestFocus() {
-
-            timesFocusRequested++;
-        }
-
-        public int getTimesFocusRequested() {
-
-            return timesFocusRequested;
-        }
     }
 
 }

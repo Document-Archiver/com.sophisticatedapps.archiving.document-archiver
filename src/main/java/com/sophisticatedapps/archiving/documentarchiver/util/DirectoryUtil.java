@@ -51,14 +51,14 @@ public class DirectoryUtil {
         archivingRootFolder = anArchivingFolder;
     }
 
-    public static File getGroupingFolder(FileTypeGroupEnum aFileType) {
+    public static File getGroupingFolder(FileTypeGroupEnum aFileTypeGroup) {
 
-        return (new File(archivingRootFolder, aFileType.getGroupingFolder()));
+        return (new File(archivingRootFolder, aFileTypeGroup.getGroupingFolder()));
     }
 
-    public static File getArchivingFolder(FileTypeGroupEnum aFileType, int aYear) {
+    public static File getArchivingFolder(FileTypeGroupEnum aFileTypeGroup, int aYear) {
 
-        return (new File(getGroupingFolder(aFileType), String.valueOf(aYear)));
+        return (new File(getGroupingFolder(aFileTypeGroup), String.valueOf(aYear)));
     }
 
 }

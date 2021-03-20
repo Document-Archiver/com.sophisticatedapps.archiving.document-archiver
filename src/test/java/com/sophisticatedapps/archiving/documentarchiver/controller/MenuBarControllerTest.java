@@ -19,11 +19,15 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
@@ -34,6 +38,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController".
@@ -71,16 +77,30 @@ class MenuBarControllerTest extends BaseTest {
         menuBarController = null;
     }
 
-    //@Test
-    void handleAboutMenuItemAction() {
+    @Test
+    void handleAboutMenuItemAction() throws IllegalAccessException {
+
+        Alert tmpMockedAboutAlert = Mockito.mock(Alert.class);
+        FieldUtils.writeField(menuBarController, "aboutAlert", tmpMockedAboutAlert, true);
+
+        menuBarController.handleAboutMenuItemAction();
+
+        verify(tmpMockedAboutAlert, Mockito.times(1)).showAndWait();
     }
 
     //@Test
     void handlePreferencesMenuItemAction() {
     }
 
-    //@Test
+    @Test
     void handleQuitMenuItemAction() {
+
+        Stage tmpMockedStage = Mockito.mock(Stage.class);
+        menuBarController.stage = tmpMockedStage;
+
+        menuBarController.handleQuitMenuItemAction();
+
+        verify(tmpMockedStage, Mockito.times(1)).hide();
     }
 
     @Test
@@ -99,8 +119,15 @@ class MenuBarControllerTest extends BaseTest {
         assertNull(menuBarController.getCurrentDocument());
     }
 
-    //@Test
+    @Test
     void handleHelpMenuItemAction() {
+
+        HostServices tmpMockedHostServices = Mockito.mock(HostServices.class);
+        menuBarController.stage.getProperties().put(GlobalConstants.HOST_SERVICES_PROPERTY_KEY, tmpMockedHostServices);
+
+        menuBarController.handleHelpMenuItemAction();
+
+        verify(tmpMockedHostServices, Mockito.times(1)).showDocument(any(String.class));
     }
 
 }
