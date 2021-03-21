@@ -19,20 +19,22 @@ package com.sophisticatedapps.archiving.documentarchiver.type;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public enum FileTypeEnum {
 
-    PDF("pdf", FileTypeGroupEnum.PDFS,false),
-    TXT("txt", FileTypeGroupEnum.TEXTS, false),
-    JPG("jpg", FileTypeGroupEnum.IMAGES, true),
-    PNG("png", FileTypeGroupEnum.IMAGES, true),
-    GIF("gif", FileTypeGroupEnum.IMAGES, true),
-    HEIC("heic", FileTypeGroupEnum.IMAGES, true),
-    XML("xml", FileTypeGroupEnum.TEXTS, false),
-    UNSUPPORTED("misc", FileTypeGroupEnum.MISC, false);
+    PDF(FileTypeGroupEnum.PDFS, false, "pdf"),
+    TXT(FileTypeGroupEnum.TEXTS, false, "txt"),
+    JPG(FileTypeGroupEnum.IMAGES, true, "jpg", "jpeg", "jpe", "jif", "jfif", "jfi"),
+    PNG(FileTypeGroupEnum.IMAGES, true, "png"),
+    GIF(FileTypeGroupEnum.IMAGES, true, "gif"),
+    HEIC(FileTypeGroupEnum.IMAGES, true, "heic"),
+    XML(FileTypeGroupEnum.TEXTS, false, "xml"),
+    DOC(FileTypeGroupEnum.OFFICE, false, "doc", "docx"),
+    UNSUPPORTED(FileTypeGroupEnum.MISC, false);
 
     private static final Map<String, FileTypeEnum> LOOKUP = new HashMap<>();
-    private final String fileExtension;
+    private final Set<String> fileExtensions;
     private final FileTypeGroupEnum fileTypeGroup;
     private final boolean utilizeTimeInformationDefault;
 
@@ -40,32 +42,35 @@ public enum FileTypeEnum {
 
         for (FileTypeEnum tmpCurrentType : EnumSet.allOf(FileTypeEnum.class)) {
 
-            LOOKUP.put(tmpCurrentType.getFileExtension(), tmpCurrentType);
+            for (String tmpCurrentExtension : tmpCurrentType.getFileExtensions()) {
+
+                LOOKUP.put(tmpCurrentExtension, tmpCurrentType);
+            }
         }
     }
 
     /**
      * Initializes a FileType with a given file extension.
      *
-     * @param   aFileExtension                      File extension to apply to the instance.
      * @param   aFileTypeGroup                      File type group to apply to the instance.
      * @param   anUtilizeTimeInformationDefault     If time information should be utilized by default.
+     * @param   aFileExtensions                     File extension(s) to apply to the instance.
      */
-    FileTypeEnum(String aFileExtension, FileTypeGroupEnum aFileTypeGroup, boolean anUtilizeTimeInformationDefault) {
+    FileTypeEnum(FileTypeGroupEnum aFileTypeGroup, boolean anUtilizeTimeInformationDefault, String... aFileExtensions) {
 
-        this.fileExtension = aFileExtension;
         this.fileTypeGroup = aFileTypeGroup;
         this.utilizeTimeInformationDefault = anUtilizeTimeInformationDefault;
+        this.fileExtensions = Set.of(aFileExtensions);
     }
 
     /**
-     * Get the file extension of the enum instance.
+     * Get the file extensions of the enum instance.
      *
-     * @return  File extension of the enum instance.
+     * @return  File extensions of the enum instance.
      */
-    public String getFileExtension() {
+    public Set<String> getFileExtensions() {
 
-        return fileExtension;
+        return fileExtensions;
     }
 
     /**

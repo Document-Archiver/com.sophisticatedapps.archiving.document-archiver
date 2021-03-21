@@ -32,7 +32,6 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,7 +73,7 @@ class DocumentsPaneControllerTest extends BaseTest {
     @Test
     void testHandleAllDocumentsChanged() {
 
-        documentsPaneController.setNewAllDocuments(DOCUMENTS_LIST);
+        documentsPaneController.setNewAllDocuments(ALL_DOCUMENTS_LIST);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -82,17 +81,20 @@ class DocumentsPaneControllerTest extends BaseTest {
         @SuppressWarnings("unchecked")
         ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
         assertNotNull(tmpDocumentsListView);
+        assertTrue(tmpDocumentsListView.getItems().containsAll(ALL_DOCUMENTS_LIST));
 
-        List<File> tmpDocumentsList = tmpDocumentsListView.getItems();
-        assertTrue(tmpDocumentsList.contains(TEST_TEXT_FILE));
-        assertTrue(tmpDocumentsList.contains(TEST_TEXT_FILE2));
-        assertTrue(tmpDocumentsList.contains(TEST_PDF_FILE));
+        // Set it to NULL and the ListView should be empty.
+        documentsPaneController.setNewAllDocuments(null);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertTrue(tmpDocumentsListView.getItems().isEmpty());
     }
 
     @Test
     void testHandleCurrentDocumentChanged() {
 
-        documentsPaneController.setNewAllDocumentsAndCurrentDocument(DOCUMENTS_LIST, TEST_TEXT_FILE2);
+        documentsPaneController.setNewAllDocumentsAndCurrentDocument(ALL_DOCUMENTS_LIST, TEST_TEXT_FILE2);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -108,7 +110,7 @@ class DocumentsPaneControllerTest extends BaseTest {
     @Test
     void testHandleDocumentsListViewClicked() {
 
-        documentsPaneController.setNewAllDocumentsAndCurrentDocument(DOCUMENTS_LIST, TEST_TEXT_FILE2);
+        documentsPaneController.setNewAllDocumentsAndCurrentDocument(ALL_DOCUMENTS_LIST, TEST_TEXT_FILE2);
 
         WaitForAsyncUtils.waitForFxEvents();
 

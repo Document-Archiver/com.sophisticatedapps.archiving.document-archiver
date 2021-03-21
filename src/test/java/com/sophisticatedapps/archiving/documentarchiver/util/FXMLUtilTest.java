@@ -33,4 +33,12 @@ class FXMLUtilTest {
         assertEquals(Pos.TOP_LEFT, tmpTestPane.getAlignment());
     }
 
+    @Test
+    void testLoadAndRampUpRegion_with_invalid_resource() {
+
+        Throwable tmpException = assertThrows(RuntimeException.class, () ->
+                FXMLUtil.loadAndRampUpRegion("view/Nope.fxml", null));
+        assertEquals("Couldn't load region 'view/Nope.fxml': Location is not set.", tmpException.getMessage());
+    }
+
 }

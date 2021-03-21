@@ -91,7 +91,7 @@ class InfoPaneControllerTest extends BaseTest {
     @Test
     void testHandleCurrentDocumentChanged() throws IOException {
 
-        infoPaneController.setNewAllDocumentsAndCurrentDocument(DOCUMENTS_LIST, TEST_TEXT_FILE2);
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(ALL_DOCUMENTS_LIST, TEST_TEXT_FILE2);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -123,7 +123,7 @@ class InfoPaneControllerTest extends BaseTest {
     @Test
     void testHandleDatePickerValueChanged() {
 
-        infoPaneController.setNewAllDocumentsAndCurrentDocument(DOCUMENTS_LIST, TEST_TEXT_FILE2);
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(ALL_DOCUMENTS_LIST, TEST_TEXT_FILE2);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -349,6 +349,40 @@ class InfoPaneControllerTest extends BaseTest {
 
         // Cleanup
         assertTrue(tmpTargetFile.delete());
+        DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
+    }
+
+    @Test
+    void testHandleSubmitButtonAction_file_exists_in_archive() {
+
+        DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
+        File tmpNewCurrentDocument = new File(tempDir, "test.txt");
+        List<File> tmpNewAllDocuments = new ArrayList<>();
+        tmpNewAllDocuments.add(tmpNewCurrentDocument);
+
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        DatePicker tmpDatePicker = (DatePicker)infoPane.lookup("#datePicker");
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
+
+        tmpDatePicker.setValue(LocalDate.from(GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER.parse("01.07.2021")));
+        tmpSelectedTagsListView.getItems().addAll("sna", "fu");
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // "Click" submit
+        Button tmpSubmitButton = (Button)infoPane.lookup("#submitButton");
+        tmpSubmitButton.getOnAction().handle(null);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Document should still be current document.
+        assertSame(tmpNewCurrentDocument, infoPaneController.getCurrentDocument());
+
+        // Cleanup
         DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
     }
 

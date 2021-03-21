@@ -23,9 +23,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -83,10 +83,9 @@ class DisplayFilePaneControllerTest extends BaseTest {
         await().atMost(10, TimeUnit.SECONDS)
                 .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
 
-        // Now there should be a Text(View) on our display file Pane.
-        Pane tmpWrapperPane = (Pane)tmpDisplayPaneChildren.get(0);
-        Text tmpText = (Text)tmpWrapperPane.getChildren().get(0);
-        assertEquals("Simple text for testing.", tmpText.getText());
+        // Now there should be a TextArea on our display file Pane.
+        TextArea tmpTextArea = (TextArea)tmpDisplayPaneChildren.get(0);
+        assertEquals("Simple text for testing.", tmpTextArea.getText());
     }
 
     @Test

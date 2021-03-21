@@ -21,6 +21,7 @@ public enum FileTypeGroupEnum {
     PDFS("pdfs"),
     TEXTS("texts"),
     IMAGES("images"),
+    OFFICE("office"),
     MISC("misc");
 
     private final String groupingFolder;

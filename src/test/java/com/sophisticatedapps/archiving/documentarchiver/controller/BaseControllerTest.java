@@ -55,7 +55,7 @@ class BaseControllerTest extends BaseTest {
     @Start
     public void start(Stage aStage) {
 
-        aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, DOCUMENTS_LIST);
+        aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, ALL_DOCUMENTS_LIST);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, TEST_TEXT_FILE);
 
         baseController = new BaseController(){};
@@ -83,7 +83,7 @@ class BaseControllerTest extends BaseTest {
     void getAllDocuments() {
 
         final List<File> tmpAllDocuments = baseController.getAllDocuments();
-        assertSame(DOCUMENTS_LIST, tmpAllDocuments);
+        assertSame(ALL_DOCUMENTS_LIST, tmpAllDocuments);
     }
 
     @Test

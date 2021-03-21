@@ -35,8 +35,8 @@ import java.util.Properties;
 
 public class MenuBarController extends BaseController {
 
-    private static Alert aboutAlert =
-            new Alert(Alert.AlertType.NONE, "Copyright 2021 by Stephan Sann", ButtonType.CLOSE);
+    private static Alert aboutAlert = new Alert(Alert.AlertType.NONE,
+            "Copyright 2021 by Stephan Sann\n\nApplication icon made by Freepik (https://www.flaticon.com/free-icon/archives_170393)", ButtonType.CLOSE);
 
     @FXML
     protected void handleAboutMenuItemAction() {

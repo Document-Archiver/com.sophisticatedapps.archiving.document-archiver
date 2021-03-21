@@ -18,11 +18,11 @@ git clone https://github.com/Document-Archiver/com.sophisticatedapps.archiving.d
 
 cd com.sophisticatedapps.archiving.document-archiver
 
-mvn clean compile assembly:single
+mvn clean package
 
 cd target/
 
-java -jar document-archiver-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar document-archiver-1.0-SNAPSHOT-with-dependencies.jar
 ```
 ### \*tada\*
 
@@ -33,3 +33,9 @@ java -jar document-archiver-1.0-SNAPSHOT-jar-with-dependencies.jar #path-to-file
 ## Quick Start
 Have a look at the Wiki for a Quick Start manual:
 https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start
+
+***
+
+Copyright 2021 by Stephan Sann
+
+Application icon made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")

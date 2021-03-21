@@ -31,10 +31,13 @@
 
   <profiles>
     <profile>
-      <id>native-environment</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+      <id>native-environment</id>
+      <properties>
+        <daShadePluginClassifierName>with-dependencies</daShadePluginClassifierName>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>org.openjfx</groupId>
@@ -60,6 +63,7 @@
       <id>mac-environment</id>
       <properties>
         <javafx.platform>mac</javafx.platform>
+        <daShadePluginClassifierName>mac</daShadePluginClassifierName>
       </properties>
       <dependencies>
         <dependency>
@@ -165,6 +169,7 @@
       <id>linux-environment</id>
       <properties>
         <javafx.platform>linux</javafx.platform>
+        <daShadePluginClassifierName>linux</daShadePluginClassifierName>
       </properties>
       <dependencies>
         <dependency>
@@ -270,6 +275,7 @@
       <id>win-environment</id>
       <properties>
         <javafx.platform>win</javafx.platform>
+        <daShadePluginClassifierName>win</daShadePluginClassifierName>
       </properties>
       <dependencies>
         <dependency>
@@ -456,6 +462,33 @@
         <directory>${basedir}/src/test/resources</directory>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>${daShadePluginClassifierName}</shadedClassifierName>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>
+                    <Main-Class>com.sophisticatedapps.archiving.documentarchiver.Launcher</Main-Class>
+                    <Build-Number>1.0</Build-Number>
+                  </manifestEntries>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
@@ -496,39 +529,6 @@
         <plugin>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
-        </plugin>
-		<plugin>
-      	  <artifactId>maven-assembly-plugin</artifactId>
-          <configuration>
-            <archive>
-              <manifest>
-                <mainClass>com.sophisticatedapps.archiving.documentarchiver.Launcher</mainClass>
-              </manifest>
-            </archive>
-            <descriptorRefs>
-              <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.1.2</version>
-          <executions>
-            <execution>
-              <id>copy-dependencies</id>
-              <phase>package</phase>
-              <goals>
-                <goal>copy-dependencies</goal>
-              </goals>
-              <configuration>
-                <outputDirectory>${project.build.directory}/theDependencies</outputDirectory>
-                <overWriteReleases>false</overWriteReleases>
-                <overWriteSnapshots>false</overWriteSnapshots>
-                <overWriteIfNewer>true</overWriteIfNewer>
-              </configuration>
-            </execution>
-          </executions>
         </plugin>
         <!-- https://github.com/moditect/moditect -->
         <!--

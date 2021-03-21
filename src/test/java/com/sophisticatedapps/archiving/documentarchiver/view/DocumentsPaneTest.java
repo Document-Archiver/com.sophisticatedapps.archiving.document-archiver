@@ -20,24 +20,28 @@ import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.api.FxRobot;
-import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
+import java.io.File;
 import java.io.IOException;
 
-@ExtendWith(ApplicationExtension.class)
-class ChooseFilesOrDirectoryPaneTest extends BaseTest {
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    private VBox chooseFilesOrDirectoryPane;
-    //private Stage stage;
+@ExtendWith(ApplicationExtension.class)
+class DocumentsPaneTest extends BaseTest {
+
+    private Pane documentsPane;
+    private Stage stage;
 
     /**
      * Will be called with {@code @Before} semantics, i. e. before each test method.
@@ -47,15 +51,14 @@ class ChooseFilesOrDirectoryPaneTest extends BaseTest {
     @Start
     public void start(Stage aStage) throws IOException {
 
-        //this.stage = aStage;
+        this.stage = aStage;
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        chooseFilesOrDirectoryPane = (VBox)FXMLUtil.loadAndRampUpRegion(
-                "view/ChooseFilesOrDirectoryPane.fxml", aStage);
+        documentsPane = (VBox)FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", stage);
 
-        aStage.setScene(new Scene(chooseFilesOrDirectoryPane));
+        aStage.setScene(new Scene(documentsPane));
         aStage.show();
         aStage.toFront();
     }
@@ -63,34 +66,27 @@ class ChooseFilesOrDirectoryPaneTest extends BaseTest {
     @AfterEach
     public void cleanUpEach() {
 
-        chooseFilesOrDirectoryPane = null;
-        //stage = null;
+        documentsPane = null;
+        stage = null;
     }
 
     /**
-     * Check the choose file(s) button.
-     *
-     * @param aFxRobot - Will be injected by the test runner.
+     * Check the documents ListView.
      */
     @Test
-    void testChooseFilesButton(FxRobot aFxRobot) {
+    void testDocumentsListView() {
 
-        Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
-        Assertions.assertThat(tmpChooseFilesButton).hasText("Choose file(s)");
-        aFxRobot.clickOn(tmpChooseFilesButton);
-    }
+        stage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, ALL_DOCUMENTS_LIST);
+        stage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, TEST_JPG_FILE);
 
-    /**
-     * Check the choose directory button.
-     *
-     * @param aFxRobot - Will be injected by the test runner.
-     */
-    @Test
-    void testChooseDirectoryButton(FxRobot aFxRobot) {
+        WaitForAsyncUtils.waitForFxEvents();
 
-        Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
-        Assertions.assertThat(tmpChooseDirectoryButton).hasText("Choose directory");
-        aFxRobot.clickOn(tmpChooseDirectoryButton);
+        @SuppressWarnings("unchecked")
+        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
+
+        assertTrue(tmpDocumentsListView.getItems().containsAll(ALL_DOCUMENTS_LIST));
+        assertSame(TEST_JPG_FILE, tmpDocumentsListView.getFocusModel().getFocusedItem());
+        assertSame(TEST_JPG_FILE, tmpDocumentsListView.getSelectionModel().getSelectedItem());
     }
 
 }

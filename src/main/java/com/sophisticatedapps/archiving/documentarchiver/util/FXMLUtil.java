@@ -55,7 +55,7 @@ public class FXMLUtil {
 
             return tmpRegion;
         }
-        catch (IOException e) {
+        catch (IOException | IllegalStateException e) {
 
             throw (new RuntimeException("Couldn't load region '" + aFxmlResource + "': " + e.getMessage()));
         }

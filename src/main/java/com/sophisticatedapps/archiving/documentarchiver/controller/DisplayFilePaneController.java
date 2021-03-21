@@ -24,12 +24,12 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
@@ -55,6 +55,7 @@ public class DisplayFilePaneController extends BaseController {
                 FileTypeEnum.GIF, DisplayImageNodeAssembler.class,
                 FileTypeEnum.HEIC, DisplayUnsupportedFiletypeNodeAssembler.class,
                 FileTypeEnum.XML, DisplayTextNodeAssembler.class,
+                FileTypeEnum.DOC, DisplayUnsupportedFiletypeNodeAssembler.class,
                 FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
     }
 
@@ -84,7 +85,8 @@ public class DisplayFilePaneController extends BaseController {
                 Class<? extends DisplayFileNodeAssembler> tmpFileNodeAssemblerClass =
                         NODE_ASSEMBLER_BY_FILETYPE.get(FileUtil.getFiletype(aNewCurrentDocument));
                 Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance()
-                        .assemble(aNewCurrentDocument, displayFilePane.getPrefWidth(), displayFilePane.getPrefHeight());
+                        .assemble(aNewCurrentDocument, displayFilePane.getPrefWidth(),
+                                (displayFilePane.getPrefHeight() - 50));
 
                 Platform.runLater(() -> displayFilePane.getChildren().setAll(tmpFileDisplayNode));
             }
@@ -198,17 +200,15 @@ public class DisplayFilePaneController extends BaseController {
                     tmpByteArrayOutputStream.write(tmpByteSize, 0, tmpLength);
                 }
 
-                // Creating the text view
-                Text tmpTextView = new Text();
+                // Creating a TextArea for the text
+                TextArea tmpTextAreaView = new TextArea();
+                tmpTextAreaView.setPrefWidth(aPrefWidth);
+                tmpTextAreaView.setPrefHeight(aPrefHeight);
 
                 // Setting text to the text view
-                tmpTextView.setText(tmpByteArrayOutputStream.toString(Charset.defaultCharset().toString()));
+                tmpTextAreaView.setText(tmpByteArrayOutputStream.toString(Charset.defaultCharset().toString()));
 
-                //Setting the image view parameters
-                tmpTextView.setX(10);
-                tmpTextView.setY(10);
-
-                return (new Pane(tmpTextView));
+                return tmpTextAreaView;
             }
             catch (Exception e) {
 

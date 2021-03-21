@@ -77,8 +77,18 @@ class AppTest extends BaseTest {
     void testMain_non_existing_file_argument() {
 
         Throwable tmpException = assertThrows(RuntimeException.class, () -> App.main(new String[]{ "/foo/bar" }));
-
         assertEquals("File does not exist: /foo/bar", tmpException.getMessage());
+    }
+
+    /**
+     * Test if parameter gets checked correctly.
+     */
+    @Test
+    void testMain_invalid_file_argument() {
+
+        Throwable tmpException =
+                assertThrows(RuntimeException.class, () -> App.main(new String[]{ String.valueOf('\0') }));
+        assertEquals("Invalid argument given: \u0000", tmpException.getMessage());
     }
 
     @Test
@@ -119,8 +129,7 @@ class AppTest extends BaseTest {
             assertEquals("Application launch must not be called more than once", e.getMessage());
         }
 
-        Set<File> tmpExpectedFilesSet = new HashSet<>(
-                Arrays.asList(TEST_TEXT_FILE, TEST_TEXT_FILE2, TEST_PDF_FILE, TEST_JPG_FILE, TEST_JPG_FILE2));
+        Set<File> tmpExpectedFilesSet = new HashSet<>(ALL_DOCUMENTS_LIST);
         @SuppressWarnings("unchecked")
         Set<File> tmpFilesFromArgsSet = new HashSet<>(
                 (List<File>)FieldUtils.readStaticField(App.class,"filesFromArgs",true));
@@ -131,7 +140,7 @@ class AppTest extends BaseTest {
     void testStart() throws IllegalAccessException {
 
         // Start clean
-        FieldUtils.writeStaticField(App.class, "filesFromArgs", null,true);
+        FieldUtils.writeStaticField(App.class, "filesFromArgs", null, true);
 
         // Mock the stage
         Stage tmpMockedStage = Mockito.mock(Stage.class);
@@ -180,7 +189,7 @@ class AppTest extends BaseTest {
         // Start the App again with "filesFromArgs"
         tmpPropertiesMap.clear();
         List<File> tmpFilesFromArgs = Collections.singletonList(TEST_TEXT_FILE);
-        FieldUtils.writeStaticField(App.class, "filesFromArgs", tmpFilesFromArgs,true);
+        FieldUtils.writeStaticField(App.class, "filesFromArgs", tmpFilesFromArgs, true);
 
         Platform.runLater(() -> (new App()).start(tmpMockedStage));
 

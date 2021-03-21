@@ -134,6 +134,31 @@ class FileUtilTest extends BaseTest {
     }
 
     /**
+     * Test if the move to archive fails when target directory cannot be created.
+     */
+    @Test
+    void testMoveFileToArchive_with_exception_while_creating_target_directory() {
+
+        // This should cause a crash when used to create the target directory.
+        DirectoryUtil.setArchivingRootFolder(new File("/:" + '\0' + "/:"));
+
+        // Create temp file
+        File tmpDocument = new File(tempDir, "file.txt");
+
+        // We need the defined file properties
+        LocalDate tmpDate = LocalDate.now();
+        DefinedFileProperties tmpDfp = new DefinedFileProperties(
+                tmpDate,false, "12:12:12", "test", null);
+
+        // Move shouldn't work.
+        Throwable tmpException = assertThrows(IOException.class, () -> FileUtil.moveFileToArchive(tmpDocument, tmpDfp));
+        assertEquals("Target folder could not be created.", tmpException.getMessage());
+
+        // Cleanup
+        DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
+    }
+
+    /**
      * Test if the move to archive is denied if file with same properties exists.
      */
     @Test

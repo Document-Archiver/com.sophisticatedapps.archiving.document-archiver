@@ -62,14 +62,8 @@ public class InfoPaneController extends BaseController {
 
     static {
 
-        TIME_AGENTS_BY_FILETYPE = Map.of(FileTypeEnum.PDF, GenericFileTimeAgent.class,
-                FileTypeEnum.TXT, GenericFileTimeAgent.class,
-                FileTypeEnum.JPG, JPGFileTimeAgent.class,
-                FileTypeEnum.PNG, GenericFileTimeAgent.class,
-                FileTypeEnum.GIF, GenericFileTimeAgent.class,
-                FileTypeEnum.HEIC, GenericFileTimeAgent.class,
-                FileTypeEnum.XML, GenericFileTimeAgent.class,
-                FileTypeEnum.UNSUPPORTED, GenericFileTimeAgent.class);
+        // Just the FileTypes which doesn't use "GenericFileTimeAgent.class" -> we are using 'getOrDefault' later.
+        TIME_AGENTS_BY_FILETYPE = Map.of(FileTypeEnum.JPG, JPGFileTimeAgent.class);
     }
 
     @FXML
@@ -165,7 +159,7 @@ public class InfoPaneController extends BaseController {
             LocalDateTime tmpFileDateTime;
 
             try {
-                tmpFileDateTime = TIME_AGENTS_BY_FILETYPE.get(tmpFileType)
+                tmpFileDateTime = TIME_AGENTS_BY_FILETYPE.getOrDefault(tmpFileType, GenericFileTimeAgent.class)
                         .getDeclaredConstructor().newInstance().determineFileTime(aNewCurrentDocument);
             }
             catch(Exception e) {

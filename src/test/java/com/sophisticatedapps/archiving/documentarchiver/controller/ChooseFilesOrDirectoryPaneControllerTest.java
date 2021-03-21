@@ -81,7 +81,7 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
 
         ChooseFilesOrDirectoryPaneController.DaFileChooser tmpMockedFileChooser =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.DaFileChooser.class);
-        when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(DOCUMENTS_LIST);
+        when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(ALL_DOCUMENTS_LIST);
         FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "fileChooser", tmpMockedFileChooser, true);
 
         Button tmpChooseFilesButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseFilesButton");
@@ -90,8 +90,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Not same, since List will be wrapped into a new List.
-        assertEquals(DOCUMENTS_LIST, chooseFilesOrDirectoryPaneController.getAllDocuments());
-        assertSame(DOCUMENTS_LIST.get(0), chooseFilesOrDirectoryPaneController.getCurrentDocument());
+        assertEquals(ALL_DOCUMENTS_LIST, chooseFilesOrDirectoryPaneController.getAllDocuments());
+        assertSame(ALL_DOCUMENTS_LIST.get(0), chooseFilesOrDirectoryPaneController.getCurrentDocument());
     }
 
     /**

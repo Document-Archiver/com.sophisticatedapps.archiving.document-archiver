@@ -18,14 +18,16 @@ package com.sophisticatedapps.archiving.documentarchiver.type;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileTypeEnumTest {
 
     @Test
-    void getFileExtension() {
+    void getFileExtensions() {
 
-        assertEquals("pdf", FileTypeEnum.PDF.getFileExtension());
+        assertEquals(Set.of("pdf"), FileTypeEnum.PDF.getFileExtensions());
     }
 
     @Test
@@ -55,10 +57,8 @@ class FileTypeEnumTest {
     @Test
     void byFileExtension_unsupported_with_exception() {
 
-
-        Throwable tmpException = assertThrows(IllegalArgumentException.class, () -> {
-            FileTypeEnum.byFileExtension("mov", false);
-        });
+        Throwable tmpException = assertThrows(IllegalArgumentException.class, () ->
+                FileTypeEnum.byFileExtension("mov", false));
         assertEquals("No FileTypeEnum for file extension: mov", tmpException.getMessage());
     }
 

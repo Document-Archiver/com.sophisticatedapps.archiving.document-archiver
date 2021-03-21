@@ -43,7 +43,8 @@ public abstract class BaseTest {
     protected static final File TEST_PNG_FILE = (new File(Objects.requireNonNull(App.class
             .getClassLoader().getResource("binder-icon.png")).getFile()));
 
-    protected static final List<File> DOCUMENTS_LIST = Arrays.asList(TEST_TEXT_FILE, TEST_TEXT_FILE2, TEST_PDF_FILE);
+    protected static final List<File> ALL_DOCUMENTS_LIST =
+            Arrays.asList(TEST_TEXT_FILE, TEST_TEXT_FILE2, TEST_PDF_FILE, TEST_JPG_FILE, TEST_JPG_FILE2);
 
     protected static final File TEST_RESOURCES_DIRECTORY = TEST_TEXT_FILE.getParentFile();
     protected static final File TEST_ARCHIVING_FOLDER = new File(Objects.requireNonNull(App.class
