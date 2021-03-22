@@ -19,10 +19,10 @@ addons:
 before_script:
   - pwd
   - ls -la
-  - cp .travis.settings.xml $HOME/.m2/settings.xml
+  # - cp .travis.settings.xml $HOME/.m2/settings.xml
 
 script:
   - mvn clean jacoco:prepare-agent test jacoco:report sonar:sonar
-  - mvn deploy -P linux-environment -DskipTests
-  - mvn deploy -P mac-environment -DskipTests
-  - mvn deploy -P win-environment -DskipTests
+  # - mvn deploy -P linux-environment -DskipTests
+  # - mvn deploy -P mac-environment -DskipTests
+  # - mvn deploy -P win-environment -DskipTests

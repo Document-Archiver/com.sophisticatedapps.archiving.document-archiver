@@ -9,7 +9,39 @@
 
 # Document Archiver
 
-Inspired by the project "PDF Archiver" (https://github.com/PDF-Archiver/PDF-Archiver), I decided to create my own archiver application, which works on all mayor platforms und allows to archive documents of all kinds, not only PDFs.
+We all store different kind of documents (office documents, miscellaneous types of PDFs, Images, Audio-Files, etc.) on our systems.
+
+The challenge here is to find a consistent approach which will help us to retrieve the documents later in a fast and easy way.
+
+Traditionally many people tend to establish some kind of folder structure on their storage space, which will then hold documents by a topic, a year, or whatever seems to fit.
+Anyhow, this approach often leads to a clutter of heterogeneous folder arrangements (over time one finds that another subfolder is needed at some place - and already consistency is broken).
+It may also lead to duplicates (Should one store a document regarding a car insurance in a folder "car" or in a folder "insurances"? Maintaining a copy in both places is not really a good idea.).
+
+This application is inspired by the project "PDF Archiver" (https://github.com/PDF-Archiver/PDF-Archiver), which utilizes a consistent way to store PDF files in a defined folder structure and by using a fixed file naming pattern.
+Document Archiver picks up this core idea and makes it available for all document types and on all mayor platforms. Thanks to Julian Kahnert for agreeing to build on his great work!
+
+### Convention
+
+Documents will be archived in this manner:
+```
+└── ~/Documents/DocumentArchiver
+    ├── pdfs
+    │   ├── 2020
+    │   │   ├── 2020-01-05--invoice__car_insurance.pdf
+    │   │   └── 2020-07-01--invoice__house_insurance.pdf
+    │   └── 2021
+    │       └── 2021-01-05--invoice__car_insurance.pdf
+    └── images
+        ├── 2020
+        │   ├── 2020-01-20-00-03-17--cake__birthday_stephan.jpg
+        │   ├── 2020-01-20-00-03-54--cake__birthday_stephan.jpg
+        │   └── 2020-03-16-15-32-23--party__birthday_natalia.jpg
+        └── 2021
+            └── 2021-01-20-00-02-42--party__birthday_stephan.jpg
+```
+* **Date\[-Time\]:** `yyyy-MM-dd` or `yyyy-MM-dd-HH-mm-ss` Date (and - if requested - time) of the document content.
+* **Description:** `--invoice` Meaningful description of the document.
+* **Tags:** `__car_insurance` Tags which will help you find the document in your archive.
 
 ## Get it running
 
@@ -18,17 +50,17 @@ git clone https://github.com/Document-Archiver/com.sophisticatedapps.archiving.d
 
 cd com.sophisticatedapps.archiving.document-archiver
 
-mvn clean package
+mvn clean package -DskipTests
 
 cd target/
 
-java -jar document-archiver-1.0-SNAPSHOT-with-dependencies.jar
+java -jar document-archiver-1.0-0-with-dependencies.jar
 ```
 ### \*tada\*
 
 If you want to pass a certain file or a folder, you can run
 ```
-java -jar document-archiver-1.0-SNAPSHOT-jar-with-dependencies.jar #path-to-file-or-folder#
+java -jar document-archiver-1.0-0-with-dependencies.jar #path-to-file-or-folder#
 ```
 ## Quick Start
 Have a look at the Wiki for a Quick Start manual:
