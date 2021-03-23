@@ -21,7 +21,9 @@ import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -30,6 +32,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
@@ -39,6 +43,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class DisplayFilePaneController extends BaseController {
@@ -56,6 +61,7 @@ public class DisplayFilePaneController extends BaseController {
                 FileTypeEnum.HEIC, DisplayUnsupportedFiletypeNodeAssembler.class,
                 FileTypeEnum.XML, DisplayTextNodeAssembler.class,
                 FileTypeEnum.DOC, DisplayUnsupportedFiletypeNodeAssembler.class,
+                FileTypeEnum.MP3, DisplayAudioNodeAssembler.class,
                 FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
     }
 
@@ -180,6 +186,41 @@ public class DisplayFilePaneController extends BaseController {
 
                 throw (new RuntimeException("Image could not be loaded."));
             }
+        }
+    }
+
+    protected static class DisplayAudioNodeAssembler implements DisplayFileNodeAssembler {
+
+        private static final String BUTTON_TEXT_PLAY = "Play";
+        private static final String BUTTON_TEXT_STOP = "Stop";
+
+        @Override
+        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
+
+            MediaPlayer mediaPlayer = new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString()));
+
+            Button tmpPlayAudioButton = new Button(BUTTON_TEXT_PLAY);
+            tmpPlayAudioButton.setOnAction(anEvent -> {
+
+                if(mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING){
+
+                    mediaPlayer.play();
+                    ((Button)anEvent.getSource()).setText(BUTTON_TEXT_STOP);
+                }
+                else {
+
+                    mediaPlayer.stop();
+                    ((Button)anEvent.getSource()).setText(BUTTON_TEXT_PLAY);
+                }
+            });
+
+            StackPane tmpStackPane = new StackPane();
+            tmpStackPane.setPrefWidth(aPrefWidth);
+            tmpStackPane.setPrefHeight(aPrefHeight);
+            tmpStackPane.setAlignment(Pos.CENTER);
+            tmpStackPane.getChildren().add(tmpPlayAudioButton);
+
+            return tmpStackPane;
         }
     }
 

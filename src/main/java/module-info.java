@@ -4,6 +4,7 @@ module DocumentArchiver {
     requires javafx.controls;
     requires javafx.web;
     requires javafx.fxml;
+    requires javafx.media;
     requires PDFViewerFX;
     requires java.desktop;
     requires org.apache.commons.imaging;

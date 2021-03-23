@@ -22,10 +22,12 @@ import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -101,6 +103,25 @@ class DisplayFilePaneControllerTest extends BaseTest {
         // Now there should be a ScrollView on our display file Pane.
         ScrollPane tmpWrapperPane = (ScrollPane)tmpDisplayPaneChildren.get(0);
         assertSame(ImageView.class, tmpWrapperPane.getContent().getClass());
+    }
+
+    @Test
+    void testHandleCurrentDocumentChangedToMp3File() {
+
+        displayFilePaneController.setNewCurrentDocument(TEST_MP3_FILE);
+
+        // Wait until sub Panes are set.
+        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
+        await().atMost(10, TimeUnit.SECONDS)
+                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+
+        // Now there should be a ScrollView on our display file Pane.
+        StackPane tmpPane = (StackPane)tmpDisplayPaneChildren.get(0);
+        Button tmpPlayStopButton = (Button)tmpPane.getChildren().get(0);
+        tmpPlayStopButton.fire();
+        assertSame("Stop", tmpPlayStopButton.getText());
+        tmpPlayStopButton.fire();
+        //assertSame("Play", tmpPlayStopButton.getText());
     }
 
 }

@@ -132,7 +132,7 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         List<File> tmpChosenDocuments = chooseFilesOrDirectoryPaneController.getAllDocuments();
-        assertEquals(5, tmpChosenDocuments.size());
+        assertEquals(ALL_DOCUMENTS_LIST.size(), tmpChosenDocuments.size());
         assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE));
         assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE2));
         assertTrue(tmpChosenDocuments.contains(TEST_PDF_FILE));
