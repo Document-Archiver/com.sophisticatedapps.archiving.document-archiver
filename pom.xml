@@ -619,23 +619,16 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <extensions>
-      <extension>
-        <groupId>io.packagecloud.maven.wagon</groupId>
-        <artifactId>maven-packagecloud-wagon</artifactId>
-        <version>0.0.6</version>
-      </extension>
-    </extensions>
   </build>
 
   <distributionManagement>
     <repository>
-      <id>packagecloud-sophisticatedapps</id>
-      <url>packagecloud+https://packagecloud.io/sophisticatedapps/document-archiver</url>
+      <id>repository-sophisticatedapps</id>
+      <url>https://repository.sophisticatedapps.com/releases</url>
     </repository>
     <snapshotRepository>
-      <id>packagecloud-sophisticatedapps</id>
-      <url>packagecloud+https://packagecloud.io/sophisticatedapps/document-archiver</url>
+      <id>repository-sophisticatedapps</id>
+      <url>https://repository.sophisticatedapps.com/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 
