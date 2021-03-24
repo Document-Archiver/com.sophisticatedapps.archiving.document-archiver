@@ -197,24 +197,26 @@ public class DisplayFilePaneController extends BaseController {
         @Override
         public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
 
-            MediaPlayer mediaPlayer = new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString()));
+            StackPane tmpStackPane = new StackPane();
+            tmpStackPane.setUserData(new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString())));
 
             Button tmpPlayAudioButton = new Button(BUTTON_TEXT_PLAY);
             tmpPlayAudioButton.setOnAction(anEvent -> {
 
-                if(mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING){
+                MediaPlayer tmpMediaPlayer = (MediaPlayer)tmpStackPane.getUserData();
 
-                    mediaPlayer.play();
+                if(tmpMediaPlayer.getStatus() != MediaPlayer.Status.PLAYING){
+
+                    tmpMediaPlayer.play();
                     ((Button)anEvent.getSource()).setText(BUTTON_TEXT_STOP);
                 }
                 else {
 
-                    mediaPlayer.stop();
+                    tmpMediaPlayer.stop();
                     ((Button)anEvent.getSource()).setText(BUTTON_TEXT_PLAY);
                 }
             });
 
-            StackPane tmpStackPane = new StackPane();
             tmpStackPane.setPrefWidth(aPrefWidth);
             tmpStackPane.setPrefHeight(aPrefHeight);
             tmpStackPane.setAlignment(Pos.CENTER);

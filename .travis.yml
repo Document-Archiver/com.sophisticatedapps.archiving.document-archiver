@@ -23,9 +23,14 @@ before_script:
 
 script:
   - mvn clean jacoco:prepare-agent test jacoco:report sonar:sonar
+
+after_success:
   - mvn package -P linux-environment -DskipTests
   - mvn package -P mac-environment -DskipTests
   - mvn package -P win-environment -DskipTests
-  - mvn org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy-file -Durl=https://repository.sophisticatedapps.com/releases -DrepositoryId=repository-sophisticatedapps -Dfile=target/document-archiver-1.1.0-SNAPSHOT.jar -DpomFile=pom.xml -Dfiles=target/document-archiver-1.1.0-SNAPSHOT-linux.jar,target/document-archiver-1.1.0-SNAPSHOT-mac.jar,target/document-archiver-1.1.0-SNAPSHOT-win.jar -Dclassifiers=linux,mac,win -Dtypes=jar,jar,jar
+  - DA_ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
   - DA_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-  - echo $DA_VERSION
+  - DA_ARTIFACT_BASENAME="${DA_ARTIFACT_ID}-${DA_VERSION}"
+  - DA_DEPLOYMENT_TARGET=$(if [[ $DA_VERSION =~ ^.*SNAPSHOT$ ]]; then echo "snapshots"; else echo "releases"; fi)
+  - echo "${DA_ARTIFACT_ID}|${DA_VERSION}|${DA_ARTIFACT_BASENAME}|${DA_DEPLOYMENT_TARGET}"
+  - mvn org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy-file -Durl=https://repository.sophisticatedapps.com/${DA_DEPLOYMENT_TARGET} -DrepositoryId=repository-sophisticatedapps -Dfile=target/${DA_ARTIFACT_BASENAME}.jar -DpomFile=pom.xml -Dfiles=target/${DA_ARTIFACT_BASENAME}-linux.jar,target/${DA_ARTIFACT_BASENAME}-mac.jar,target/${DA_ARTIFACT_BASENAME}-win.jar -Dclassifiers=linux,mac,win -Dtypes=jar,jar,jar

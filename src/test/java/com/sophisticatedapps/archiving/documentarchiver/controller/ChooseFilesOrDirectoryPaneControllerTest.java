@@ -138,6 +138,7 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         assertTrue(tmpChosenDocuments.contains(TEST_PDF_FILE));
         assertTrue(tmpChosenDocuments.contains(TEST_JPG_FILE));
         assertTrue(tmpChosenDocuments.contains(TEST_JPG_FILE2));
+        assertTrue(tmpChosenDocuments.contains(TEST_MP3_FILE));
     }
 
     /**

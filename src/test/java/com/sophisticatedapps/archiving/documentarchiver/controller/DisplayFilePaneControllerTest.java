@@ -28,10 +28,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
@@ -42,6 +44,8 @@ import java.util.function.Predicate;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(ApplicationExtension.class)
 class DisplayFilePaneControllerTest extends BaseTest {
@@ -115,13 +119,37 @@ class DisplayFilePaneControllerTest extends BaseTest {
         await().atMost(10, TimeUnit.SECONDS)
                 .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
 
-        // Now there should be a ScrollView on our display file Pane.
+        // Now there should be a "play" Button on the assembled pane.
         StackPane tmpPane = (StackPane)tmpDisplayPaneChildren.get(0);
         Button tmpPlayStopButton = (Button)tmpPane.getChildren().get(0);
+        assertEquals("Play", tmpPlayStopButton.getText());
+    }
+
+    @Test
+    void testDisplayAudioNodeAssemblerPlayStopButton() {
+
+        DisplayFilePaneController.DisplayAudioNodeAssembler tmpDisplayAudioNodeAssembler =
+                new DisplayFilePaneController.DisplayAudioNodeAssembler();
+
+        StackPane tmpPane = (StackPane)tmpDisplayAudioNodeAssembler.assemble(TEST_MP3_FILE, 250, 250);
+        Button tmpPlayStopButton = (Button)tmpPane.getChildren().get(0);
+        assertSame("Play", tmpPlayStopButton.getText());
+
+        // Set a mocked MediaPlayer
+        MediaPlayer tmpMockedMediaPlayer = Mockito.mock(MediaPlayer.class);
+        tmpPane.setUserData(tmpMockedMediaPlayer);
+
+        // Play
+        when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.STOPPED);
         tmpPlayStopButton.fire();
-        assertSame("Stop", tmpPlayStopButton.getText());
+        verify(tmpMockedMediaPlayer, Mockito.times(1)).play();
+        assertEquals("Stop", tmpPlayStopButton.getText());
+
+        // Stop
+        when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PLAYING);
         tmpPlayStopButton.fire();
-        //assertSame("Play", tmpPlayStopButton.getText());
+        verify(tmpMockedMediaPlayer, Mockito.times(1)).stop();
+        assertEquals("Play", tmpPlayStopButton.getText());
     }
 
 }
