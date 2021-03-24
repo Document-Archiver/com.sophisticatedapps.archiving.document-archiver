@@ -23,6 +23,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
@@ -119,10 +120,18 @@ class DisplayFilePaneControllerTest extends BaseTest {
         await().atMost(10, TimeUnit.SECONDS)
                 .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
 
-        // Now there should be a "play" Button on the assembled pane.
+        // Now there should be a "play" Button or a message on the assembled pane.
         StackPane tmpPane = (StackPane)tmpDisplayPaneChildren.get(0);
-        Button tmpPlayStopButton = (Button)tmpPane.getChildren().get(0);
-        assertEquals("Play", tmpPlayStopButton.getText());
+        Node tmpNode = tmpPane.getChildren().get(0);
+
+        if (tmpNode instanceof Button) {
+
+            assertEquals("Play", ((Button)tmpNode).getText());
+        }
+        else {
+
+            assertEquals("Sorry - audio not supported.", ((Label)tmpNode).getText());
+        }
     }
 
     @Test
@@ -131,13 +140,14 @@ class DisplayFilePaneControllerTest extends BaseTest {
         DisplayFilePaneController.DisplayAudioNodeAssembler tmpDisplayAudioNodeAssembler =
                 new DisplayFilePaneController.DisplayAudioNodeAssembler();
 
-        StackPane tmpPane = (StackPane)tmpDisplayAudioNodeAssembler.assemble(TEST_MP3_FILE, 250, 250);
-        Button tmpPlayStopButton = (Button)tmpPane.getChildren().get(0);
-        assertSame("Play", tmpPlayStopButton.getText());
-
-        // Set a mocked MediaPlayer
+        // Mock a MediaPlayer and set it to a Pane
         MediaPlayer tmpMockedMediaPlayer = Mockito.mock(MediaPlayer.class);
+        Pane tmpPane = new Pane();
         tmpPane.setUserData(tmpMockedMediaPlayer);
+
+        // Assemble button
+        Button tmpPlayStopButton = tmpDisplayAudioNodeAssembler.assemblePlayStopButton(tmpPane);
+        assertSame("Play", tmpPlayStopButton.getText());
 
         // Play
         when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.STOPPED);

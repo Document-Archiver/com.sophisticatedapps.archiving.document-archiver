@@ -33,6 +33,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -198,12 +199,30 @@ public class DisplayFilePaneController extends BaseController {
         public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
 
             StackPane tmpStackPane = new StackPane();
-            tmpStackPane.setUserData(new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString())));
+            tmpStackPane.setPrefWidth(aPrefWidth);
+            tmpStackPane.setPrefHeight(aPrefHeight);
+            tmpStackPane.setAlignment(Pos.CENTER);
+
+            try {
+
+                tmpStackPane.setUserData(new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString())));
+                tmpStackPane.getChildren().add(assemblePlayStopButton(tmpStackPane));
+            }
+            catch (MediaException e) {
+
+                // Audio not supported.
+                tmpStackPane.getChildren().add(new Label("Sorry - audio not supported."));
+            }
+
+            return tmpStackPane;
+        }
+
+        protected Button assemblePlayStopButton(Pane aParentPane) {
 
             Button tmpPlayAudioButton = new Button(BUTTON_TEXT_PLAY);
             tmpPlayAudioButton.setOnAction(anEvent -> {
 
-                MediaPlayer tmpMediaPlayer = (MediaPlayer)tmpStackPane.getUserData();
+                MediaPlayer tmpMediaPlayer = (MediaPlayer)aParentPane.getUserData();
 
                 if(tmpMediaPlayer.getStatus() != MediaPlayer.Status.PLAYING){
 
@@ -217,12 +236,7 @@ public class DisplayFilePaneController extends BaseController {
                 }
             });
 
-            tmpStackPane.setPrefWidth(aPrefWidth);
-            tmpStackPane.setPrefHeight(aPrefHeight);
-            tmpStackPane.setAlignment(Pos.CENTER);
-            tmpStackPane.getChildren().add(tmpPlayAudioButton);
-
-            return tmpStackPane;
+            return tmpPlayAudioButton;
         }
     }
 
