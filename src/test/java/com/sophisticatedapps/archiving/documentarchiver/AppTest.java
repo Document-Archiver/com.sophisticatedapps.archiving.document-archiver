@@ -27,13 +27,17 @@ import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.util.WaitForAsyncUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,6 +51,21 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(ApplicationExtension.class)
 class AppTest extends BaseTest {
+
+    private final PrintStream standardErr = System.err;
+    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
+    @BeforeEach
+    public void setUp() {
+
+        System.setErr(new PrintStream(outputStreamCaptor));
+    }
+
+    @AfterEach
+    public void tearDown() {
+
+        System.setErr(standardErr);
+    }
 
     @Test
     void testMain_no_arguments() throws IllegalAccessException {
@@ -76,8 +95,8 @@ class AppTest extends BaseTest {
     @Test
     void testMain_non_existing_file_argument() {
 
-        Throwable tmpException = assertThrows(RuntimeException.class, () -> App.main(new String[]{ "/foo/bar" }));
-        assertEquals("File does not exist: /foo/bar", tmpException.getMessage());
+        App.main(new String[]{ "/foo/bar" });
+        assertEquals("File does not exist: /foo/bar", outputStreamCaptor.toString().trim());
     }
 
     /**
@@ -88,7 +107,7 @@ class AppTest extends BaseTest {
 
         Throwable tmpException =
                 assertThrows(RuntimeException.class, () -> App.main(new String[]{ String.valueOf('\0') }));
-        assertEquals("Invalid argument given: \u0000", tmpException.getMessage());
+        assertEquals("Could not create File object for '\u0000': Invalid file path", tmpException.getMessage());
     }
 
     @Test

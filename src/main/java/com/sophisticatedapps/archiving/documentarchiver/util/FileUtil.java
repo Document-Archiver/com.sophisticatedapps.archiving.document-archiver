@@ -21,6 +21,8 @@ import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperti
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +40,38 @@ public class FileUtil {
      * Private constructor.
      */
     private FileUtil() {
+    }
+
+    /**
+     * Turn an command line argument into a Java File object.
+     *
+     * @param   anArg   Command line argument to turn into a Java File object.
+     * @return  Java File object.
+     */
+    public static File argToFile(String anArg) {
+
+        try {
+
+            File tmpFile;
+
+            if (anArg.startsWith("file:/")) {
+
+                tmpFile = new File(new URI(anArg));
+            }
+            else {
+
+                tmpFile = new File(anArg);
+            }
+
+            // Will throw an exception if path is faulty.
+            tmpFile.getCanonicalPath();
+
+            return tmpFile;
+        }
+        catch (IOException | URISyntaxException e) {
+
+            throw (new RuntimeException("Could not create File object for '" + anArg + "': " + e.getMessage()));
+        }
     }
 
     /**

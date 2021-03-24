@@ -44,6 +44,36 @@ class FileUtilTest extends BaseTest {
     File tempDir;
 
     /**
+     * Test if an command line argument is correctly turned into a file.
+     */
+    @Test
+    void testArgToFile() {
+
+        String tmpPathInput =
+                "/Users/stephansann/Library/Mobile Documents/com~apple~CloudDocs/lotk/Music/The Hit List Vol 5.mp3";
+        File tmpFile = FileUtil.argToFile(tmpPathInput);
+        assertEquals(tmpPathInput, tmpFile.getPath());
+
+        String tmpURIInput1 =
+                "file:/Users/stephansann/Library/Mobile%20Documents/com~apple~CloudDocs/lotk/Music/The%20Hit%20List%20Vol%205.mp3";
+        File tmpFile2 = FileUtil.argToFile(tmpURIInput1);
+        assertEquals(tmpPathInput, tmpFile2.getPath());
+
+        String tmpURIInput2 =
+                "file:///Users/stephansann/Library/Mobile%20Documents/com~apple~CloudDocs/lotk/Music/The%20Hit%20List%20Vol%205.mp3";
+        File tmpFile3 = FileUtil.argToFile(tmpURIInput2);
+        assertEquals(tmpPathInput, tmpFile3.getPath());
+
+        String tmpDirectoryInput = "/path/to/foo/";
+        File tmpFile4 = FileUtil.argToFile(tmpDirectoryInput);
+        assertEquals("/path/to/foo", tmpFile4.getPath());
+
+        Throwable tmpException =
+                assertThrows(RuntimeException.class, () -> FileUtil.argToFile(String.valueOf('\0')));
+        assertEquals("Could not create File object for '\u0000': Invalid file path", tmpException.getMessage());
+    }
+
+    /**
      * Test if properties are being read correctly.
      */
     @Test

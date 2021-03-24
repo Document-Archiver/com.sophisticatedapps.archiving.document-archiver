@@ -17,8 +17,8 @@ Traditionally many people tend to establish some kind of folder structure on the
 Anyhow, this approach often leads to a clutter of heterogeneous folder arrangements (over time one finds that another subfolder is needed at some place - and already consistency is broken).
 It may also lead to duplicates (Should one store a document regarding a car insurance in a folder "car" or in a folder "insurances"? Maintaining a copy in both places is not really a good idea.).
 
-This application is inspired by the project "PDF Archiver" (https://github.com/PDF-Archiver/PDF-Archiver), which utilizes a consistent way to store PDF files in a defined folder structure and by using a fixed file naming pattern.
-Document Archiver picks up this core idea and makes it available for all document types and on all mayor platforms. Thanks to Julian Kahnert for agreeing to build on his great work!
+Document Archiver is inspired by the project "PDF Archiver" (https://github.com/PDF-Archiver/PDF-Archiver), which utilizes a consistent way to store PDF files in a defined folder structure and by using a fixed file naming pattern.
+This application picks up this core idea and makes it available for all document types and on all mayor platforms. Thanks to Julian Kahnert for agreeing to build on his great work!
 
 ### Convention
 
@@ -43,7 +43,39 @@ Documents will be archived in this manner:
 * **Description:** `--invoice` Meaningful description of the document.
 * **Tags:** `__car_insurance` Tags which will help you find the document in your archive.
 
-## Get it running
+## How to get it
+
+There are three alternative ways to get Document Archiver. 
+
+### Option A - Download the last release version (quick and easy 🎁)
+
+Depending on your system, download one of the following files:
+
+**[\[ DOWNLOAD - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.0.0-linux.jar)
+-or-
+[\[ DOWNLOAD - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.0.0-mac.jar)
+-or-
+[\[ DOWNLOAD - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.0.0-win.jar)**
+
+**Startup (example for macOS - possible variants "linux", "mac", "win")**
+```
+java -jar document-archiver-1.0-0-mac.jar
+```
+
+### Option B - Download the latest SNAPSHOT release (get the latest and greatest ✨)
+
+The latest SNAPSHOT releases can be downloaded here:
+
+**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/1.1.0-SNAPSHOT/)**
+
+Select the JAR file suitable for your system ("linux", "mac" or "win")
+
+**Startup (example - timestamp will vary)**
+```
+java -jar document-archiver-1.1.0-20210324.121919-1-mac.jar
+```
+
+### Option C - Build it yourself (the nerdy way 🤓)
 
 ```
 git clone https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver.git
@@ -53,20 +85,17 @@ cd com.sophisticatedapps.archiving.document-archiver
 mvn clean package -DskipTests
 
 cd target/
+```
+**Startup (example - version may vary)**
+```
+java -jar document-archiver-1.1.0-SNAPSHOT.jar
+```
 
-java -jar document-archiver-1.0-0-with-dependencies.jar
-```
-### \*tada\*
-
-If you want to pass a certain file or a folder, you can run
-```
-java -jar document-archiver-1.0-0-with-dependencies.jar #path-to-file-or-folder#
-```
 ## Quick Start
 Have a look at the Wiki for a Quick Start manual:
 https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start
 
-***
+---
 
 Copyright 2021 by Stephan Sann
 

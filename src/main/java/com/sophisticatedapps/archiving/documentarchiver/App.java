@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver;
 
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import javafx.application.Application;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
@@ -28,18 +29,13 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Objects;
 
 public class App extends Application {
-
-    private static final Pattern PARAMETER_PATH_PATTERN = Pattern.compile(".*?/+(.*)");
 
     private static List<File> filesFromArgs;
 
@@ -52,36 +48,22 @@ public class App extends Application {
 
         if (args.length > 0) {
 
-            String tmpPath;
+            File tmpFile = FileUtil.argToFile(args[0]);
 
-            Matcher tmpMatcher = PARAMETER_PATH_PATTERN.matcher(args[0]);
-            if (tmpMatcher.find()) {
-                String tmpFoundPath = tmpMatcher.group(1);
-                try {
-                    if (args[0].startsWith("file:")) {
-                        tmpFoundPath = URLDecoder.decode(tmpFoundPath, Charset.defaultCharset().toString());
-                    }
-                }
-                catch (UnsupportedEncodingException e) {
-                    throw (new RuntimeException("Could not decode path: ".concat(e.getMessage())));
-                }
-                tmpPath = "/".concat(tmpFoundPath);
-            }
-            else {
-                throw (new RuntimeException("Invalid argument given: ".concat(args[0])));
-            }
-
-            File tmpFile = new File(tmpPath);
             if(!tmpFile.exists()) {
-                throw (new RuntimeException("File does not exist: ".concat(tmpPath)));
+
+                System.err.println("File does not exist: ".concat(args[0]));
+                return;
             }
 
             if (tmpFile.isDirectory()) {
+
                 // We have to wrap the result in a new List, since the result is not modifiable.
                 filesFromArgs = new ArrayList<>(
                         Arrays.asList(Objects.requireNonNull(tmpFile.listFiles(File::isFile))));
             }
             else {
+
                 filesFromArgs = new ArrayList<>();
                 filesFromArgs.add(tmpFile);
             }
