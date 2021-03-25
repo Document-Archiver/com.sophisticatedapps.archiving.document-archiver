@@ -32,6 +32,8 @@ public enum FileTypeEnum {
     XML(FileTypeGroupEnum.TEXTS, false, "xml"),
     DOC(FileTypeGroupEnum.OFFICE, false, "doc", "docx"),
     MP3(FileTypeGroupEnum.AUDIO, false, "mp3"),
+    M4A(FileTypeGroupEnum.AUDIO, false, "m4a"),
+    WAV(FileTypeGroupEnum.AUDIO, false, "wav", "wave"),
     UNSUPPORTED(FileTypeGroupEnum.MISC, false);
 
     private static final Map<String, FileTypeEnum> LOOKUP = new HashMap<>();

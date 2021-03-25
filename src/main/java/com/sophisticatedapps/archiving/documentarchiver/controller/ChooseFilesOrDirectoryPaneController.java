@@ -22,7 +22,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Window;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,8 +31,29 @@ import java.util.Objects;
 
 public class ChooseFilesOrDirectoryPaneController extends BaseController {
 
-    private DaFileChooser fileChooser = new DaFileChooser();
-    private DaDirectoryChooser directoryChooser = new DaDirectoryChooser();
+    private FileChooser fileChooser;
+    private DirectoryChooser directoryChooser;
+
+    /**
+     * Default constructor.
+     */
+    @SuppressWarnings("unused")
+    public ChooseFilesOrDirectoryPaneController() {
+
+        this(new FileChooser(), new DirectoryChooser());
+    }
+
+    /**
+     * Alternative constructor which allows to pass custom File- and DirectoryChooser.
+     *
+     * @param   aFileChooser        FileChooser to use.
+     * @param   aDirectoryChooser   DirectoryChooser to use.
+     */
+    public ChooseFilesOrDirectoryPaneController(FileChooser aFileChooser, DirectoryChooser aDirectoryChooser) {
+
+        this.fileChooser = aFileChooser;
+        this.directoryChooser = aDirectoryChooser;
+    }
 
     @FXML
     protected void handleChooseFilesButtonAction() {
@@ -80,52 +100,6 @@ public class ChooseFilesOrDirectoryPaneController extends BaseController {
         else {
 
             setNewAllDocumentsAndCurrentDocument(null, null);
-        }
-    }
-
-    public static class DaFileChooser {
-
-        private final FileChooser fileChooser = new FileChooser();
-
-        /**
-         * Shows a new file open dialog in which multiple files can be selected.
-         * The method doesn't return until the displayed open dialog is dismissed.
-         * The return value specifies the files chosen by the user or {@code null}
-         * if no selection has been made. If the owner window for the file dialog is
-         * set, input to all windows in the dialog's owner chain is blocked while
-         * the file dialog is being shown.
-         * <p>
-         * The returned list is unmodifiable and will throw
-         * {@code UnsupportedOperationException} on each modification attempt.
-         *
-         * @param anOwnerWindow the owner window of the displayed file dialog
-         * @return the selected files or {@code null} if no file has been selected
-         */
-        public List<File> showOpenMultipleDialog(final Window anOwnerWindow) {
-
-            return fileChooser.showOpenMultipleDialog(anOwnerWindow);
-        }
-    }
-
-    public static class DaDirectoryChooser {
-
-        private final DirectoryChooser directoryChooser = new DirectoryChooser();
-
-        /**
-         * Shows a new directory selection dialog. The method doesn't return until
-         * the displayed dialog is dismissed. The return value specifies the
-         * directory chosen by the user or {@code null} if no selection has been
-         * made. If the owner window for the directory selection dialog is set,
-         * input to all windows in the dialog's owner chain is blocked while the
-         * dialog is being shown.
-         *
-         * @param anOwnerWindow the owner window of the displayed dialog
-         * @return the selected directory or {@code null} if no directory has been
-         *      selected
-         */
-        public File showDialog(final Window anOwnerWindow) {
-
-            return directoryChooser.showDialog(anOwnerWindow);
         }
     }
 

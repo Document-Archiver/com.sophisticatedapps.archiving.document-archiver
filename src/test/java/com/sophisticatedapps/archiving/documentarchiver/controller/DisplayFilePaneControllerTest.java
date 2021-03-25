@@ -28,6 +28,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -60,6 +61,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
+    @SuppressWarnings("unused")
     public void start(Stage aStage) throws IOException {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
@@ -132,6 +134,27 @@ class DisplayFilePaneControllerTest extends BaseTest {
 
             assertEquals("Sorry - audio not supported.", ((Label)tmpNode).getText());
         }
+    }
+
+    @Test
+    void testPaneRemovalCleanup() {
+
+        DisplayFilePaneController.DisplayAudioNodeAssembler tmpDisplayAudioNodeAssembler =
+                new DisplayFilePaneController.DisplayAudioNodeAssembler();
+
+        // Mock a MediaPlayer and set it to a Pane
+        MediaPlayer tmpMockedMediaPlayer = Mockito.mock(MediaPlayer.class);
+        when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PLAYING);
+
+        Region tmpPane = tmpDisplayAudioNodeAssembler.assemble(TEST_MP3_FILE, 250, 250);
+        tmpPane.setUserData(tmpMockedMediaPlayer);
+
+        // Set and remove Pane to and from a parent Pane
+        Pane tmpParentPane = new Pane(tmpPane);
+        tmpParentPane.getChildren().remove(tmpPane);
+
+        // "stop" should have been called.
+        verify(tmpMockedMediaPlayer, Mockito.times(1)).stop();
     }
 
     @Test

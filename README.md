@@ -88,7 +88,7 @@ cd target/
 ```
 **Startup (example - version may vary)**
 ```
-java -jar document-archiver-1.1.0-SNAPSHOT.jar
+java -jar document-archiver-1.1.0-SNAPSHOT-with-dependencies.jar
 ```
 
 ## Quick Start

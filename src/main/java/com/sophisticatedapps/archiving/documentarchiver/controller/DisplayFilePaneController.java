@@ -45,25 +45,33 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Map;
 
 public class DisplayFilePaneController extends BaseController {
 
-    private static final Map<FileTypeEnum, Class<? extends DisplayFilePaneController.DisplayFileNodeAssembler>>
+    private static final Map<FileTypeEnum, Class<? extends DisplayFileNodeAssembler>>
             NODE_ASSEMBLER_BY_FILETYPE;
 
     static {
 
-        NODE_ASSEMBLER_BY_FILETYPE = Map.of(FileTypeEnum.PDF, DisplayPDFNodeAssembler.class,
-                FileTypeEnum.TXT, DisplayTextNodeAssembler.class,
-                FileTypeEnum.JPG, DisplayImageNodeAssembler.class,
-                FileTypeEnum.PNG, DisplayImageNodeAssembler.class,
-                FileTypeEnum.GIF, DisplayImageNodeAssembler.class,
-                FileTypeEnum.HEIC, DisplayUnsupportedFiletypeNodeAssembler.class,
-                FileTypeEnum.XML, DisplayTextNodeAssembler.class,
-                FileTypeEnum.DOC, DisplayUnsupportedFiletypeNodeAssembler.class,
-                FileTypeEnum.MP3, DisplayAudioNodeAssembler.class,
-                FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
+        Map<FileTypeEnum, Class<? extends DisplayFileNodeAssembler>> tmpAssemblerMap =
+                new EnumMap<>(FileTypeEnum.class);
+        tmpAssemblerMap.put(FileTypeEnum.PDF, DisplayPDFNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.TXT, DisplayTextNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.JPG, DisplayImageNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.PNG, DisplayImageNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.GIF, DisplayImageNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.HEIC, DisplayUnsupportedFiletypeNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.XML, DisplayTextNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.DOC, DisplayUnsupportedFiletypeNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.MP3, DisplayAudioNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.M4A, DisplayAudioNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.WAV, DisplayAudioNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
+
+        NODE_ASSEMBLER_BY_FILETYPE = Collections.unmodifiableMap(tmpAssemblerMap);
     }
 
     @FXML
@@ -213,6 +221,16 @@ public class DisplayFilePaneController extends BaseController {
                 // Audio not supported.
                 tmpStackPane.getChildren().add(new Label("Sorry - audio not supported."));
             }
+
+            // Listener for when the pane is "closed" (aNewParent == null)
+            tmpStackPane.parentProperty().addListener((anObs, anOldParent, aNewParent) -> {
+                if (aNewParent == null) {
+                    MediaPlayer tmpMediaPlayer = (MediaPlayer)tmpStackPane.getUserData();
+                    if((tmpMediaPlayer != null) && (tmpMediaPlayer.getStatus() == MediaPlayer.Status.PLAYING)) {
+                        tmpMediaPlayer.stop();
+                    }
+                }
+            });
 
             return tmpStackPane;
         }
