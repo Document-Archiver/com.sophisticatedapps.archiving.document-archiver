@@ -27,9 +27,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
@@ -39,13 +40,15 @@ import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -123,16 +126,17 @@ class DisplayFilePaneControllerTest extends BaseTest {
                 .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
 
         // Now there should be a "play" Button or a message on the assembled pane.
-        StackPane tmpPane = (StackPane)tmpDisplayPaneChildren.get(0);
-        Node tmpNode = tmpPane.getChildren().get(0);
+        VBox tmpMediaTypePane = (VBox)tmpDisplayPaneChildren.get(0);
+        ObservableList<Node> tmpChildNodeList = tmpMediaTypePane.getChildren();
+        Node tmpLastNode = tmpChildNodeList.get(tmpChildNodeList.size() - 1);
 
-        if (tmpNode instanceof Button) {
+        if (tmpLastNode instanceof HBox) {
 
-            assertEquals("Play", ((Button)tmpNode).getText());
+            assertEquals("Play", ((Button)((HBox)tmpLastNode).getChildren().get(0)).getText());
         }
         else {
 
-            assertEquals("Sorry - audio not supported.", ((Label)tmpNode).getText());
+            assertEquals("Sorry - media not supported.", ((Label)tmpLastNode).getText());
         }
     }
 
@@ -146,7 +150,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
         MediaPlayer tmpMockedMediaPlayer = Mockito.mock(MediaPlayer.class);
         when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PLAYING);
 
-        Region tmpPane = tmpDisplayAudioNodeAssembler.assemble(TEST_MP3_FILE, 250, 250);
+        Region tmpPane = tmpDisplayAudioNodeAssembler.assemble(TEST_MP3_FILE, null, 250, 250);
         tmpPane.setUserData(tmpMockedMediaPlayer);
 
         // Set and remove Pane to and from a parent Pane
@@ -158,31 +162,54 @@ class DisplayFilePaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testDisplayAudioNodeAssemblerPlayStopButton() {
+    void testDisplayAudioNodeAssemblerSetupMediaView() throws IOException, URISyntaxException {
+
+        FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioPane.fxml"));
+        VBox tmpMediaTypeAudioPane = tmpLoader.load();
+        MediaTypeAudioPaneController tmpMediaTypeAudioPaneController = tmpLoader.getController();
+        tmpMediaTypeAudioPaneController.rampUp(displayFilePaneController.stage);
 
         DisplayFilePaneController.DisplayAudioNodeAssembler tmpDisplayAudioNodeAssembler =
                 new DisplayFilePaneController.DisplayAudioNodeAssembler();
 
-        // Mock a MediaPlayer and set it to a Pane
-        MediaPlayer tmpMockedMediaPlayer = Mockito.mock(MediaPlayer.class);
-        Pane tmpPane = new Pane();
-        tmpPane.setUserData(tmpMockedMediaPlayer);
+        tmpDisplayAudioNodeAssembler.setupMediaView(tmpMediaTypeAudioPaneController, tmpMediaTypeAudioPane,
+                TEST_MP3_FILE, 250, 250);
 
-        // Assemble button
-        Button tmpPlayStopButton = tmpDisplayAudioNodeAssembler.assemblePlayStopButton(tmpPane);
-        assertSame("Play", tmpPlayStopButton.getText());
+        // Different outcome on CI build (no media support -> (MediaPlayer == null))
+        MediaPlayer tmpMediaPlayer = tmpMediaTypeAudioPaneController.getMediaPlayer();
 
-        // Play
-        when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.STOPPED);
-        tmpPlayStopButton.fire();
-        verify(tmpMockedMediaPlayer, Mockito.times(1)).play();
-        assertEquals("Stop", tmpPlayStopButton.getText());
+        if (tmpMediaPlayer == null) {
 
-        // Stop
-        when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PLAYING);
-        tmpPlayStopButton.fire();
-        verify(tmpMockedMediaPlayer, Mockito.times(1)).stop();
-        assertEquals("Play", tmpPlayStopButton.getText());
+            assertEquals("Sorry - media not supported.", ((Label)tmpMediaTypeAudioPane.getChildren().get(2)).getText());
+        }
+        else {
+
+            File tmpFileFromMediaPlayer = new File(new URI(tmpMediaPlayer.getMedia().getSource()));
+            assertEquals(TEST_MP3_FILE, tmpFileFromMediaPlayer);
+        }
+    }
+
+    @Test
+    void testDisplayVideoNodeAssemblerSetupMediaView_with_exception() throws IOException {
+
+        FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioVideoPane.fxml"));
+        VBox tmpMediaTypeAudioVideoPane = tmpLoader.load();
+        MediaTypeAudioVideoPaneController tmpMediaTypeAudioVideoPaneController = tmpLoader.getController();
+        tmpMediaTypeAudioVideoPaneController.rampUp(displayFilePaneController.stage);
+
+        DisplayFilePaneController.DisplayVideoNodeAssembler tmpDisplayVideoNodeAssembler =
+                new DisplayFilePaneController.DisplayVideoNodeAssembler();
+
+        // We give an inappropriate file
+        tmpDisplayVideoNodeAssembler.setupMediaView(tmpMediaTypeAudioVideoPaneController, tmpMediaTypeAudioVideoPane,
+                TEST_TEXT_FILE, 250, 250);
+
+        // Now there should be no media player set on the controller.
+        assertNull(tmpMediaTypeAudioVideoPaneController.getMediaPlayer());
+
+        // Pane should contain a warning message
+        assertEquals("Sorry - media not supported.",
+                ((Label)tmpMediaTypeAudioVideoPane.getChildren().get(2)).getText());
     }
 
 }

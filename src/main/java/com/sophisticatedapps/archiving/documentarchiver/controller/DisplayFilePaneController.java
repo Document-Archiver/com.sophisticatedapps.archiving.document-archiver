@@ -17,13 +17,14 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -32,6 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
@@ -39,10 +41,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import java.awt.*;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -69,6 +68,8 @@ public class DisplayFilePaneController extends BaseController {
         tmpAssemblerMap.put(FileTypeEnum.MP3, DisplayAudioNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.M4A, DisplayAudioNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.WAV, DisplayAudioNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.MP4, DisplayVideoNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.MOV, DisplayUnsupportedFiletypeNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
 
         NODE_ASSEMBLER_BY_FILETYPE = Collections.unmodifiableMap(tmpAssemblerMap);
@@ -100,7 +101,7 @@ public class DisplayFilePaneController extends BaseController {
                 Class<? extends DisplayFileNodeAssembler> tmpFileNodeAssemblerClass =
                         NODE_ASSEMBLER_BY_FILETYPE.get(FileUtil.getFiletype(aNewCurrentDocument));
                 Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance()
-                        .assemble(aNewCurrentDocument, displayFilePane.getPrefWidth(),
+                        .assemble(aNewCurrentDocument, stage, displayFilePane.getPrefWidth(),
                                 (displayFilePane.getPrefHeight() - 50));
 
                 Platform.runLater(() -> displayFilePane.getChildren().setAll(tmpFileDisplayNode));
@@ -118,13 +119,13 @@ public class DisplayFilePaneController extends BaseController {
 
     private interface DisplayFileNodeAssembler {
 
-        Region assemble(File aFile, double aPrefWidth, double aPrefHeight);
+        Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight);
     }
 
     protected static class DisplayUnsupportedFiletypeNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
             try {
                 Desktop.getDesktop().open(aFile);
@@ -150,7 +151,7 @@ public class DisplayFilePaneController extends BaseController {
         }
 
         @Override
-        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
             try {
 
@@ -170,7 +171,7 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayImageNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 
@@ -200,68 +201,74 @@ public class DisplayFilePaneController extends BaseController {
 
     protected static class DisplayAudioNodeAssembler implements DisplayFileNodeAssembler {
 
-        private static final String BUTTON_TEXT_PLAY = "Play";
-        private static final String BUTTON_TEXT_STOP = "Stop";
-
         @Override
-        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
-
-            StackPane tmpStackPane = new StackPane();
-            tmpStackPane.setPrefWidth(aPrefWidth);
-            tmpStackPane.setPrefHeight(aPrefHeight);
-            tmpStackPane.setAlignment(Pos.CENTER);
+        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
             try {
 
-                tmpStackPane.setUserData(new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString())));
-                tmpStackPane.getChildren().add(assemblePlayStopButton(tmpStackPane));
+                FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioPane.fxml"));
+                VBox tmpMediaTypeAudioPane = tmpLoader.load();
+                MediaTypeAudioPaneController tmpMediaTypeAudioPaneController = tmpLoader.getController();
+                tmpMediaTypeAudioPaneController.rampUp(aStage);
+
+                setupMediaView(tmpMediaTypeAudioPaneController, tmpMediaTypeAudioPane, aFile, aPrefWidth, aPrefHeight);
+
+                return tmpMediaTypeAudioPane;
+            }
+            catch (IOException e) {
+
+                throw (new RuntimeException("Could not load MediaTypeAudioPane: " + e.getMessage()));
+            }
+        }
+
+        protected void setupMediaView(MediaTypeAudioPaneController aController, VBox aMediaTypePane, File aFile,
+                double aPrefWidth, double aPrefHeight) {
+
+            aMediaTypePane.setPrefWidth(aPrefWidth);
+            aMediaTypePane.setPrefHeight(aPrefHeight);
+            aMediaTypePane.setAlignment(Pos.CENTER);
+
+            try {
+
+                MediaPlayer tmpMediaPlayer = new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString()));
+                aController.setupMediaView(tmpMediaPlayer, aPrefWidth);
             }
             catch (MediaException e) {
 
-                // Audio not supported.
-                tmpStackPane.getChildren().add(new Label("Sorry - audio not supported."));
+                // Media not supported.
+                aMediaTypePane.getChildren().add(new Label("Sorry - media not supported."));
             }
-
-            // Listener for when the pane is "closed" (aNewParent == null)
-            tmpStackPane.parentProperty().addListener((anObs, anOldParent, aNewParent) -> {
-                if (aNewParent == null) {
-                    MediaPlayer tmpMediaPlayer = (MediaPlayer)tmpStackPane.getUserData();
-                    if((tmpMediaPlayer != null) && (tmpMediaPlayer.getStatus() == MediaPlayer.Status.PLAYING)) {
-                        tmpMediaPlayer.stop();
-                    }
-                }
-            });
-
-            return tmpStackPane;
         }
+    }
 
-        protected Button assemblePlayStopButton(Pane aParentPane) {
+    protected static class DisplayVideoNodeAssembler extends DisplayAudioNodeAssembler {
 
-            Button tmpPlayAudioButton = new Button(BUTTON_TEXT_PLAY);
-            tmpPlayAudioButton.setOnAction(anEvent -> {
+        @Override
+        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
-                MediaPlayer tmpMediaPlayer = (MediaPlayer)aParentPane.getUserData();
+            try {
 
-                if(tmpMediaPlayer.getStatus() != MediaPlayer.Status.PLAYING){
+                FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioVideoPane.fxml"));
+                VBox tmpMediaTypeAudioVideoPane = tmpLoader.load();
+                MediaTypeAudioVideoPaneController tmpMediaTypeAudioVideoPaneController = tmpLoader.getController();
+                tmpMediaTypeAudioVideoPaneController.rampUp(aStage);
 
-                    tmpMediaPlayer.play();
-                    ((Button)anEvent.getSource()).setText(BUTTON_TEXT_STOP);
-                }
-                else {
+                setupMediaView(tmpMediaTypeAudioVideoPaneController, tmpMediaTypeAudioVideoPane, aFile, aPrefWidth,
+                        aPrefHeight);
 
-                    tmpMediaPlayer.stop();
-                    ((Button)anEvent.getSource()).setText(BUTTON_TEXT_PLAY);
-                }
-            });
+                return tmpMediaTypeAudioVideoPane;
+            }
+            catch (IOException e) {
 
-            return tmpPlayAudioButton;
+                throw (new RuntimeException("Could not load MediaTypeAudioVideoPane: " + e.getMessage()));
+            }
         }
     }
 
     protected static class DisplayTextNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 

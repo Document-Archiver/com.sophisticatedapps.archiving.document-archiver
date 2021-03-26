@@ -51,15 +51,15 @@ class FileTypeEnumTest {
     @Test
     void byFileExtension_unsupported_with_return_unsupported_type() {
 
-        assertEquals(FileTypeEnum.UNSUPPORTED, FileTypeEnum.byFileExtension("mov", true));
+        assertEquals(FileTypeEnum.UNSUPPORTED, FileTypeEnum.byFileExtension("tor", true));
     }
 
     @Test
     void byFileExtension_unsupported_with_exception() {
 
         Throwable tmpException = assertThrows(IllegalArgumentException.class, () ->
-                FileTypeEnum.byFileExtension("mov", false));
-        assertEquals("No FileTypeEnum for file extension: mov", tmpException.getMessage());
+                FileTypeEnum.byFileExtension("tor", false));
+        assertEquals("No FileTypeEnum for file extension: tor", tmpException.getMessage());
     }
 
 }

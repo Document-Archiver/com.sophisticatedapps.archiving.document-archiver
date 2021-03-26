@@ -34,6 +34,8 @@ public enum FileTypeEnum {
     MP3(FileTypeGroupEnum.AUDIO, false, "mp3"),
     M4A(FileTypeGroupEnum.AUDIO, false, "m4a"),
     WAV(FileTypeGroupEnum.AUDIO, false, "wav", "wave"),
+    MP4(FileTypeGroupEnum.VIDEOS, false, "mp4"),
+    MOV(FileTypeGroupEnum.VIDEOS, false, "mov"),
     UNSUPPORTED(FileTypeGroupEnum.MISC, false);
 
     private static final Map<String, FileTypeEnum> LOOKUP = new HashMap<>();
