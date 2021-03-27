@@ -53,7 +53,7 @@ class ChooseFilesOrDirectoryPaneTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         chooseFilesOrDirectoryPane = (VBox)FXMLUtil.loadAndRampUpRegion(
-                "view/ChooseFilesOrDirectoryPane.fxml", aStage);
+                "view/ChooseFilesOrDirectoryPane.fxml", aStage).getRegion();
 
         aStage.setScene(new Scene(chooseFilesOrDirectoryPane));
         aStage.show();

@@ -16,12 +16,13 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.application.HostServices;
-import javafx.fxml.FXMLLoader;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.control.MenuBar;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -33,11 +34,11 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -56,16 +57,14 @@ class MenuBarControllerTest extends BaseTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/MenuBar.fxml"));
-        //menuBar =
-        loader.load();
-        menuBarController = loader.getController();
-        menuBarController.rampUp(aStage);
+        FXMLUtil.ControllerRegionPair<MenuBarController,MenuBar> tmpMenuBarControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/MenuBar.fxml", aStage);
+        menuBarController = tmpMenuBarControllerRegionPair.getController();
     }
 
     @AfterEach
@@ -81,7 +80,15 @@ class MenuBarControllerTest extends BaseTest {
     void handleAboutMenuItemAction() throws IllegalAccessException {
 
         Alert tmpMockedAboutAlert = Mockito.mock(Alert.class);
-        FieldUtils.writeField(menuBarController, "aboutAlert", tmpMockedAboutAlert, true);
+
+        MenuBarController.AlertProvider tmpMockedAlertProvider = new MenuBarController.AlertProvider() {
+            @Override
+            public Alert provideAboutAlert() {
+                return tmpMockedAboutAlert;
+            }
+        };
+
+        FieldUtils.writeField(menuBarController, "alertProvider", tmpMockedAlertProvider, true);
 
         menuBarController.handleAboutMenuItemAction();
 
@@ -128,6 +135,21 @@ class MenuBarControllerTest extends BaseTest {
         menuBarController.handleHelpMenuItemAction();
 
         verify(tmpMockedHostServices, Mockito.times(1)).showDocument(any(String.class));
+    }
+
+    @Test
+    void testAlertProvider() {
+
+        MenuBarController.AlertProvider tmpAlertProvider = new MenuBarController.AlertProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.provideAboutAlert()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertTrue(tmpAlert.getContentText().startsWith("Copyright"));
     }
 
 }

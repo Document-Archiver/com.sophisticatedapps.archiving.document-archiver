@@ -20,13 +20,14 @@ import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
-import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -37,6 +38,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
@@ -44,14 +46,16 @@ import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.List;
+import java.util.*;
 
 public class DisplayFilePaneController extends BaseController {
 
     private static final Map<FileTypeEnum, Class<? extends DisplayFileNodeAssembler>>
             NODE_ASSEMBLER_BY_FILETYPE;
+
+    private final List<ChangeListener<Number>> paneWidthPropertyListenersList = new ArrayList<>();
+    private final List<ChangeListener<Number>> paneHeightPropertyListenersList = new ArrayList<>();
 
     static {
 
@@ -84,7 +88,58 @@ public class DisplayFilePaneController extends BaseController {
         super.rampUp(aStage);
 
         // Add listener
+        final ChangeListener<Number> tmpPaneWidthPropertyListener =
+                ((anObservable, anOldValue, aNewValue) -> setWidths());
+        paneWidthPropertyListenersList.add(tmpPaneWidthPropertyListener);
+        displayFilePane.widthProperty().addListener(tmpPaneWidthPropertyListener);
+
+        final ChangeListener<Number> tmpPaneHeightPropertyListener =
+                ((anObservable, anOldValue, aNewValue) -> setHeights());
+        paneHeightPropertyListenersList.add(tmpPaneHeightPropertyListener);
+        displayFilePane.heightProperty().addListener(tmpPaneHeightPropertyListener);
+
         addCurrentDocumentChangedListener(aChange -> handleCurrentDocumentChanged((File)aChange.getValueAdded()));
+    }
+
+    @Override
+    public void rampDown() {
+
+        super.rampDown();
+
+        // Remove width and height listeners
+        ReadOnlyDoubleProperty tmpPaneWidthProperty = displayFilePane.widthProperty();
+        for (ChangeListener<Number> tmpCurrentListener : paneWidthPropertyListenersList) {
+            tmpPaneWidthProperty.removeListener(tmpCurrentListener);
+        }
+        paneWidthPropertyListenersList.clear();
+
+        ReadOnlyDoubleProperty tmpPaneHeightProperty = displayFilePane.heightProperty();
+        for (ChangeListener<Number> tmpCurrentListener : paneHeightPropertyListenersList) {
+            tmpPaneHeightProperty.removeListener(tmpCurrentListener);
+        }
+        paneHeightPropertyListenersList.clear();
+    }
+
+    private void setWidths() {
+
+        ObservableList<Node> tmpDisplayFilePaneChildren = displayFilePane.getChildren();
+
+        if (!tmpDisplayFilePaneChildren.isEmpty()) {
+
+            Region tmpMediaRegion = (Region)tmpDisplayFilePaneChildren.get(0);
+            tmpMediaRegion.setPrefWidth(displayFilePane.getPrefWidth());
+        }
+    }
+
+    private void setHeights() {
+
+        ObservableList<Node> tmpDisplayFilePaneChildren = displayFilePane.getChildren();
+
+        if (!tmpDisplayFilePaneChildren.isEmpty()) {
+
+            Region tmpMediaRegion = (Region)tmpDisplayFilePaneChildren.get(0);
+            tmpMediaRegion.setPrefHeight(displayFilePane.getPrefHeight());
+        }
     }
 
     /**
@@ -102,9 +157,9 @@ public class DisplayFilePaneController extends BaseController {
                         NODE_ASSEMBLER_BY_FILETYPE.get(FileUtil.getFiletype(aNewCurrentDocument));
                 Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance()
                         .assemble(aNewCurrentDocument, stage, displayFilePane.getPrefWidth(),
-                                (displayFilePane.getPrefHeight() - 50));
+                                displayFilePane.getPrefHeight());
 
-                Platform.runLater(() -> displayFilePane.getChildren().setAll(tmpFileDisplayNode));
+                displayFilePane.getChildren().setAll(tmpFileDisplayNode);
             }
             catch (Exception e) {
 
@@ -135,6 +190,8 @@ public class DisplayFilePaneController extends BaseController {
             }
 
             StackPane tmpStackPane = new StackPane();
+            tmpStackPane.setPrefWidth(aPrefWidth);
+            tmpStackPane.setPrefHeight(aPrefHeight);
             tmpStackPane.getChildren().add(new Label("Unsupported Filetype. Opened external viewer."));
 
             return tmpStackPane;
@@ -159,7 +216,14 @@ public class DisplayFilePaneController extends BaseController {
                 WebView tmpWebView = (WebView)PDF_VIEWER.toNode();
                 tmpWebView.setPrefWidth(aPrefWidth);
                 tmpWebView.setPrefHeight(aPrefHeight);
-                return (new Pane(tmpWebView));
+
+                Pane tmpPane = new Pane(tmpWebView);
+                tmpPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                        tmpWebView.setPrefWidth(aNewValue.doubleValue()));
+                tmpPane.heightProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                        tmpWebView.setPrefHeight(aNewValue.doubleValue()));
+
+                return (tmpPane);
             }
             catch (Exception e) {
 
@@ -176,7 +240,7 @@ public class DisplayFilePaneController extends BaseController {
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 
                 // Creating the image object
-                javafx.scene.image.Image tmpImage = new Image(tmpInputStream);
+                Image tmpImage = new Image(tmpInputStream);
 
                 // Creating the image view
                 ImageView tmpImageView = new ImageView();
@@ -185,12 +249,16 @@ public class DisplayFilePaneController extends BaseController {
                 tmpImageView.setImage(tmpImage);
 
                 //Setting the image view parameters
-                tmpImageView.setX(10);
+                tmpImageView.setX(0);
                 tmpImageView.setY(10);
                 tmpImageView.setFitWidth(aPrefWidth);
                 tmpImageView.setPreserveRatio(true);
 
-                return (new ScrollPane(tmpImageView));
+                final Pane tmpPane = new Pane(tmpImageView);
+                tmpPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                        tmpImageView.setFitWidth(aNewValue.doubleValue()));
+
+                return (tmpPane);
             }
             catch (Exception e) {
 
@@ -228,6 +296,8 @@ public class DisplayFilePaneController extends BaseController {
             aMediaTypePane.setPrefHeight(aPrefHeight);
             aMediaTypePane.setAlignment(Pos.CENTER);
 
+            setWidthChangeListener(aController, aMediaTypePane);
+
             try {
 
                 MediaPlayer tmpMediaPlayer = new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString()));
@@ -238,6 +308,12 @@ public class DisplayFilePaneController extends BaseController {
                 // Media not supported.
                 aMediaTypePane.getChildren().add(new Label("Sorry - media not supported."));
             }
+        }
+
+        protected void setWidthChangeListener(MediaTypeAudioPaneController aController, Pane aMediaTypePane) {
+
+            aMediaTypePane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                ((ImageView)aController.getMediaVisualization()).setFitWidth(aNewValue.doubleValue() * 0.75));
         }
     }
 
@@ -262,6 +338,13 @@ public class DisplayFilePaneController extends BaseController {
 
                 throw (new RuntimeException("Could not load MediaTypeAudioVideoPane: " + e.getMessage()));
             }
+        }
+
+        @Override
+        protected void setWidthChangeListener(MediaTypeAudioPaneController aController, Pane aMediaTypePane) {
+
+            aMediaTypePane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                    ((MediaView)aController.getMediaVisualization()).setFitWidth(aNewValue.doubleValue()));
         }
     }
 

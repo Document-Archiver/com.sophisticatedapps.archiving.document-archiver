@@ -84,8 +84,8 @@ public class App extends Application {
         Rectangle2D tmpBounds = Screen.getPrimary().getVisualBounds();
         aPrimaryStage.setX(tmpBounds.getMinX());
         aPrimaryStage.setY(tmpBounds.getMinY());
-        aPrimaryStage.setWidth(tmpBounds.getWidth());
-        aPrimaryStage.setHeight(tmpBounds.getHeight());
+        aPrimaryStage.setWidth(tmpBounds.getWidth()); //aPrimaryStage.setWidth(1000);
+        aPrimaryStage.setHeight(tmpBounds.getHeight()); //aPrimaryStage.setHeight(690);
 
         // Set stage properties
         ObservableMap<Object, Object> tmpStageProperties = aPrimaryStage.getProperties();
@@ -93,7 +93,7 @@ public class App extends Application {
 
         // Create root pane
         BorderPane tmpRootPane =
-                (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", aPrimaryStage);
+                (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", aPrimaryStage).getRegion();
 
         // Set files from args to stage properties
         if ((filesFromArgs != null) && (!filesFromArgs.isEmpty())) {

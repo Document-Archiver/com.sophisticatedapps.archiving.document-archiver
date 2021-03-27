@@ -35,13 +35,30 @@ import java.util.Properties;
 
 public class MenuBarController extends BaseController {
 
-    private static Alert aboutAlert = new Alert(Alert.AlertType.NONE,
-            "Copyright 2021 by Stephan Sann\n\nApplication icon made by Freepik (https://www.flaticon.com/free-icon/archives_170393)", ButtonType.CLOSE);
+    private AlertProvider alertProvider;
+
+    /**
+     * Default constructor.
+     */
+    @SuppressWarnings("unused")
+    public MenuBarController() {
+
+        this(new AlertProvider());
+    }
+
+    /**
+     * Alternative constructor which allows to pass a custom AlertProvider.
+     * @param   anAlertProvider Custom AlertProvider
+     */
+    public MenuBarController(AlertProvider anAlertProvider) {
+
+        this.alertProvider = anAlertProvider;
+    }
 
     @FXML
     protected void handleAboutMenuItemAction() {
 
-        aboutAlert.showAndWait();
+        this.alertProvider.provideAboutAlert().showAndWait();
     }
 
     @FXML
@@ -116,6 +133,15 @@ public class MenuBarController extends BaseController {
         HostServices tmpHostServices =
                 (HostServices)stage.getProperties().get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY);
         tmpHostServices.showDocument(GlobalConstants.WIKI_URL);
+    }
+
+    protected static class AlertProvider {
+
+        public Alert provideAboutAlert() {
+
+            return (new Alert(Alert.AlertType.NONE,
+                    "Copyright 2021 by Stephan Sann\n\nApplication icons made by Freepik (https://www.flaticon.com/free-icon/archives_170393)", ButtonType.CLOSE));
+        }
     }
 
 }

@@ -33,6 +33,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.imaging.Imaging;
@@ -65,6 +66,9 @@ public class InfoPaneController extends BaseController {
         // Just the FileTypes which doesn't use "GenericFileTimeAgent.class" -> we are using 'getOrDefault' later.
         TIME_AGENTS_BY_FILETYPE = Map.of(FileTypeEnum.JPG, JPGFileTimeAgent.class);
     }
+
+    @FXML
+    private VBox infoPane;
 
     @FXML
     private DatePicker datePicker;
@@ -106,6 +110,9 @@ public class InfoPaneController extends BaseController {
         quickDescriptionWordsComboBox.getItems().addAll(GlobalConstants.QUICK_DESCRIPTION_WORDS.split(","));
 
         // Add listener
+        infoPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) -> setWidths());
+        infoPane.heightProperty().addListener((anObservable, anOldValue, aNewValue) -> setHeights());
+
         addCurrentDocumentChangedListener(aChange ->
                 handleCurrentDocumentChanged((File)aChange.getValueAdded()));
 
@@ -144,6 +151,18 @@ public class InfoPaneController extends BaseController {
             tmpUticbSelectedProperty.removeListener(tmpCurrentListener);
         }
         utilizeTimeInformationCheckBoxSelectedPropertyListenersList.clear();
+    }
+
+    private void setWidths() {
+
+        quickDescriptionWordsComboBox.setPrefWidth(infoPane.getPrefWidth());
+    }
+
+    private void setHeights() {
+
+        double tmpTagsListViewsPrefHeight = (infoPane.getPrefHeight() - 330);
+        existingTagsListView.setPrefHeight(tmpTagsListViewsPrefHeight);
+        selectedTagsListView.setPrefHeight(tmpTagsListViewsPrefHeight);
     }
 
     /**

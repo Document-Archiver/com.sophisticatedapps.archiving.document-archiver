@@ -19,6 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver.view;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
@@ -56,7 +57,7 @@ class DocumentsPaneTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        documentsPane = (VBox)FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", stage);
+        documentsPane = (VBox)FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", stage).getRegion();
 
         aStage.setScene(new Scene(documentsPane));
         aStage.show();
@@ -76,8 +77,11 @@ class DocumentsPaneTest extends BaseTest {
     @Test
     void testDocumentsListView() {
 
-        stage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, ALL_DOCUMENTS_LIST);
-        stage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, TEST_JPG_FILE);
+        Platform.runLater(() -> {
+
+            stage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, ALL_DOCUMENTS_LIST);
+            stage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, TEST_JPG_FILE);
+        });
 
         WaitForAsyncUtils.waitForFxEvents();
 

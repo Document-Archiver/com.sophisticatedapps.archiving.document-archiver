@@ -16,10 +16,9 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
-import javafx.fxml.FXMLLoader;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -31,7 +30,6 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,15 +48,15 @@ class DocumentsPaneControllerTest extends BaseTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/DocumentsPane.fxml"));
-        documentsPane = loader.load();
-        documentsPaneController = loader.getController();
-        documentsPaneController.rampUp(aStage);
+        FXMLUtil.ControllerRegionPair<DocumentsPaneController,Pane> tmpDocumentsPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", aStage);
+        documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
+        documentsPaneController = tmpDocumentsPaneControllerRegionPair.getController();
     }
 
     @AfterEach

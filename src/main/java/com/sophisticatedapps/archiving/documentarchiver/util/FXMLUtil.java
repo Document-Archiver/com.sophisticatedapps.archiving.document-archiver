@@ -19,7 +19,6 @@ package com.sophisticatedapps.archiving.documentarchiver.util;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.controller.BaseController;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -37,27 +36,53 @@ public class FXMLUtil {
      *
      * @param   aFxmlResource   FXML-resource to load.
      * @param   aStage          Stage to set to the controller.
-     * @return  A Region object.
+     * @return  A ControllerRegionPair object.
      */
-    public static Region loadAndRampUpRegion(String aFxmlResource, Stage aStage) {
+    public static <C extends BaseController,R> ControllerRegionPair<C,R> loadAndRampUpRegion(String aFxmlResource, Stage aStage) {
 
         try {
 
             FXMLLoader tmpRegionLoader = new FXMLLoader(App.class.getResource(aFxmlResource));
 
-            Region tmpRegion = tmpRegionLoader.load();
-            BaseController tmpBaseController = tmpRegionLoader.getController();
+            R tmpRegion = tmpRegionLoader.load();
+            C tmpBaseController = tmpRegionLoader.getController();
 
             if (tmpBaseController != null) {
 
                 tmpBaseController.rampUp(aStage);
             }
 
-            return tmpRegion;
+            return (new ControllerRegionPair<>(tmpBaseController, tmpRegion));
         }
         catch (IOException | IllegalStateException e) {
 
             throw (new RuntimeException("Couldn't load region '" + aFxmlResource + "': " + e.getMessage()));
+        }
+    }
+
+    public static class ControllerRegionPair<C,R> {
+
+        private final C controller;
+        private final R region;
+
+        /**
+         * Constructor.
+         *
+         * @param   aController Controller to set.
+         * @param   aRegion     Region to set.
+         */
+        public ControllerRegionPair(C aController, R aRegion) {
+
+            this.controller = aController;
+            this.region = aRegion;
+        }
+
+        public C getController() {
+            return controller;
+        }
+
+        public R getRegion() {
+            return region;
         }
     }
 

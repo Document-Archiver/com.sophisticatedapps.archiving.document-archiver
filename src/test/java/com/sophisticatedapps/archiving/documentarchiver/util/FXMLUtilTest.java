@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import com.sophisticatedapps.archiving.documentarchiver.controller.BaseController;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import org.junit.jupiter.api.Test;
@@ -27,8 +28,10 @@ class FXMLUtilTest {
     @Test
     void testLoadAndRampUpRegion() {
 
-        StackPane tmpTestPane = (StackPane)FXMLUtil.loadAndRampUpRegion("view/TestPane.fxml", null);
+        FXMLUtil.ControllerRegionPair<BaseController,StackPane> tmpTestPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/TestPane.fxml", null);
 
+        StackPane tmpTestPane = tmpTestPaneControllerRegionPair.getRegion();
         assertNotNull(tmpTestPane);
         assertEquals(Pos.TOP_LEFT, tmpTestPane.getAlignment());
     }

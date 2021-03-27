@@ -19,12 +19,12 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -33,6 +33,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +43,7 @@ import org.testfx.framework.junit5.Start;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
@@ -65,15 +67,15 @@ class DisplayFilePaneControllerTest extends BaseTest {
      */
     @Start
     @SuppressWarnings("unused")
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/DisplayFilePane.fxml"));
-        displayFilePane = loader.load();
-        displayFilePaneController = loader.getController();
-        displayFilePaneController.rampUp(aStage);
+        FXMLUtil.ControllerRegionPair<DisplayFilePaneController,Pane> tmpDisplayFilePaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", aStage);
+        displayFilePane = tmpDisplayFilePaneControllerRegionPair.getRegion();
+        displayFilePaneController = tmpDisplayFilePaneControllerRegionPair.getController();
     }
 
     @AfterEach
@@ -83,6 +85,40 @@ class DisplayFilePaneControllerTest extends BaseTest {
 
         displayFilePane = null;
         displayFilePaneController = null;
+    }
+
+    @Test
+    void testSetWidths() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        displayFilePaneController.setNewCurrentDocument(TEST_TEXT_FILE);
+
+        // Wait until sub Panes are set.
+        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
+        await().atMost(10, TimeUnit.SECONDS)
+                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+
+        displayFilePane.setPrefWidth(999);
+        MethodUtils.invokeMethod(displayFilePaneController, true, "setWidths");
+
+        TextArea tmpTextArea = (TextArea)tmpDisplayPaneChildren.get(0);
+        assertEquals(999, tmpTextArea.getPrefWidth());
+    }
+
+    @Test
+    void testSetHeights() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+
+        displayFilePaneController.setNewCurrentDocument(TEST_TEXT_FILE);
+
+        // Wait until sub Panes are set.
+        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
+        await().atMost(10, TimeUnit.SECONDS)
+                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+
+        displayFilePane.setPrefHeight(555);
+        MethodUtils.invokeMethod(displayFilePaneController, true, "setHeights");
+
+        TextArea tmpTextArea = (TextArea)tmpDisplayPaneChildren.get(0);
+        assertEquals(555, tmpTextArea.getPrefHeight());
     }
 
     @Test
@@ -110,9 +146,9 @@ class DisplayFilePaneControllerTest extends BaseTest {
         await().atMost(10, TimeUnit.SECONDS)
                 .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
 
-        // Now there should be a ScrollView on our display file Pane.
-        ScrollPane tmpWrapperPane = (ScrollPane)tmpDisplayPaneChildren.get(0);
-        assertSame(ImageView.class, tmpWrapperPane.getContent().getClass());
+        // Now there should be a Pane on our display file Pane.
+        Pane tmpWrapperPane = (Pane)tmpDisplayPaneChildren.get(0);
+        assertSame(ImageView.class, tmpWrapperPane.getChildren().get(0).getClass());
     }
 
     @Test

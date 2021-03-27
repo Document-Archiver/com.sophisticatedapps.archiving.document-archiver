@@ -16,9 +16,8 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
-import javafx.fxml.FXMLLoader;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
@@ -31,8 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -51,15 +48,15 @@ class MediaTypeAudioPaneControllerTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioPane.fxml"));
-        mediaTypeAudioPane = tmpLoader.load();
-        mediaTypeAudioPaneController = tmpLoader.getController();
-        mediaTypeAudioPaneController.rampUp(aStage);
+        FXMLUtil.ControllerRegionPair<MediaTypeAudioPaneController,Pane> tmpMediaTypeAudioPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioPane.fxml", aStage);
+        mediaTypeAudioPane = tmpMediaTypeAudioPaneControllerRegionPair.getRegion();
+        mediaTypeAudioPaneController = tmpMediaTypeAudioPaneControllerRegionPair.getController();
     }
 
     @AfterEach

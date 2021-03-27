@@ -16,17 +16,17 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +39,7 @@ import org.testfx.util.WaitForAsyncUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -68,15 +69,15 @@ class InfoPaneControllerTest extends BaseTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/InfoPane.fxml"));
-        infoPane = loader.load();
-        infoPaneController = loader.getController();
-        infoPaneController.rampUp(aStage);
+        FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpInfoPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", aStage);
+        infoPane = tmpInfoPaneControllerRegionPair.getRegion();
+        infoPaneController = tmpInfoPaneControllerRegionPair.getController();
     }
 
     @AfterEach
@@ -86,6 +87,35 @@ class InfoPaneControllerTest extends BaseTest {
 
         infoPane = null;
         infoPaneController = null;
+    }
+
+    @Test
+    void testSetWidths() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        infoPane.setPrefWidth(222);
+        MethodUtils.invokeMethod(infoPaneController, true, "setWidths");
+
+        @SuppressWarnings("unchecked")
+        ComboBox<String> tmpComboBox = (ComboBox<String>)
+                FieldUtils.readField(infoPaneController, "quickDescriptionWordsComboBox", true);
+        assertEquals(222, tmpComboBox.getPrefWidth());
+    }
+
+    @Test
+    void testSetHeights() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        infoPane.setPrefHeight(1111);
+        MethodUtils.invokeMethod(infoPaneController, true, "setHeights");
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpExistingTagsListView = (ListView<String>)
+                FieldUtils.readField(infoPaneController, "existingTagsListView", true);
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)
+                FieldUtils.readField(infoPaneController, "selectedTagsListView", true);
+
+        assertEquals(781, tmpExistingTagsListView.getPrefHeight());
+        assertEquals(781, tmpSelectedTagsListView.getPrefHeight());
     }
 
     @Test

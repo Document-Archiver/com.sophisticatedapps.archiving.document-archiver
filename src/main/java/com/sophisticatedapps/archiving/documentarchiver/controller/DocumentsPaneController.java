@@ -20,12 +20,16 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.List;
 
 public class DocumentsPaneController extends BaseController {
+
+    @FXML
+    private VBox documentsPane;
 
     @FXML
     private ListView<File> documentsListView;
@@ -56,6 +60,8 @@ public class DocumentsPaneController extends BaseController {
         });
 
         // Add listeners
+        documentsPane.heightProperty().addListener((observable, oldValue, newValue) ->
+            documentsListView.setPrefHeight(documentsPane.getPrefHeight() - 50));
         addAllDocumentsChangedListener(aChange ->
                 handleAllDocumentsChanged((List<File>)aChange.getValueAdded()));
         addCurrentDocumentChangedListener(aChange ->

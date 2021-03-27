@@ -16,10 +16,10 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.layout.Pane;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -30,8 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
@@ -48,16 +46,16 @@ class MediaTypeAudioVideoPaneControllerTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioVideoPane.fxml"));
-        //mediaTypeAudioVideoPane =
-        tmpLoader.load();
-        mediaTypeAudioVideoPaneController = tmpLoader.getController();
-        mediaTypeAudioVideoPaneController.rampUp(aStage);
+        FXMLUtil.ControllerRegionPair<MediaTypeAudioVideoPaneController, Pane>
+                tmpMediaTypeAudioVideoPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioVideoPane.fxml", aStage);
+        //mediaTypeAudioVideoPane = tmpMediaTypeAudioVideoPaneControllerRegionPair.getRegion();
+        mediaTypeAudioVideoPaneController = tmpMediaTypeAudioVideoPaneControllerRegionPair.getController();
     }
 
     @AfterEach

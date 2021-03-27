@@ -11,22 +11,22 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.InfoPaneController">
+<VBox fx:id="infoPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.InfoPaneController">
    <children>
       <Label text="Please select date:" />
       <DatePicker fx:id="datePicker" />
       <CheckBox fx:id="utilizeTimeInformationCheckBox" mnemonicParsing="false" text="Utilize time information" />
       <TextField fx:id="timeInformationTextField" />
       <Label text="Please define description" />
-      <ComboBox fx:id="quickDescriptionWordsComboBox" prefWidth="150.0" promptText="Quick description words" />
+      <ComboBox fx:id="quickDescriptionWordsComboBox" promptText="Quick description words" />
       <TextField fx:id="descriptionTextField" />
       <Label text="Please select tags" />
       <TextField fx:id="tagsTextField" onKeyPressed="#handleTagsTextFieldKeyPressed" />
-      <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox>
          <children>
-            <ListView fx:id="existingTagsListView" minHeight="-Infinity" onKeyPressed="#handleExistingTagsListViewKeyPressed" onMouseClicked="#handleExistingTagsListViewClicked" prefHeight="300.0" />
+            <ListView fx:id="existingTagsListView" minHeight="-Infinity" onKeyPressed="#handleExistingTagsListViewKeyPressed" onMouseClicked="#handleExistingTagsListViewClicked" />
             <Label text="-&gt;" />
-            <ListView fx:id="selectedTagsListView" minHeight="-Infinity" onMouseClicked="#handleSelectedTagsListViewClicked" prefHeight="300.0" />
+            <ListView fx:id="selectedTagsListView" minHeight="-Infinity" onMouseClicked="#handleSelectedTagsListViewClicked" />
          </children>
       </HBox>
       <CheckBox fx:id="takeOverDescriptionAndTagsCheckBox" mnemonicParsing="false" text="Take over description and tags to next document" />

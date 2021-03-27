@@ -99,4 +99,4 @@ https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-ar
 
 Copyright 2021 by Stephan Sann
 
-Application icon made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")
+Application icons made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")

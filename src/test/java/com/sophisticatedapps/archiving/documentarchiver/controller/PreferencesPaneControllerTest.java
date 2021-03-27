@@ -16,12 +16,11 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
-import javafx.fxml.FXMLLoader;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -29,9 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.PreferencesPaneController".
@@ -39,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(ApplicationExtension.class)
 class PreferencesPaneControllerTest {
 
-    private VBox preferencesPane;
+    private Pane preferencesPane;
     private PreferencesPaneController preferencesPaneController;
 
     /**
@@ -48,15 +45,15 @@ class PreferencesPaneControllerTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/PreferencesPane.fxml"));
-        preferencesPane = loader.load();
-        preferencesPaneController = loader.getController();
-        preferencesPaneController.rampUp(aStage);
+        FXMLUtil.ControllerRegionPair<PreferencesPaneController,Pane> tmpPreferencesPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", aStage);
+        preferencesPane = tmpPreferencesPaneControllerRegionPair.getRegion();
+        preferencesPaneController = tmpPreferencesPaneControllerRegionPair.getController();
     }
 
     @AfterEach

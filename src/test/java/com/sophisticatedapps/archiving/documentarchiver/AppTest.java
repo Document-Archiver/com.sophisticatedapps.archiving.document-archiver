@@ -18,6 +18,8 @@ package com.sophisticatedapps.archiving.documentarchiver;
 
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoublePropertyBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -31,6 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.util.WaitForAsyncUtils;
@@ -183,6 +186,11 @@ class AppTest extends BaseTest {
         doAnswer(anInvocationOnMock -> {
             tmpPropertiesMap.put("theScene", anInvocationOnMock.getArgument(0)); return null;
         }).when(tmpMockedStage).setScene(any(Scene.class));
+
+        ReadOnlyDoubleProperty tmpMockedWidthProperty = Mockito.mock(ReadOnlyDoublePropertyBase.class);
+        ReadOnlyDoubleProperty tmpMockedHeightProperty = Mockito.mock(ReadOnlyDoublePropertyBase.class);
+        doReturn(tmpMockedWidthProperty).when(tmpMockedStage).widthProperty();
+        doReturn(tmpMockedHeightProperty).when(tmpMockedStage).heightProperty();
 
         // Start the App
         Platform.runLater(() -> (new App()).start(tmpMockedStage));
