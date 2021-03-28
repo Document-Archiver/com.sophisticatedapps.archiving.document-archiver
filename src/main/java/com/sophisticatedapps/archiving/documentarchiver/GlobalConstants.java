@@ -16,14 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
-
-import java.io.File;
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GlobalConstants {
 
@@ -48,32 +41,5 @@ public class GlobalConstants {
 
     public static final String WIKI_URL =
             "https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start";
-
-    public static final String PROPERTIES_FILE = "document-archiver.properties";
-    public static final File ARCHIVING_ROOT_FOLDER;
-    public static final String QUICK_DESCRIPTION_WORDS;
-
-    private static final Pattern HOME_DIR_PATTERN = Pattern.compile("^~(.*)$");
-
-    static {
-
-        try {
-
-            Properties tmpProperties = FileUtil.readProperties(PROPERTIES_FILE);
-
-            String tmpArchivingFolderPath = tmpProperties.getProperty("archiving.path");
-            Matcher tmpMatcher = HOME_DIR_PATTERN.matcher(tmpArchivingFolderPath);
-            if (tmpMatcher.find()) {
-                tmpArchivingFolderPath = System.getProperty("user.home").concat(tmpMatcher.group(1));
-            }
-            ARCHIVING_ROOT_FOLDER = new File(tmpArchivingFolderPath);
-
-            QUICK_DESCRIPTION_WORDS = tmpProperties.getProperty("quick.description.words");
-        }
-        catch (IOException e) {
-
-            throw (new RuntimeException("Properties could not be loaded: ".concat(e.getMessage())));
-        }
-    }
 
 }

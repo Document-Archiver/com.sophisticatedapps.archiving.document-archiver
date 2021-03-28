@@ -10,7 +10,7 @@
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
    <children>
-      <Label text="Documents" />
+      <Label text="%documents-pane.documents-label" />
       <ListView fx:id="documentsListView" onMouseClicked="#handleDocumentsListViewClicked" />
    </children>
 </VBox>

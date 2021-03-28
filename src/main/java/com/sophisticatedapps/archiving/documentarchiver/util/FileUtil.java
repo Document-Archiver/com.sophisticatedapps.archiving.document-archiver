@@ -16,25 +16,14 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
-import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
-import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Objects;
-import java.util.Properties;
 
 public class FileUtil {
-
-    private static File localPropertiesDirectory =
-            new File(System.getProperty("user.home").concat("/.documentarchiver"));
 
     /**
      * Private constructor.
@@ -72,109 +61,6 @@ public class FileUtil {
 
             throw (new RuntimeException("Could not create File object for '" + anArg + "': " + e.getMessage()));
         }
-    }
-
-    /**
-     * Read the given properties file and return the contained properties as object.
-     *
-     * @param   aFilename  Filename of the properties file
-     * @return  {@link Properties} object
-     * @throws  IOException in case there is a problem with reading the properties file.
-     */
-    public static Properties readProperties(String aFilename) throws IOException {
-
-        Properties tmpProperties = new Properties();
-
-        // Do we have an existing local properties directory?
-        File tmpLocalPropertiesDirectory = retrieveLocalPropertiesDirectory(false);
-
-        if (tmpLocalPropertiesDirectory.exists()) {
-
-            // Do we have a local properties file?
-            File tmpPropertiesFile = new File(tmpLocalPropertiesDirectory, aFilename);
-
-            if (tmpPropertiesFile.exists()) {
-
-                try (BufferedInputStream tmpInputStream =
-                             new BufferedInputStream(new FileInputStream(tmpPropertiesFile))) {
-
-                    tmpProperties.load(tmpInputStream);
-                    return tmpProperties;
-                }
-            }
-        }
-
-        try (BufferedInputStream tmpInputStream = new BufferedInputStream(Objects.requireNonNull(
-                Thread.currentThread().getContextClassLoader().getResourceAsStream(aFilename)))) {
-
-            tmpProperties.load(tmpInputStream);
-            return tmpProperties;
-        }
-    }
-
-    public static void writeProperties(String aFilename, Properties aProperties) throws IOException {
-
-        File tmpPropertiesFile = new File(retrieveLocalPropertiesDirectory(true), aFilename);
-
-        try (FileOutputStream tmpOutputStream = new FileOutputStream(tmpPropertiesFile)) {
-
-            aProperties.store(tmpOutputStream, null);
-        }
-    }
-
-    protected static File retrieveLocalPropertiesDirectory(boolean aCreateIfNotExisting) {
-
-        if ((!localPropertiesDirectory.exists()) && aCreateIfNotExisting) {
-
-            localPropertiesDirectory.mkdirs();
-        }
-
-        return localPropertiesDirectory;
-    }
-
-    public static void moveFileToArchive(File aFileToMove, DefinedFileProperties aDfp) throws IOException {
-
-        String tmpFileExtension = getFileExtension(aFileToMove);
-        FileTypeEnum tmpFileType = FileTypeEnum.byFileExtension(tmpFileExtension, true);
-
-        File tmpTargetDirectory =
-                DirectoryUtil.getArchivingFolder(tmpFileType.getFileTypeGroup(), aDfp.getDate().getYear());
-
-        if (!tmpTargetDirectory.exists() && (!tmpTargetDirectory.mkdirs())) {
-
-            throw (new IOException("Target folder could not be created."));
-        }
-
-        StringBuilder tmpFilename = new StringBuilder();
-
-        if (aDfp.isUtilizeTimeInformation()) {
-
-            LocalTime tmpLocalTime = LocalTime.from(
-                    GlobalConstants.ONLY_TIME_DATE_TIME_FORMATTER.parse(aDfp.getTimeInformation()));
-            LocalDateTime tmpLocalDateTime = LocalDateTime.of(aDfp.getDate(), tmpLocalTime);
-
-            tmpFilename.append(GlobalConstants.FILENAME_DATE_TIME_FORMATTER.format(tmpLocalDateTime));
-        }
-        else {
-
-            tmpFilename.append(GlobalConstants.FILENAME_ONLY_DATE_DATE_TIME_FORMATTER.format(aDfp.getDate()));
-        }
-
-        tmpFilename.append("--");
-        tmpFilename.append(StringUtil.retrieveFilenameSafeString(aDfp.getDescription()));
-        tmpFilename.append("__");
-        tmpFilename.append(String.join("_", aDfp.getTags()));
-        tmpFilename.append(".");
-        tmpFilename.append(tmpFileExtension);
-
-        File tmpNewFile = new File(tmpTargetDirectory, tmpFilename.toString());
-        if (tmpNewFile.exists()) {
-            throw new IOException("File with name '" + tmpNewFile.getPath() + "' exists!");
-        }
-
-        Path tmpSource = Paths.get(aFileToMove.getPath());
-        Path tmpTarget = Paths.get(tmpNewFile.getPath());
-        Files.move(tmpSource, tmpTarget);
     }
 
     public static String getFileNameWithoutExtension(File aFile) {

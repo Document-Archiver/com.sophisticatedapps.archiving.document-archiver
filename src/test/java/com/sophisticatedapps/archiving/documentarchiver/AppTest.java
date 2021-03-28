@@ -33,7 +33,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.util.WaitForAsyncUtils;
@@ -44,7 +43,6 @@ import java.io.PrintStream;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;
@@ -109,7 +107,7 @@ class AppTest extends BaseTest {
     void testMain_invalid_file_argument() {
 
         Throwable tmpException =
-                assertThrows(RuntimeException.class, () -> App.main(new String[]{ String.valueOf('\0') }));
+                assertThrows(RuntimeException.class, () -> App.main(new String[]{ NUL_CHARACTER_STRING }));
         assertEquals("Could not create File object for '\u0000': Invalid file path", tmpException.getMessage());
     }
 

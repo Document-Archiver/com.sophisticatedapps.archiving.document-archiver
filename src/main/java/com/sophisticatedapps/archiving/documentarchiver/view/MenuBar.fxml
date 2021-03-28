@@ -7,24 +7,30 @@
 
 <MenuBar fx:id="menuBar" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController">
   <menus>
-    <Menu mnemonicParsing="false" text="DocumentArchiver">
+    <Menu mnemonicParsing="false" text="%menu-bar.document-archiver-menu">
       <items>
-        <MenuItem mnemonicParsing="false" onAction="#handleAboutMenuItemAction" text="About DocumentArchiver" />
+        <MenuItem mnemonicParsing="false" onAction="#handleAboutMenuItemAction" text="%menu-bar.document-archiver-menu.about-menu-item" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemAction" text="Preferences..." />
+            <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemAction" text="%menu-bar.document-archiver-menu.preferences-menu-item" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#handleQuitMenuItemAction" text="Quit DocumentArchiver" />
+            <MenuItem mnemonicParsing="false" onAction="#handleQuitMenuItemAction" text="%menu-bar.document-archiver-menu.quit-menu-item" />
       </items>
     </Menu>
-    <Menu mnemonicParsing="false" text="File">
+    <Menu mnemonicParsing="false" text="%menu-bar.file-menu">
       <items>
-        <MenuItem mnemonicParsing="false" onAction="#handleOpenFilesOrDirectoryMenuItemAction" text="Open File(s) Or Directory..." />
+        <MenuItem mnemonicParsing="false" onAction="#handleOpenFilesOrDirectoryMenuItemAction" text="%menu-bar.file-menu.open-files-or-directory-menu-item" />
       </items>
     </Menu>
-    <Menu mnemonicParsing="false" text="Help">
+    <Menu mnemonicParsing="false" text="%menu-bar.help-menu">
       <items>
-        <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="DocumentArchiver Help" />
+        <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="%menu-bar.help-menu.help-menu-item" />
       </items>
     </Menu>
+      <Menu mnemonicParsing="false" text="%menu-bar.language-menu">
+        <items>
+            <MenuItem fx:id="englishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.english-menu-item" />
+          <MenuItem fx:id="germanLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.german-menu-item" />
+        </items>
+      </Menu>
   </menus>
 </MenuBar>

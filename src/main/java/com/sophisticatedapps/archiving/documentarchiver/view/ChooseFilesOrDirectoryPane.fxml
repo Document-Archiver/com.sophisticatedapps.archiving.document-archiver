@@ -6,8 +6,8 @@
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.ChooseFilesOrDirectoryPaneController">
    <children>
-      <Label text="Choose file(s) or directory." />
-      <Button fx:id="chooseFilesButton" mnemonicParsing="false" onAction="#handleChooseFilesButtonAction" text="Choose file(s)" />
-      <Button fx:id="chooseDirectoryButton" mnemonicParsing="false" onAction="#handleChooseDirectoryButtonAction" text="Choose directory" />
+      <Label text="%choose-files-or-directory-pane.choose-files-or-directory-label" />
+      <Button fx:id="chooseFilesButton" mnemonicParsing="false" onAction="#handleChooseFilesButtonAction" text="%choose-files-or-directory-pane.choose-files-button.text" />
+      <Button fx:id="chooseDirectoryButton" mnemonicParsing="false" onAction="#handleChooseDirectoryButtonAction" text="%choose-files-or-directory-pane.choose-directory-button.text" />
    </children>
 </VBox>

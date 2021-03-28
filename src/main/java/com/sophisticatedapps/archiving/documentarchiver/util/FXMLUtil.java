@@ -43,6 +43,7 @@ public class FXMLUtil {
         try {
 
             FXMLLoader tmpRegionLoader = new FXMLLoader(App.class.getResource(aFxmlResource));
+            tmpRegionLoader.setResources(LanguageUtil.getResourceBundleForCurrentLanguage());
 
             R tmpRegion = tmpRegionLoader.load();
             C tmpBaseController = tmpRegionLoader.getController();

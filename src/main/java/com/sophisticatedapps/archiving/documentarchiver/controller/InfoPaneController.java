@@ -17,10 +17,12 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.model.Archive;
 import com.sophisticatedapps.archiving.documentarchiver.model.Tags;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -107,7 +109,7 @@ public class InfoPaneController extends BaseController {
         setNewExistingTagsToListView(Collections.emptyList());
 
         // Set values
-        quickDescriptionWordsComboBox.getItems().addAll(GlobalConstants.QUICK_DESCRIPTION_WORDS.split(","));
+        quickDescriptionWordsComboBox.getItems().addAll(PropertiesUtil.QUICK_DESCRIPTION_WORDS.split(","));
 
         // Add listener
         infoPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) -> setWidths());
@@ -327,7 +329,7 @@ public class InfoPaneController extends BaseController {
 
         try {
 
-            FileUtil.moveFileToArchive(tmpCurrentDocument, tmpDfp);
+            Archive.moveFileToArchive(tmpCurrentDocument, tmpDfp);
 
             List<File> tmpAllDocuments = getAllDocuments();
             tmpAllDocuments.remove(tmpCurrentDocument);

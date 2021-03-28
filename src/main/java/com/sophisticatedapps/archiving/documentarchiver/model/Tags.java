@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Tags {
 
@@ -34,9 +32,6 @@ public class Tags {
      */
     private Tags() {
     }
-
-    private static final Pattern FIND_TAGS_IN_FILENAME_PATTERN =
-            Pattern.compile(".*__(.+)\\..+");
 
     public static SortedSet<String> getExistingTags(FileTypeEnum aFileType) {
 
@@ -65,12 +60,14 @@ public class Tags {
             }
             else if (tmpCurrentFile.isFile()) {
 
-                Matcher tmpMatcher = FIND_TAGS_IN_FILENAME_PATTERN.matcher(tmpCurrentFile.getName());
+                String tmpFileName = tmpCurrentFile.getName();
+                int tmpStartTagsIndex = tmpFileName.lastIndexOf("__");
+                int tmpStopTagsIndex = tmpFileName.lastIndexOf('.');
 
-                if (tmpMatcher.find()) {
+                if ((tmpStartTagsIndex > 0) && (tmpStopTagsIndex > (tmpStartTagsIndex + 2))) {
 
-                    String[] tmpFoundTags = tmpMatcher.group(1).split("_");
-                    Collections.addAll(aTagSet, tmpFoundTags);
+                    Collections.addAll(aTagSet,
+                            tmpFileName.substring((tmpStartTagsIndex + 2), tmpStopTagsIndex).split("_"));
                 }
             }
         }

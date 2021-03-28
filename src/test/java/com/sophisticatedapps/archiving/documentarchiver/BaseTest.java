@@ -61,4 +61,6 @@ public abstract class BaseTest {
     protected static final KeyEvent MOCK_KEY_EVENT_WITH_CODE_UP = new KeyEvent(MOCK_EVENT_TYPE,
             "↑", "up key", KeyCode.UP,false,false, false, false);
 
+    protected static final String NUL_CHARACTER_STRING = String.valueOf('\0');
+
 }

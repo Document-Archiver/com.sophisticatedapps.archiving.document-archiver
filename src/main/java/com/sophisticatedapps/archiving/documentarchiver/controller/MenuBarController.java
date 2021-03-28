@@ -18,23 +18,25 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
-import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.HostServices;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 public class MenuBarController extends BaseController {
 
+    private static final Map<String,Locale> LOCALES_BY_MENU_ITEM_MAP = Map.of(
+            "englishLanguageMenuItem", Locale.ENGLISH, "germanLanguageMenuItem", Locale.GERMAN);
     private AlertProvider alertProvider;
 
     /**
@@ -94,15 +96,14 @@ public class MenuBarController extends BaseController {
             Optional<Pair<String, String>> tmpResult = tmpDialog.showAndWait();
 
             tmpResult.ifPresent(anResultPair -> {
-                Properties tmpProperties = new Properties();
-                tmpProperties.setProperty("archiving.path", anResultPair.getKey());
-                tmpProperties.setProperty("quick.description.words", anResultPair.getValue());
+                Pair<String, String> tmpArchivingPathPropertiesPair =
+                        new Pair<>(PropertiesUtil.KEY_ARCHIVING_PATH, anResultPair.getKey());
+                Pair<String, String> tmpQuickDescriptionWordsPropertiesPair =
+                        new Pair<>(PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS, anResultPair.getValue());
                 try {
-                    FileUtil.writeProperties(GlobalConstants.PROPERTIES_FILE, tmpProperties);
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                            "Preferences have been saved and will be active with the next start of DocumentArchiver.",
-                            ButtonType.CLOSE);
-                    alert.showAndWait();
+                    PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
+                            tmpQuickDescriptionWordsPropertiesPair);
+                    alertProvider.providePreferencesChangedAlert().showAndWait();
                 }
                 catch (IOException e) {
                     throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
@@ -135,12 +136,32 @@ public class MenuBarController extends BaseController {
         tmpHostServices.showDocument(GlobalConstants.WIKI_URL);
     }
 
+    @FXML
+    protected void handleChangeLanguageMenuItemAction(ActionEvent anEvent) {
+
+        Locale tmpNewLocale = LOCALES_BY_MENU_ITEM_MAP.get(((MenuItem)anEvent.getSource()).getId());
+
+        if (!LanguageUtil.getCurrentLanguageLocale().equals(tmpNewLocale)) {
+
+            LanguageUtil.setNewLanguage(tmpNewLocale);
+            alertProvider.providePreferencesChangedAlert().showAndWait();
+        }
+    }
+
     protected static class AlertProvider {
 
         public Alert provideAboutAlert() {
 
             return (new Alert(Alert.AlertType.NONE,
-                    "Copyright 2021 by Stephan Sann\n\nApplication icons made by Freepik (https://www.flaticon.com/free-icon/archives_170393)", ButtonType.CLOSE));
+                    "Copyright 2021 by Stephan Sann\n\nApplication icons made by Freepik (https://www.flaticon.com/free-icon/archives_170393)",
+                    ButtonType.CLOSE));
+        }
+
+        public Alert providePreferencesChangedAlert() {
+
+            return (new Alert(Alert.AlertType.INFORMATION,
+                    "Preferences have been saved and will be active with the next start of DocumentArchiver.",
+                    ButtonType.CLOSE));
         }
     }
 

@@ -17,9 +17,9 @@
 package com.sophisticatedapps.archiving.documentarchiver.model;
 
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
-import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.SortedSet;
@@ -43,7 +43,7 @@ class TagsTest extends BaseTest {
 
         assertEquals("[bar, foo, fu, sna]", tmpResult.toString());
 
-        DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
     }
 
 }

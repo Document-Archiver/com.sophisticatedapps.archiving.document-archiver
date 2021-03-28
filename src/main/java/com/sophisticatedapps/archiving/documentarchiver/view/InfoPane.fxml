@@ -13,14 +13,14 @@
 
 <VBox fx:id="infoPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.InfoPaneController">
    <children>
-      <Label text="Please select date:" />
+      <Label text="%info-pane.please-select-date-label" />
       <DatePicker fx:id="datePicker" />
-      <CheckBox fx:id="utilizeTimeInformationCheckBox" mnemonicParsing="false" text="Utilize time information" />
+      <CheckBox fx:id="utilizeTimeInformationCheckBox" mnemonicParsing="false" text="%info-pane.utilize-time-information-checkbox.text" />
       <TextField fx:id="timeInformationTextField" />
-      <Label text="Please define description" />
-      <ComboBox fx:id="quickDescriptionWordsComboBox" promptText="Quick description words" />
+      <Label text="%info-pane.please-define-description-label" />
+      <ComboBox fx:id="quickDescriptionWordsComboBox" promptText="%info-pane.quick-description-words-combo-box.prompt-text" />
       <TextField fx:id="descriptionTextField" />
-      <Label text="Please select tags" />
+      <Label text="%info-pane.please-select-tags-label" />
       <TextField fx:id="tagsTextField" onKeyPressed="#handleTagsTextFieldKeyPressed" />
       <HBox>
          <children>
@@ -29,8 +29,8 @@
             <ListView fx:id="selectedTagsListView" minHeight="-Infinity" onMouseClicked="#handleSelectedTagsListViewClicked" />
          </children>
       </HBox>
-      <CheckBox fx:id="takeOverDescriptionAndTagsCheckBox" mnemonicParsing="false" text="Take over description and tags to next document" />
-      <Button fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Archive file" />
+      <CheckBox fx:id="takeOverDescriptionAndTagsCheckBox" mnemonicParsing="false" text="%info-pane.take-over-description-and-tags-to-next-document-checkbox.text" />
+      <Button fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="%info-pane.archive-file-button.text" />
    </children>
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

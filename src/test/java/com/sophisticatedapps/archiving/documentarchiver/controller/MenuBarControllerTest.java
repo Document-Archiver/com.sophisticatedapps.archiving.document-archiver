@@ -19,34 +19,44 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController".
  */
 @ExtendWith(ApplicationExtension.class)
 class MenuBarControllerTest extends BaseTest {
+
+    @TempDir
+    File tempDir;
 
     //private MenuBar menuBar;
     private MenuBarController menuBarController;
@@ -138,7 +148,47 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
-    void testAlertProvider() {
+    void testhandleChangeLanguageMenuItemAction() throws IllegalAccessException, IOException {
+
+        // Exchange the local properties directory
+        File tmpOriginalLocalPropertiesDirectory = (File) FieldUtils.readStaticField(
+                PropertiesUtil.class, "localPropertiesDirectory", true);
+        File tmpTempLocalPropertiesDirectory = new File(tempDir, ".documentarchiver");
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpTempLocalPropertiesDirectory, true);
+
+        Alert tmpPreferencesChangedAlert = Mockito.mock(Alert.class);
+        MenuBarController.AlertProvider tmpMockedAlertProvider = new MenuBarController.AlertProvider() {
+            @Override
+            public Alert providePreferencesChangedAlert() {
+                return tmpPreferencesChangedAlert;
+            }
+        };
+        FieldUtils.writeField(menuBarController, "alertProvider", tmpMockedAlertProvider, true);
+
+        MenuItem tmpMockedMenuItem = Mockito.mock(MenuItem.class);
+        when(tmpMockedMenuItem.getId()).thenReturn("germanLanguageMenuItem");
+        ActionEvent tmpMockedActionEvent = Mockito.mock(ActionEvent.class);
+        when(tmpMockedActionEvent.getSource()).thenReturn(tmpMockedMenuItem);
+
+        menuBarController.handleChangeLanguageMenuItemAction(tmpMockedActionEvent);
+
+        // Alert triggered?
+        verify(tmpPreferencesChangedAlert, Mockito.times(1)).showAndWait();
+
+        // Read them in again
+        Properties tmpReadProperties = PropertiesUtil.readProperties("document-archiver.properties");
+
+        // Check
+        assertEquals("de", tmpReadProperties.getProperty(PropertiesUtil.KEY_LANGUAGE_LOCALE));
+
+        // Change local properties directory back
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpOriginalLocalPropertiesDirectory, true);
+    }
+
+    @Test
+    void testAlertProvider_provideAboutAlert() {
 
         MenuBarController.AlertProvider tmpAlertProvider = new MenuBarController.AlertProvider();
         final List<Alert> tmpAlertList = new ArrayList<>();
@@ -150,6 +200,21 @@ class MenuBarControllerTest extends BaseTest {
         Alert tmpAlert = tmpAlertList.get(0);
         assertNotNull(tmpAlert);
         assertTrue(tmpAlert.getContentText().startsWith("Copyright"));
+    }
+
+    @Test
+    void testAlertProvider_providePreferencesChangedAlert() {
+
+        MenuBarController.AlertProvider tmpAlertProvider = new MenuBarController.AlertProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.providePreferencesChangedAlert()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertTrue(tmpAlert.getContentText().startsWith("Preferences have been saved"));
     }
 
 }

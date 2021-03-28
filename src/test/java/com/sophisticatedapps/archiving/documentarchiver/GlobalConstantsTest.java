@@ -16,7 +16,9 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -32,9 +34,9 @@ class GlobalConstantsTest {
 
         String tmpExpectedPath =
                 System.getProperty("user.home").concat("/Documents/DocumentArchiver");
-        assertEquals(tmpExpectedPath, GlobalConstants.ARCHIVING_ROOT_FOLDER.getPath());
+        assertEquals(tmpExpectedPath, PropertiesUtil.ARCHIVING_ROOT_FOLDER.getPath());
 
-        assertEquals("please set in preferences", GlobalConstants.QUICK_DESCRIPTION_WORDS);
+        assertEquals("please set in preferences", PropertiesUtil.QUICK_DESCRIPTION_WORDS);
     }
 
 }

@@ -19,6 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -67,6 +68,7 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_RESOURCES_DIRECTORY);
 
         FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/ChooseFilesOrDirectoryPane.fxml"));
+        tmpLoader.setResources(LanguageUtil.getResourceBundleForCurrentLanguage());
         tmpLoader.setControllerFactory(aParam ->
                 new ChooseFilesOrDirectoryPaneController(tmpMockedFileChooser, tmpMockedDirectoryChooser));
         chooseFilesOrDirectoryPane = tmpLoader.load();

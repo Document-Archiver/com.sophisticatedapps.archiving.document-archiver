@@ -16,14 +16,13 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
-import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 
 import java.io.File;
 
 public class DirectoryUtil {
 
-    private static File archivingRootFolder = GlobalConstants.ARCHIVING_ROOT_FOLDER;
+    private static File archivingRootFolder = PropertiesUtil.ARCHIVING_ROOT_FOLDER;
 
     /**
      * Private constructor.

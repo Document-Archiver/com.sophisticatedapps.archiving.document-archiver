@@ -17,20 +17,20 @@
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
-import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class DirectoryUtilTest extends BaseTest {
 
     @Test
     void getArchivingRootFolder() {
 
-        assertSame(GlobalConstants.ARCHIVING_ROOT_FOLDER, DirectoryUtil.getArchivingRootFolder());
+        assertSame(PropertiesUtil.ARCHIVING_ROOT_FOLDER, DirectoryUtil.getArchivingRootFolder());
     }
 
     @Test
@@ -38,7 +38,7 @@ class DirectoryUtilTest extends BaseTest {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
         assertSame(TEST_ARCHIVING_FOLDER, DirectoryUtil.getArchivingRootFolder());
-        DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
     }
 
     @Test
@@ -46,7 +46,7 @@ class DirectoryUtilTest extends BaseTest {
 
         File tmpPDFsGroupingFolder = DirectoryUtil.getGroupingFolder(FileTypeGroupEnum.PDFS);
 
-        assertEquals((new File(GlobalConstants.ARCHIVING_ROOT_FOLDER.getPath() + "/pdfs")),
+        assertEquals((new File(PropertiesUtil.ARCHIVING_ROOT_FOLDER.getPath() + "/pdfs")),
                 tmpPDFsGroupingFolder);
     }
 
@@ -55,7 +55,7 @@ class DirectoryUtilTest extends BaseTest {
 
         File tmpArchivingFolder = DirectoryUtil.getArchivingFolder(FileTypeGroupEnum.PDFS, 1975);
 
-        assertEquals((new File(GlobalConstants.ARCHIVING_ROOT_FOLDER.getPath() + "/pdfs/1975")),
+        assertEquals((new File(PropertiesUtil.ARCHIVING_ROOT_FOLDER.getPath() + "/pdfs/1975")),
                 tmpArchivingFolder);
     }
 

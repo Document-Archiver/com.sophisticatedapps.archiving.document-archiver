@@ -21,6 +21,7 @@ import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
@@ -379,7 +380,7 @@ class InfoPaneControllerTest extends BaseTest {
 
         // Cleanup
         assertTrue(tmpTargetFile.delete());
-        DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
     }
 
     @Test
@@ -413,7 +414,7 @@ class InfoPaneControllerTest extends BaseTest {
         assertSame(tmpNewCurrentDocument, infoPaneController.getCurrentDocument());
 
         // Cleanup
-        DirectoryUtil.setArchivingRootFolder(GlobalConstants.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
     }
 
     @Test

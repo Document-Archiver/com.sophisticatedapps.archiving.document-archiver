@@ -84,8 +84,8 @@ public class App extends Application {
         Rectangle2D tmpBounds = Screen.getPrimary().getVisualBounds();
         aPrimaryStage.setX(tmpBounds.getMinX());
         aPrimaryStage.setY(tmpBounds.getMinY());
-        aPrimaryStage.setWidth(tmpBounds.getWidth()); //aPrimaryStage.setWidth(1000);
-        aPrimaryStage.setHeight(tmpBounds.getHeight()); //aPrimaryStage.setHeight(690);
+        aPrimaryStage.setWidth(tmpBounds.getWidth());
+        aPrimaryStage.setHeight(tmpBounds.getHeight());
 
         // Set stage properties
         ObservableMap<Object, Object> tmpStageProperties = aPrimaryStage.getProperties();
