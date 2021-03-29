@@ -39,10 +39,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,14 +87,8 @@ class MenuBarControllerTest extends BaseTest {
     void handleAboutMenuItemAction() throws IllegalAccessException {
 
         Alert tmpMockedAboutAlert = Mockito.mock(Alert.class);
-
-        MenuBarController.AlertProvider tmpMockedAlertProvider = new MenuBarController.AlertProvider() {
-            @Override
-            public Alert provideAboutAlert() {
-                return tmpMockedAboutAlert;
-            }
-        };
-
+        MenuBarController.AlertProvider tmpMockedAlertProvider = Mockito.mock(MenuBarController.AlertProvider.class);
+        when(tmpMockedAlertProvider.provideAboutAlert()).thenReturn(tmpMockedAboutAlert);
         FieldUtils.writeField(menuBarController, "alertProvider", tmpMockedAlertProvider, true);
 
         menuBarController.handleAboutMenuItemAction();
@@ -148,7 +139,7 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
-    void testhandleChangeLanguageMenuItemAction() throws IllegalAccessException, IOException {
+    void testHandleChangeLanguageMenuItemAction() throws IllegalAccessException, IOException {
 
         // Exchange the local properties directory
         File tmpOriginalLocalPropertiesDirectory = (File) FieldUtils.readStaticField(
@@ -158,12 +149,9 @@ class MenuBarControllerTest extends BaseTest {
                 tmpTempLocalPropertiesDirectory, true);
 
         Alert tmpPreferencesChangedAlert = Mockito.mock(Alert.class);
-        MenuBarController.AlertProvider tmpMockedAlertProvider = new MenuBarController.AlertProvider() {
-            @Override
-            public Alert providePreferencesChangedAlert() {
-                return tmpPreferencesChangedAlert;
-            }
-        };
+        MenuBarController.AlertProvider tmpMockedAlertProvider = Mockito.mock(MenuBarController.AlertProvider.class);
+        when(tmpMockedAlertProvider.providePreferencesChangedAlert(any(Locale.class)))
+                .thenReturn(tmpPreferencesChangedAlert);
         FieldUtils.writeField(menuBarController, "alertProvider", tmpMockedAlertProvider, true);
 
         MenuItem tmpMockedMenuItem = Mockito.mock(MenuItem.class);
@@ -215,6 +203,21 @@ class MenuBarControllerTest extends BaseTest {
         Alert tmpAlert = tmpAlertList.get(0);
         assertNotNull(tmpAlert);
         assertTrue(tmpAlert.getContentText().startsWith("Preferences have been saved"));
+    }
+
+    @Test
+    void testAlertProvider_providePreferencesChangedAlert_with_Locale() {
+
+        MenuBarController.AlertProvider tmpAlertProvider = new MenuBarController.AlertProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.providePreferencesChangedAlert(Locale.GERMAN)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertTrue(tmpAlert.getContentText().startsWith("Einstellungen wurden gespeichert"));
     }
 
 }

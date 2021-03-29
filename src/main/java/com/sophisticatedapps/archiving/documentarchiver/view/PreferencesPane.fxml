@@ -9,9 +9,9 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.PreferencesPaneController">
    <children>
-      <Label text="Archiving folder" />
+      <Label text="%preferences-pane.archiving-folder-label" />
       <TextField fx:id="archivingFolderTextField" />
-      <Label text="Quick description words (comma-separated)" />
+      <Label text="%preferences-pane.quick-description-words-label" />
       <TextArea fx:id="quickDescriptionWordsTextArea" prefHeight="200.0" prefWidth="200.0" />
    </children>
    <padding>

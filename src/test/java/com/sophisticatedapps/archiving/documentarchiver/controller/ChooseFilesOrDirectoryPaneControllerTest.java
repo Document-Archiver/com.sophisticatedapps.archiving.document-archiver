@@ -21,6 +21,7 @@ import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -42,6 +43,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(ApplicationExtension.class)
@@ -69,8 +71,8 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
 
         FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/ChooseFilesOrDirectoryPane.fxml"));
         tmpLoader.setResources(LanguageUtil.getResourceBundleForCurrentLanguage());
-        tmpLoader.setControllerFactory(aParam ->
-                new ChooseFilesOrDirectoryPaneController(tmpMockedFileChooser, tmpMockedDirectoryChooser));
+        tmpLoader.setControllerFactory(aParam -> new ChooseFilesOrDirectoryPaneController(
+                tmpMockedFileChooser, tmpMockedDirectoryChooser, null));
         chooseFilesOrDirectoryPane = tmpLoader.load();
         chooseFilesOrDirectoryPaneController = tmpLoader.getController();
         chooseFilesOrDirectoryPaneController.rampUp(aStage);
@@ -172,11 +174,19 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "directoryChooser",
                 tmpMockedDirectoryChooser, true);
 
-        Button tmpChooseDirectoryButton = (Button)chooseFilesOrDirectoryPane.lookup("#chooseDirectoryButton");
-        tmpChooseDirectoryButton.fire();
+        Alert tmpDirectoryDoesNotContainFilesAlert = Mockito.mock(Alert.class);
+        ChooseFilesOrDirectoryPaneController.AlertProvider tmpMockedAlertProvider =
+                Mockito.mock(ChooseFilesOrDirectoryPaneController.AlertProvider.class);
+        when(tmpMockedAlertProvider.provideDirectoryDoesNotContainFilesAlert())
+                .thenReturn(tmpDirectoryDoesNotContainFilesAlert);
+        FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "alertProvider",
+                tmpMockedAlertProvider, true);
+
+        chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
 
         WaitForAsyncUtils.waitForFxEvents();
 
+        verify(tmpDirectoryDoesNotContainFilesAlert, Mockito.times(1)).showAndWait();
         assertNull(chooseFilesOrDirectoryPaneController.getAllDocuments());
         assertNull(chooseFilesOrDirectoryPaneController.getCurrentDocument());
     }

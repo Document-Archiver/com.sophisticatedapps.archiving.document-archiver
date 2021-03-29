@@ -16,16 +16,15 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.util.Pair;
 
 import java.io.IOException;
@@ -66,54 +65,48 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handlePreferencesMenuItemAction() {
 
-        try {
+        // Load preferences Pane
+        FXMLUtil.ControllerRegionPair<PreferencesPaneController, Pane> tmpPreferencesPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", stage);
+        Pane tmpPreferencesPane = tmpPreferencesPaneControllerRegionPair.getRegion();
+        PreferencesPaneController tmpPreferencesPaneController =
+                tmpPreferencesPaneControllerRegionPair.getController();
 
-            // Load preferences Pane
-            FXMLLoader tmpPreferencesPaneLoader = new FXMLLoader();
-            tmpPreferencesPaneLoader.setLocation(App.class.getResource("view/PreferencesPane.fxml"));
-            VBox tmpPreferencesPane = tmpPreferencesPaneLoader.load();
-            PreferencesPaneController tmpPreferencesPaneController = tmpPreferencesPaneLoader.getController();
-            tmpPreferencesPaneController.rampUp(stage);
+        // Create Dialog
+        Dialog<Pair<String, String>> tmpDialog = new Dialog<>();
+        tmpDialog.setTitle(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.title"));
+        tmpDialog.setHeaderText(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.header-text"));
 
-            // Create Dialog
-            Dialog<Pair<String, String>> tmpDialog = new Dialog<>();
-            tmpDialog.setTitle("Preferences");
-            tmpDialog.setHeaderText("Change your archiving folder and/or your quick description words.");
+        ButtonType tmpOkButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        tmpDialog.getDialogPane().getButtonTypes().addAll(tmpOkButtonType, ButtonType.CANCEL);
 
-            ButtonType tmpOkButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-            tmpDialog.getDialogPane().getButtonTypes().addAll(tmpOkButtonType, ButtonType.CANCEL);
+        tmpDialog.setResultConverter(aDialogButton -> {
+            if (aDialogButton == tmpOkButtonType) {
+                return (new Pair<>(tmpPreferencesPaneController.getArchivingFolder(),
+                        tmpPreferencesPaneController.getQuickDescriptionWords()));
+            }
+            return null;
+        });
 
-            tmpDialog.setResultConverter(aDialogButton -> {
-                if (aDialogButton == tmpOkButtonType) {
-                    return (new Pair<>(tmpPreferencesPaneController.getArchivingFolder(),
-                            tmpPreferencesPaneController.getQuickDescriptionWords()));
-                }
-                return null;
-            });
+        tmpDialog.getDialogPane().setContent(tmpPreferencesPane);
 
-            tmpDialog.getDialogPane().setContent(tmpPreferencesPane);
+        Optional<Pair<String, String>> tmpResult = tmpDialog.showAndWait();
 
-            Optional<Pair<String, String>> tmpResult = tmpDialog.showAndWait();
-
-            tmpResult.ifPresent(anResultPair -> {
-                Pair<String, String> tmpArchivingPathPropertiesPair =
-                        new Pair<>(PropertiesUtil.KEY_ARCHIVING_PATH, anResultPair.getKey());
-                Pair<String, String> tmpQuickDescriptionWordsPropertiesPair =
-                        new Pair<>(PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS, anResultPair.getValue());
-                try {
-                    PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
-                            tmpQuickDescriptionWordsPropertiesPair);
-                    alertProvider.providePreferencesChangedAlert().showAndWait();
-                }
-                catch (IOException e) {
-                    throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
-                }
-            });
-        }
-        catch (IOException e) {
-
-            throw (new RuntimeException("Couldn't load preferences Pane: " + e.getMessage()));
-        }
+        tmpResult.ifPresent(anResultPair -> {
+            Pair<String, String> tmpArchivingPathPropertiesPair =
+                    new Pair<>(PropertiesUtil.KEY_ARCHIVING_PATH, anResultPair.getKey());
+            Pair<String, String> tmpQuickDescriptionWordsPropertiesPair =
+                    new Pair<>(PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS, anResultPair.getValue());
+            try {
+                PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
+                        tmpQuickDescriptionWordsPropertiesPair);
+                alertProvider.providePreferencesChangedAlert().showAndWait();
+            }
+            catch (IOException e) {
+                throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
+            }
+        });
+        tmpPreferencesPaneController.rampDown();
     }
 
     @FXML
@@ -144,7 +137,7 @@ public class MenuBarController extends BaseController {
         if (!LanguageUtil.getCurrentLanguageLocale().equals(tmpNewLocale)) {
 
             LanguageUtil.setNewLanguage(tmpNewLocale);
-            alertProvider.providePreferencesChangedAlert().showAndWait();
+            alertProvider.providePreferencesChangedAlert(tmpNewLocale).showAndWait();
         }
     }
 
@@ -153,14 +146,22 @@ public class MenuBarController extends BaseController {
         public Alert provideAboutAlert() {
 
             return (new Alert(Alert.AlertType.NONE,
-                    "Copyright 2021 by Stephan Sann\n\nApplication icons made by Freepik (https://www.flaticon.com/free-icon/archives_170393)",
+                    LanguageUtil.i18n("menu-bar-controller.alert-provider.about-alert"),
                     ButtonType.CLOSE));
         }
 
         public Alert providePreferencesChangedAlert() {
 
             return (new Alert(Alert.AlertType.INFORMATION,
-                    "Preferences have been saved and will be active with the next start of DocumentArchiver.",
+                    LanguageUtil.i18n("menu-bar-controller.alert-provider.preferences-changed-alert"),
+                    ButtonType.CLOSE));
+        }
+
+        public Alert providePreferencesChangedAlert(Locale aLanguageLocale) {
+
+            return (new Alert(Alert.AlertType.INFORMATION,
+                    LanguageUtil.i18n("menu-bar-controller.alert-provider.preferences-changed-alert",
+                            aLanguageLocale),
                     ButtonType.CLOSE));
         }
     }

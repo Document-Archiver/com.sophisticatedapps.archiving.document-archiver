@@ -51,15 +51,15 @@ There are three alternative ways to get Document Archiver.
 
 Depending on your system, download one of the following files:
 
-**[\[ DOWNLOAD - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.0.0-linux.jar)
+**[\[ DOWNLOAD - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.1.0-linux.jar)
 -or-
-[\[ DOWNLOAD - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.0.0-mac.jar)
+[\[ DOWNLOAD - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.1.0-mac.jar)
 -or-
-[\[ DOWNLOAD - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.0.0-win.jar)**
+[\[ DOWNLOAD - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.0.0/document-archiver-1.1.0-win.jar)**
 
 **Startup (example for macOS - possible variants "linux", "mac", "win")**
 ```
-java -jar document-archiver-1.0-0-mac.jar
+java -jar document-archiver-1.1-0-mac.jar
 ```
 
 ### Option B - Download the latest SNAPSHOT release (get the latest and greatest ✨)
@@ -70,9 +70,9 @@ The latest SNAPSHOT releases can be downloaded here:
 
 Select the JAR file suitable for your system ("linux", "mac" or "win")
 
-**Startup (example - timestamp will vary)**
+**Startup (example - version and timestamp will vary)**
 ```
-java -jar document-archiver-1.1.0-20210324.121919-1-mac.jar
+java -jar document-archiver-X.Y.Z-20210324.121919-1-mac.jar
 ```
 
 ### Option C - Build it yourself (the nerdy way 🤓)
@@ -86,9 +86,9 @@ mvn clean package -DskipTests
 
 cd target/
 ```
-**Startup (example - version may vary)**
+**Startup (example - version will vary)**
 ```
-java -jar document-archiver-1.1.0-SNAPSHOT-with-dependencies.jar
+java -jar document-archiver-X.Y.Z-SNAPSHOT-with-dependencies.jar
 ```
 
 ## Quick Start

@@ -24,7 +24,6 @@ import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -98,6 +97,27 @@ public class InfoPaneController extends BaseController {
 
     @FXML
     private CheckBox takeOverDescriptionAndTagsCheckBox;
+
+    private AlertProvider alertProvider;
+
+    /**
+     * Default constructor.
+     */
+    @SuppressWarnings("unused")
+    public InfoPaneController() {
+
+        this(new AlertProvider());
+    }
+
+    /**
+     * Alternative constructor which allows to pass a custom AlertProvider.
+     *
+     * @param   anAlertProvider AlertProvider to use.
+     */
+    public InfoPaneController(AlertProvider anAlertProvider) {
+
+        this.alertProvider = anAlertProvider;
+    }
 
     @Override
     public void rampUp(Stage aStage) {
@@ -342,11 +362,7 @@ public class InfoPaneController extends BaseController {
         }
         catch (IOException e) {
 
-            Platform.runLater(() -> {
-
-                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.CLOSE);
-                alert.showAndWait();
-            });
+            alertProvider.provideArchiveFileNotSuccessfulAlert(e).showAndWait();
         }
     }
 
@@ -368,8 +384,6 @@ public class InfoPaneController extends BaseController {
      * StringConverter for DatePickers.
      */
     protected static class DatePickerStringConverter extends StringConverter<LocalDate> {
-
-
 
         @Override
         public String toString(LocalDate aLocalDate) {
@@ -444,6 +458,14 @@ public class InfoPaneController extends BaseController {
 
                 return (new GenericFileTimeAgent().determineFileTime(aFile));
             }
+        }
+    }
+
+    protected static class AlertProvider {
+
+        public Alert provideArchiveFileNotSuccessfulAlert(Exception anException) {
+
+            return (new Alert(Alert.AlertType.ERROR, anException.getMessage(), ButtonType.CLOSE));
         }
     }
 

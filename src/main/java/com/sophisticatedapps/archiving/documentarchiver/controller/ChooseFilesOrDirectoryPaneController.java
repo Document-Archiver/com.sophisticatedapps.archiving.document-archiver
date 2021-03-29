@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import javafx.application.Platform;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -34,25 +34,40 @@ public class ChooseFilesOrDirectoryPaneController extends BaseController {
     private FileChooser fileChooser;
     private DirectoryChooser directoryChooser;
 
+    private AlertProvider alertProvider;
+
     /**
      * Default constructor.
      */
     @SuppressWarnings("unused")
     public ChooseFilesOrDirectoryPaneController() {
 
-        this(new FileChooser(), new DirectoryChooser());
+        this(new AlertProvider());
     }
 
     /**
-     * Alternative constructor which allows to pass custom File- and DirectoryChooser.
+     * Alternative constructor which allows to pass a custom AlertProvider.
+     *
+     * @param   anAlertProvider AlertProvider to use.
+     */
+    public ChooseFilesOrDirectoryPaneController(AlertProvider anAlertProvider) {
+
+        this(new FileChooser(), new DirectoryChooser(), anAlertProvider);
+    }
+
+    /**
+     * Alternative constructor which allows to pass custom File- and DirectoryChooser and AlertProvider.
      *
      * @param   aFileChooser        FileChooser to use.
      * @param   aDirectoryChooser   DirectoryChooser to use.
+     * @param   anAlertProvider     AlertProvider to use.
      */
-    public ChooseFilesOrDirectoryPaneController(FileChooser aFileChooser, DirectoryChooser aDirectoryChooser) {
+    public ChooseFilesOrDirectoryPaneController(FileChooser aFileChooser, DirectoryChooser aDirectoryChooser,
+                                                AlertProvider anAlertProvider) {
 
         this.fileChooser = aFileChooser;
         this.directoryChooser = aDirectoryChooser;
+        this.alertProvider = anAlertProvider;
     }
 
     @FXML
@@ -88,18 +103,22 @@ public class ChooseFilesOrDirectoryPaneController extends BaseController {
             else {
 
                 setNewAllDocumentsAndCurrentDocument(null, null);
-
-                Platform.runLater(() -> {
-
-                    Alert tmpAlert = new Alert(Alert.AlertType.WARNING,
-                            "The chosen directory doesn't contain files.", ButtonType.CLOSE);
-                    tmpAlert.showAndWait();
-                });
+                alertProvider.provideDirectoryDoesNotContainFilesAlert().showAndWait();
             }
         }
         else {
 
             setNewAllDocumentsAndCurrentDocument(null, null);
+        }
+    }
+
+    protected static class AlertProvider {
+
+        public Alert provideDirectoryDoesNotContainFilesAlert() {
+
+            return (new Alert(Alert.AlertType.WARNING,
+                    LanguageUtil.i18n("choose-files-or-directory-pane-controller.alert-provider.directory-does-not-contain-files-alert"),
+                    ButtonType.CLOSE));
         }
     }
 

@@ -20,6 +20,7 @@ import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -192,7 +193,8 @@ public class DisplayFilePaneController extends BaseController {
             StackPane tmpStackPane = new StackPane();
             tmpStackPane.setPrefWidth(aPrefWidth);
             tmpStackPane.setPrefHeight(aPrefHeight);
-            tmpStackPane.getChildren().add(new Label("Unsupported Filetype. Opened external viewer."));
+            tmpStackPane.getChildren().add(new Label(LanguageUtil.i18n(
+                    "display-file-pane-controller.display-unsupported-filetype-node-assembler.unsupported-filetype-label")));
 
             return tmpStackPane;
         }
@@ -306,7 +308,8 @@ public class DisplayFilePaneController extends BaseController {
             catch (MediaException e) {
 
                 // Media not supported.
-                aMediaTypePane.getChildren().add(new Label("Sorry - media not supported."));
+                aMediaTypePane.getChildren().add(new Label(LanguageUtil.i18n(
+                        "display-file-pane-controller.display-audio-node-assembler.media-not-supported-label")));
             }
         }
 
@@ -369,6 +372,7 @@ public class DisplayFilePaneController extends BaseController {
                 TextArea tmpTextAreaView = new TextArea();
                 tmpTextAreaView.setPrefWidth(aPrefWidth);
                 tmpTextAreaView.setPrefHeight(aPrefHeight);
+                tmpTextAreaView.setEditable(false);
 
                 // Setting text to the text view
                 tmpTextAreaView.setText(tmpByteArrayOutputStream.toString(Charset.defaultCharset().toString()));

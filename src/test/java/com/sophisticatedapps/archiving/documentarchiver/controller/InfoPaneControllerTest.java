@@ -50,7 +50,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.DocumentsPaneController".
@@ -384,12 +386,18 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testHandleSubmitButtonAction_file_exists_in_archive() {
+    void testHandleSubmitButtonAction_file_exists_in_archive() throws IllegalAccessException {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
         File tmpNewCurrentDocument = new File(tempDir, "test.txt");
         List<File> tmpNewAllDocuments = new ArrayList<>();
         tmpNewAllDocuments.add(tmpNewCurrentDocument);
+
+        Alert tmpMockedAlert = Mockito.mock(Alert.class);
+        InfoPaneController.AlertProvider tmpMockedAlertProvider = Mockito.mock(InfoPaneController.AlertProvider.class);
+        when(tmpMockedAlertProvider.provideArchiveFileNotSuccessfulAlert(any(Exception.class)))
+                .thenReturn(tmpMockedAlert);
+        FieldUtils.writeField(infoPaneController, "alertProvider", tmpMockedAlertProvider, true);
 
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
 
@@ -408,10 +416,9 @@ class InfoPaneControllerTest extends BaseTest {
         Button tmpSubmitButton = (Button)infoPane.lookup("#submitButton");
         tmpSubmitButton.getOnAction().handle(null);
 
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Document should still be current document.
+        // Document should still be current document and alert should have been triggered.
         assertSame(tmpNewCurrentDocument, infoPaneController.getCurrentDocument());
+        verify(tmpMockedAlert, Mockito.times(1)).showAndWait();
 
         // Cleanup
         DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);

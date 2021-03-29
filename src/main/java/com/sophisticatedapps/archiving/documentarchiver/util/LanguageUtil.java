@@ -64,8 +64,23 @@ public class LanguageUtil {
 
     public static ResourceBundle getResourceBundleForCurrentLanguage() {
 
-        return RESOURCE_BUNDLE_CACHE.computeIfAbsent(CURRENT_LANGUAGE_LOCALE,
-                (aLocale -> ResourceBundle.getBundle(I18N_BUNDLE_BASENAME, CURRENT_LANGUAGE_LOCALE)));
+        return getResourceBundleForLanguageLocale(CURRENT_LANGUAGE_LOCALE);
+    }
+
+    public static ResourceBundle getResourceBundleForLanguageLocale(Locale aLanguageLocale) {
+
+        return RESOURCE_BUNDLE_CACHE.computeIfAbsent(aLanguageLocale,
+                (aLocale -> ResourceBundle.getBundle(I18N_BUNDLE_BASENAME, aLanguageLocale)));
+    }
+
+    public static String i18n(String aPropertyKey) {
+
+        return getResourceBundleForCurrentLanguage().getString(aPropertyKey);
+    }
+
+    public static String i18n(String aPropertyKey, Locale aLanguageLocale) {
+
+        return getResourceBundleForLanguageLocale(aLanguageLocale).getString(aPropertyKey);
     }
 
 }
