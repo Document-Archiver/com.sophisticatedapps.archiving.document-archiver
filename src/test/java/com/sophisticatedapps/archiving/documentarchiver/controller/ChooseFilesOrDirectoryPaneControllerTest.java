@@ -20,6 +20,7 @@ import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -39,6 +40,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -175,12 +177,12 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
                 tmpMockedDirectoryChooser, true);
 
         Alert tmpDirectoryDoesNotContainFilesAlert = Mockito.mock(Alert.class);
-        ChooseFilesOrDirectoryPaneController.AlertProvider tmpMockedAlertProvider =
+        ChooseFilesOrDirectoryPaneController.AlertProvider tmpMockedDialogProvider =
                 Mockito.mock(ChooseFilesOrDirectoryPaneController.AlertProvider.class);
-        when(tmpMockedAlertProvider.provideDirectoryDoesNotContainFilesAlert())
+        when(tmpMockedDialogProvider.provideDirectoryDoesNotContainFilesAlert())
                 .thenReturn(tmpDirectoryDoesNotContainFilesAlert);
         FieldUtils.writeField(chooseFilesOrDirectoryPaneController, "alertProvider",
-                tmpMockedAlertProvider, true);
+                tmpMockedDialogProvider, true);
 
         chooseFilesOrDirectoryPaneController.handleChooseDirectoryButtonAction();
 
@@ -189,6 +191,22 @@ class ChooseFilesOrDirectoryPaneControllerTest extends BaseTest {
         verify(tmpDirectoryDoesNotContainFilesAlert, Mockito.times(1)).showAndWait();
         assertNull(chooseFilesOrDirectoryPaneController.getAllDocuments());
         assertNull(chooseFilesOrDirectoryPaneController.getCurrentDocument());
+    }
+
+    @Test
+    void testAlertProvider_provideDirectoryDoesNotContainFilesAlert() {
+
+        ChooseFilesOrDirectoryPaneController.AlertProvider tmpAlertProvider =
+                new ChooseFilesOrDirectoryPaneController.AlertProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.provideDirectoryDoesNotContainFilesAlert()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertEquals("The chosen directory doesn't contain files.", tmpAlert.getContentText());
     }
 
 }

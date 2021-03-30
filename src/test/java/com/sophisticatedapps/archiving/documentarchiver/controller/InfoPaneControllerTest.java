@@ -23,6 +23,7 @@ import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -394,10 +395,10 @@ class InfoPaneControllerTest extends BaseTest {
         tmpNewAllDocuments.add(tmpNewCurrentDocument);
 
         Alert tmpMockedAlert = Mockito.mock(Alert.class);
-        InfoPaneController.AlertProvider tmpMockedAlertProvider = Mockito.mock(InfoPaneController.AlertProvider.class);
-        when(tmpMockedAlertProvider.provideArchiveFileNotSuccessfulAlert(any(Exception.class)))
+        InfoPaneController.AlertProvider tmpMockedDialogProvider = Mockito.mock(InfoPaneController.AlertProvider.class);
+        when(tmpMockedDialogProvider.provideArchiveFileNotSuccessfulAlert(any(Exception.class)))
                 .thenReturn(tmpMockedAlert);
-        FieldUtils.writeField(infoPaneController, "alertProvider", tmpMockedAlertProvider, true);
+        FieldUtils.writeField(infoPaneController, "alertProvider", tmpMockedDialogProvider, true);
 
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
 
@@ -487,6 +488,22 @@ class InfoPaneControllerTest extends BaseTest {
         LocalDateTime tmpExpectedFileDateTime = tmpGenericFileTimeAgent.determineFileTime(TEST_JPG_FILE2);
 
         assertEquals(tmpExpectedFileDateTime, tmpFileDateTime);
+    }
+
+    @Test
+    void testAlertProvider_provideArchiveFileNotSuccessfulAlert() {
+
+        InfoPaneController.AlertProvider tmpAlertProvider = new InfoPaneController.AlertProvider();
+        Exception tmpException = new Exception("This is a test");
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.provideArchiveFileNotSuccessfulAlert(tmpException)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertEquals("This is a test", tmpAlert.getContentText());
     }
 
 }

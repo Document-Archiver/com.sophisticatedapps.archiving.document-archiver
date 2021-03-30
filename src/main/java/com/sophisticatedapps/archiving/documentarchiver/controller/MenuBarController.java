@@ -36,7 +36,7 @@ public class MenuBarController extends BaseController {
 
     private static final Map<String,Locale> LOCALES_BY_MENU_ITEM_MAP = Map.of(
             "englishLanguageMenuItem", Locale.ENGLISH, "germanLanguageMenuItem", Locale.GERMAN);
-    private AlertProvider alertProvider;
+    private DialogProvider dialogProvider;
 
     /**
      * Default constructor.
@@ -44,22 +44,22 @@ public class MenuBarController extends BaseController {
     @SuppressWarnings("unused")
     public MenuBarController() {
 
-        this(new AlertProvider());
+        this(new DialogProvider());
     }
 
     /**
      * Alternative constructor which allows to pass a custom AlertProvider.
-     * @param   anAlertProvider Custom AlertProvider
+     * @param   anDialogProvider Custom AlertProvider
      */
-    public MenuBarController(AlertProvider anAlertProvider) {
+    public MenuBarController(DialogProvider anDialogProvider) {
 
-        this.alertProvider = anAlertProvider;
+        this.dialogProvider = anDialogProvider;
     }
 
     @FXML
     protected void handleAboutMenuItemAction() {
 
-        this.alertProvider.provideAboutAlert().showAndWait();
+        this.dialogProvider.provideAboutDialog().showAndWait();
     }
 
     @FXML
@@ -72,40 +72,33 @@ public class MenuBarController extends BaseController {
         PreferencesPaneController tmpPreferencesPaneController =
                 tmpPreferencesPaneControllerRegionPair.getController();
 
-        // Create Dialog
-        Dialog<Pair<String, String>> tmpDialog = new Dialog<>();
-        tmpDialog.setTitle(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.title"));
-        tmpDialog.setHeaderText(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.header-text"));
+        // Create and show Dialog
+        Optional<ButtonType> tmpResult = dialogProvider.providePreferencesDialog(tmpPreferencesPane).showAndWait();
 
-        ButtonType tmpOkButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        tmpDialog.getDialogPane().getButtonTypes().addAll(tmpOkButtonType, ButtonType.CANCEL);
+        // Deal with result
+        tmpResult.ifPresent(aButtonType -> {
 
-        tmpDialog.setResultConverter(aDialogButton -> {
-            if (aDialogButton == tmpOkButtonType) {
-                return (new Pair<>(tmpPreferencesPaneController.getArchivingFolder(),
-                        tmpPreferencesPaneController.getQuickDescriptionWords()));
-            }
-            return null;
-        });
+            if (ButtonType.OK == aButtonType) {
 
-        tmpDialog.getDialogPane().setContent(tmpPreferencesPane);
+                Pair<String, String> tmpArchivingPathPropertiesPair = new Pair<>(
+                        PropertiesUtil.KEY_ARCHIVING_PATH, tmpPreferencesPaneController.getArchivingFolder());
+                Pair<String, String> tmpQuickDescriptionWordsPropertiesPair = new Pair<>(
+                        PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS,
+                        tmpPreferencesPaneController.getQuickDescriptionWords());
 
-        Optional<Pair<String, String>> tmpResult = tmpDialog.showAndWait();
+                try {
 
-        tmpResult.ifPresent(anResultPair -> {
-            Pair<String, String> tmpArchivingPathPropertiesPair =
-                    new Pair<>(PropertiesUtil.KEY_ARCHIVING_PATH, anResultPair.getKey());
-            Pair<String, String> tmpQuickDescriptionWordsPropertiesPair =
-                    new Pair<>(PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS, anResultPair.getValue());
-            try {
-                PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
-                        tmpQuickDescriptionWordsPropertiesPair);
-                alertProvider.providePreferencesChangedAlert().showAndWait();
-            }
-            catch (IOException e) {
-                throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
+                    PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
+                            tmpQuickDescriptionWordsPropertiesPair);
+                    dialogProvider.providePreferencesChangedAlert().showAndWait();
+                }
+                catch (IOException e) {
+
+                    throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
+                }
             }
         });
+
         tmpPreferencesPaneController.rampDown();
     }
 
@@ -137,17 +130,28 @@ public class MenuBarController extends BaseController {
         if (!LanguageUtil.getCurrentLanguageLocale().equals(tmpNewLocale)) {
 
             LanguageUtil.setNewLanguage(tmpNewLocale);
-            alertProvider.providePreferencesChangedAlert(tmpNewLocale).showAndWait();
+            dialogProvider.providePreferencesChangedAlert(tmpNewLocale).showAndWait();
         }
     }
 
-    protected static class AlertProvider {
+    protected static class DialogProvider {
 
-        public Alert provideAboutAlert() {
+        public Dialog<ButtonType> provideAboutDialog() {
 
             return (new Alert(Alert.AlertType.NONE,
                     LanguageUtil.i18n("menu-bar-controller.alert-provider.about-alert"),
                     ButtonType.CLOSE));
+        }
+
+        public Dialog<ButtonType> providePreferencesDialog(Pane aPreferencesPane) {
+
+            Dialog<ButtonType> tmpDialog = new Dialog<>();
+            tmpDialog.setTitle(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.title"));
+            tmpDialog.setHeaderText(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.header-text"));
+            tmpDialog.getDialogPane().setContent(aPreferencesPane);
+            tmpDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+            return tmpDialog;
         }
 
         public Alert providePreferencesChangedAlert() {

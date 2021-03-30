@@ -23,9 +23,8 @@ import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -43,8 +42,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController".
@@ -87,17 +85,55 @@ class MenuBarControllerTest extends BaseTest {
     void handleAboutMenuItemAction() throws IllegalAccessException {
 
         Alert tmpMockedAboutAlert = Mockito.mock(Alert.class);
-        MenuBarController.AlertProvider tmpMockedAlertProvider = Mockito.mock(MenuBarController.AlertProvider.class);
-        when(tmpMockedAlertProvider.provideAboutAlert()).thenReturn(tmpMockedAboutAlert);
-        FieldUtils.writeField(menuBarController, "alertProvider", tmpMockedAlertProvider, true);
+        MenuBarController.DialogProvider tmpMockedDialogProvider = Mockito.mock(MenuBarController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideAboutDialog()).thenReturn(tmpMockedAboutAlert);
+        FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
 
         menuBarController.handleAboutMenuItemAction();
 
         verify(tmpMockedAboutAlert, Mockito.times(1)).showAndWait();
     }
 
-    //@Test
-    void handlePreferencesMenuItemAction() {
+    @Test
+    void handlePreferencesMenuItemAction() throws IllegalAccessException, IOException {
+
+        // Exchange the local properties directory
+        File tmpOriginalLocalPropertiesDirectory = (File) FieldUtils.readStaticField(
+                PropertiesUtil.class, "localPropertiesDirectory", true);
+        File tmpTempLocalPropertiesDirectory = new File(tempDir, ".documentarchiver");
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpTempLocalPropertiesDirectory, true);
+
+        MenuBarController.DialogProvider tmpMockedDialogProvider = Mockito.mock(MenuBarController.DialogProvider.class);
+
+        Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
+        when(tmpMockedDialogProvider.providePreferencesChangedAlert()).thenReturn(tmpMockedPreferencesChangedAlert);
+
+        Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
+        when(tmpMockedDialog.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
+
+        doAnswer(anInvocationOnMock -> {
+            Pane tmpPreferencesPane = anInvocationOnMock.getArgument(0);
+            ((TextField)tmpPreferencesPane.getChildren().get(1)).setText("/foo/bar/snafu");
+            ((TextArea)tmpPreferencesPane.getChildren().get(3)).setText("ha ,hi, ho");
+            return tmpMockedDialog;
+        }).when(tmpMockedDialogProvider).providePreferencesDialog(any(Pane.class));
+
+        FieldUtils.writeField(menuBarController,"dialogProvider", tmpMockedDialogProvider, true);
+
+        // Call method
+        menuBarController.handlePreferencesMenuItemAction();
+
+        // Read the newly written properties
+        Properties tmpReadProperties = PropertiesUtil.readProperties("document-archiver.properties");
+
+        // Check
+        assertEquals("/foo/bar/snafu", tmpReadProperties.getProperty(PropertiesUtil.KEY_ARCHIVING_PATH));
+        assertEquals("ha,hi,ho", tmpReadProperties.getProperty(PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS));
+
+        // Change local properties directory back
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpOriginalLocalPropertiesDirectory, true);
     }
 
     @Test
@@ -149,10 +185,10 @@ class MenuBarControllerTest extends BaseTest {
                 tmpTempLocalPropertiesDirectory, true);
 
         Alert tmpPreferencesChangedAlert = Mockito.mock(Alert.class);
-        MenuBarController.AlertProvider tmpMockedAlertProvider = Mockito.mock(MenuBarController.AlertProvider.class);
-        when(tmpMockedAlertProvider.providePreferencesChangedAlert(any(Locale.class)))
+        MenuBarController.DialogProvider tmpMockedDialogProvider = Mockito.mock(MenuBarController.DialogProvider.class);
+        when(tmpMockedDialogProvider.providePreferencesChangedAlert(any(Locale.class)))
                 .thenReturn(tmpPreferencesChangedAlert);
-        FieldUtils.writeField(menuBarController, "alertProvider", tmpMockedAlertProvider, true);
+        FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
 
         MenuItem tmpMockedMenuItem = Mockito.mock(MenuItem.class);
         when(tmpMockedMenuItem.getId()).thenReturn("germanLanguageMenuItem");
@@ -176,27 +212,45 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
-    void testAlertProvider_provideAboutAlert() {
+    void testDialogProvider_provideAboutDialog() {
 
-        MenuBarController.AlertProvider tmpAlertProvider = new MenuBarController.AlertProvider();
-        final List<Alert> tmpAlertList = new ArrayList<>();
+        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
 
-        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.provideAboutAlert()));
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideAboutDialog()));
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        Alert tmpAlert = tmpAlertList.get(0);
+        Dialog<ButtonType> tmpAlert = tmpDialogList.get(0);
         assertNotNull(tmpAlert);
         assertTrue(tmpAlert.getContentText().startsWith("Copyright"));
     }
 
     @Test
-    void testAlertProvider_providePreferencesChangedAlert() {
+    void testDialogProvider_providePreferencesDialog() {
 
-        MenuBarController.AlertProvider tmpAlertProvider = new MenuBarController.AlertProvider();
+        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
+
+        PreferencesPaneController tmpMockedController = Mockito.mock(PreferencesPaneController.class);
+        Pane tmpMockedPane = new Pane();
+
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.providePreferencesDialog(tmpMockedPane)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
+        assertNotNull(tmpDialog);
+        assertSame(tmpMockedPane, tmpDialog.getDialogPane().getContent());
+    }
+
+    @Test
+    void testDialogProvider_providePreferencesChangedAlert() {
+
+        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
         final List<Alert> tmpAlertList = new ArrayList<>();
 
-        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.providePreferencesChangedAlert()));
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePreferencesChangedAlert()));
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -206,12 +260,12 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
-    void testAlertProvider_providePreferencesChangedAlert_with_Locale() {
+    void testDialogProvider_providePreferencesChangedAlert_with_Locale() {
 
-        MenuBarController.AlertProvider tmpAlertProvider = new MenuBarController.AlertProvider();
+        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
         final List<Alert> tmpAlertList = new ArrayList<>();
 
-        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.providePreferencesChangedAlert(Locale.GERMAN)));
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePreferencesChangedAlert(Locale.GERMAN)));
 
         WaitForAsyncUtils.waitForFxEvents();
 
