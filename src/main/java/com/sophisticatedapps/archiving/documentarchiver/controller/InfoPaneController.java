@@ -49,10 +49,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InfoPaneController extends BaseController {
 
@@ -194,7 +191,7 @@ public class InfoPaneController extends BaseController {
      */
     private void handleCurrentDocumentChanged(File aNewCurrentDocument) {
 
-        if (aNewCurrentDocument != null) {
+        if (!Objects.isNull(aNewCurrentDocument)) {
 
             FileTypeEnum tmpFileType = FileUtil.getFiletype(aNewCurrentDocument);
             LocalDateTime tmpFileDateTime;
@@ -354,7 +351,8 @@ public class InfoPaneController extends BaseController {
             List<File> tmpAllDocuments = getAllDocuments();
             tmpAllDocuments.remove(tmpCurrentDocument);
 
-            // Trigger listeners by first setting the all documents List to null.
+            // Trigger listeners by first setting the all documents List to null
+            // (just removing a file from the list will not trigger listeners).
             setNewAllDocuments(null);
 
             setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
@@ -388,7 +386,7 @@ public class InfoPaneController extends BaseController {
         @Override
         public String toString(LocalDate aLocalDate) {
 
-            if (aLocalDate == null) {
+            if (Objects.isNull(aLocalDate)) {
 
                 return StringUtil.EMPTY_STRING;
             }
@@ -399,7 +397,7 @@ public class InfoPaneController extends BaseController {
         @Override
         public LocalDate fromString(String aDateString) {
 
-            if((aDateString == null) || (aDateString.trim().isEmpty())) {
+            if(Objects.isNull(aDateString) || (aDateString.trim().isEmpty())) {
 
                 return null;
             }

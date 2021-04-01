@@ -57,14 +57,14 @@ public class MediaTypeAudioPaneController extends BaseController {
 
         super.rampUp(aStage);
 
-        // Listener for when the pane is "closed" (aNewParent == null)
+        // Listener for when the pane is "closed" (aNewParent == null) -> stop MediaPlayer
         mediaTypePane.parentProperty().addListener((anObs, anOldParent, aNewParent) -> {
 
-            if (aNewParent == null) {
+            if (Objects.isNull(aNewParent)) {
 
                 MediaPlayer tmpMediaPlayer = getMediaPlayer();
 
-                if((tmpMediaPlayer != null) && (tmpMediaPlayer.getStatus() == MediaPlayer.Status.PLAYING)) {
+                if((!Objects.isNull(tmpMediaPlayer)) && (tmpMediaPlayer.getStatus() == MediaPlayer.Status.PLAYING)) {
 
                     tmpMediaPlayer.stop();
                 }
@@ -107,7 +107,7 @@ public class MediaTypeAudioPaneController extends BaseController {
 
         MediaPlayer tmpMediaPlayer = getMediaPlayer();
 
-        if((tmpMediaPlayer != null) && (tmpMediaPlayer.getStatus() != MediaPlayer.Status.PLAYING)) {
+        if((!Objects.isNull(tmpMediaPlayer)) && (tmpMediaPlayer.getStatus() != MediaPlayer.Status.PLAYING)) {
 
             tmpMediaPlayer.play();
             playButton.setDisable(true);
@@ -121,7 +121,7 @@ public class MediaTypeAudioPaneController extends BaseController {
 
         MediaPlayer tmpMediaPlayer = getMediaPlayer();
 
-        if((tmpMediaPlayer != null) && (tmpMediaPlayer.getStatus() == MediaPlayer.Status.PLAYING)) {
+        if((!Objects.isNull(tmpMediaPlayer)) && (tmpMediaPlayer.getStatus() == MediaPlayer.Status.PLAYING)) {
 
             tmpMediaPlayer.pause();
             playButton.setDisable(false);
@@ -135,7 +135,7 @@ public class MediaTypeAudioPaneController extends BaseController {
 
         MediaPlayer tmpMediaPlayer = getMediaPlayer();
 
-        if((tmpMediaPlayer != null) && (tmpMediaPlayer.getStatus() != MediaPlayer.Status.STOPPED)) {
+        if((!Objects.isNull(tmpMediaPlayer)) && (tmpMediaPlayer.getStatus() != MediaPlayer.Status.STOPPED)) {
 
             tmpMediaPlayer.stop();
             playButton.setDisable(false);

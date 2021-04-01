@@ -16,16 +16,21 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
-import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -62,14 +67,24 @@ class MenuBarControllerTest extends BaseTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) {
+    public void start(Stage aStage) throws IOException {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLUtil.ControllerRegionPair<MenuBarController,MenuBar> tmpMenuBarControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/MenuBar.fxml", aStage);
-        menuBarController = tmpMenuBarControllerRegionPair.getController();
+        FileChooser tmpMockedFileChooser = Mockito.mock(FileChooser.class);
+        when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(ALL_DOCUMENTS_LIST);
+        DirectoryChooser tmpMockedDirectoryChooser = Mockito.mock(DirectoryChooser.class);
+        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_RESOURCES_DIRECTORY);
+
+        FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MenuBar.fxml"));
+        tmpLoader.setResources(LanguageUtil.getResourceBundleForCurrentLanguage());
+        tmpLoader.setControllerFactory(aParam -> new MenuBarController(
+                tmpMockedFileChooser, tmpMockedDirectoryChooser, null));
+        //menuBar =
+        tmpLoader.load();
+        menuBarController = tmpLoader.getController();
+        menuBarController.rampUp(aStage);
     }
 
     @AfterEach
@@ -148,17 +163,85 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
-    void handleOpenFilesOrDirectoryMenuItemAction() {
+    void handleOpenFilesMenuItemAction() {
 
-        List<File> tmpNewAllDocuments = Collections.singletonList(TEST_TEXT_FILE2);
-        menuBarController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, TEST_TEXT_FILE2);
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        menuBarController.handleOpenFilesOrDirectoryMenuItemAction();
+        menuBarController.handleOpenFilesMenuItemAction();
 
         WaitForAsyncUtils.waitForFxEvents();
 
+        // Not same, since List will be wrapped into a new List.
+        assertEquals(ALL_DOCUMENTS_LIST, menuBarController.getAllDocuments());
+        assertSame(ALL_DOCUMENTS_LIST.get(0), menuBarController.getCurrentDocument());
+    }
+
+    @Test
+    void handleOpenFilesMenuItemAction_with_cancel() throws IllegalAccessException {
+
+        FileChooser tmpMockedFileChooser = Mockito.mock(FileChooser.class);
+        when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(null);
+        FieldUtils.writeField(menuBarController, "fileChooser", tmpMockedFileChooser, true);
+
+        menuBarController.handleOpenFilesMenuItemAction();
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertNull(menuBarController.getAllDocuments());
+        assertNull(menuBarController.getCurrentDocument());
+    }
+
+    @Test
+    void handleOpenDirectoryMenuItemAction() {
+
+        menuBarController.handleOpenDirectoryMenuItemAction();
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        List<File> tmpChosenDocuments = menuBarController.getAllDocuments();
+        assertEquals(ALL_DOCUMENTS_LIST.size(), tmpChosenDocuments.size());
+        assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE));
+        assertTrue(tmpChosenDocuments.contains(TEST_TEXT_FILE2));
+        assertTrue(tmpChosenDocuments.contains(TEST_PDF_FILE));
+        assertTrue(tmpChosenDocuments.contains(TEST_JPG_FILE));
+        assertTrue(tmpChosenDocuments.contains(TEST_JPG_FILE2));
+        assertTrue(tmpChosenDocuments.contains(TEST_MP3_FILE));
+    }
+
+    @Test
+    void handleOpenDirectoryMenuItemAction_with_cancel() throws IllegalAccessException {
+
+        DirectoryChooser tmpMockedDirectoryChooser = Mockito.mock(DirectoryChooser.class);
+        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(null);
+        FieldUtils.writeField(menuBarController, "directoryChooser",
+                tmpMockedDirectoryChooser, true);
+
+        menuBarController.handleOpenDirectoryMenuItemAction();
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertNull(menuBarController.getAllDocuments());
+        assertNull(menuBarController.getCurrentDocument());
+    }
+
+    @Test
+    void handleOpenDirectoryMenuItemAction__with_empty_folder() throws IllegalAccessException {
+
+        DirectoryChooser tmpMockedDirectoryChooser = Mockito.mock(DirectoryChooser.class);
+        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_ARCHIVING_FOLDER);
+        FieldUtils.writeField(menuBarController, "directoryChooser",
+                tmpMockedDirectoryChooser, true);
+
+        Alert tmpDirectoryDoesNotContainFilesAlert = Mockito.mock(Alert.class);
+        MenuBarController.DialogProvider tmpMockedDialogProvider =
+                Mockito.mock(MenuBarController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideDirectoryDoesNotContainFilesAlert())
+                .thenReturn(tmpDirectoryDoesNotContainFilesAlert);
+        FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
+
+        menuBarController.handleOpenDirectoryMenuItemAction();
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        verify(tmpDirectoryDoesNotContainFilesAlert, Mockito.times(1)).showAndWait();
         assertNull(menuBarController.getAllDocuments());
         assertNull(menuBarController.getCurrentDocument());
     }
@@ -232,7 +315,6 @@ class MenuBarControllerTest extends BaseTest {
         MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
         final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
 
-        PreferencesPaneController tmpMockedController = Mockito.mock(PreferencesPaneController.class);
         Pane tmpMockedPane = new Pane();
 
         Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.providePreferencesDialog(tmpMockedPane)));
@@ -272,6 +354,21 @@ class MenuBarControllerTest extends BaseTest {
         Alert tmpAlert = tmpAlertList.get(0);
         assertNotNull(tmpAlert);
         assertTrue(tmpAlert.getContentText().startsWith("Einstellungen wurden gespeichert"));
+    }
+
+    @Test
+    void testDialogProvider_provideDirectoryDoesNotContainFilesAlert() {
+
+        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideDirectoryDoesNotContainFilesAlert()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertEquals("The chosen directory doesn't contain files.", tmpAlert.getContentText());
     }
 
 }

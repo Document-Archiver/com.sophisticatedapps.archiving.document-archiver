@@ -159,9 +159,6 @@ class AppTest extends BaseTest {
     @Test
     void testStart() throws IllegalAccessException {
 
-        // Start clean
-        FieldUtils.writeStaticField(App.class, "filesFromArgs", null, true);
-
         // Mock the stage
         Stage tmpMockedStage = Mockito.mock(Stage.class);
         ObservableMap<Object, Object> tmpPropertiesMap = FXCollections.observableMap(new HashMap<>());
@@ -191,6 +188,8 @@ class AppTest extends BaseTest {
         doReturn(tmpMockedHeightProperty).when(tmpMockedStage).heightProperty();
 
         // Start the App
+        List<File> tmpFilesFromArgs = Collections.singletonList(TEST_TEXT_FILE);
+        FieldUtils.writeStaticField(App.class, "filesFromArgs", tmpFilesFromArgs, true);
         Platform.runLater(() -> (new App()).start(tmpMockedStage));
 
         WaitForAsyncUtils.waitForFxEvents();
@@ -204,24 +203,12 @@ class AppTest extends BaseTest {
         assertEquals(Scene.class, tmpPropertiesMap.get("theScene").getClass());
         verify(tmpMockedStage, Mockito.times(1)).show();
 
-        assertNull(tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
-        assertNull(tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
+        assertEquals(tmpFilesFromArgs, tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
+        assertEquals(TEST_TEXT_FILE, tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
 
         assertEquals(HostServices.class, tmpPropertiesMap.get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY).getClass());
         assertEquals(Image.class, tmpIconsList.get(0).getClass());
         //assertTrue(Taskbar.getTaskbar().getIconImage() instanceof java.awt.Image);
-
-        // Start the App again with "filesFromArgs"
-        tmpPropertiesMap.clear();
-        List<File> tmpFilesFromArgs = Collections.singletonList(TEST_TEXT_FILE);
-        FieldUtils.writeStaticField(App.class, "filesFromArgs", tmpFilesFromArgs, true);
-
-        Platform.runLater(() -> (new App()).start(tmpMockedStage));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        assertEquals(tmpFilesFromArgs, tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
-        assertEquals(TEST_TEXT_FILE, tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
     }
 
 }

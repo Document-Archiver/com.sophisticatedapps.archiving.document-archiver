@@ -22,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class FXMLUtil {
 
@@ -48,7 +49,7 @@ public class FXMLUtil {
             R tmpRegion = tmpRegionLoader.load();
             C tmpBaseController = tmpRegionLoader.getController();
 
-            if (tmpBaseController != null) {
+            if (!Objects.isNull(tmpBaseController)) {
 
                 tmpBaseController.rampUp(aStage);
             }

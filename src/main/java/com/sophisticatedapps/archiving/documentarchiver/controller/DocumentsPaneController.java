@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class DocumentsPaneController extends BaseController {
 
@@ -48,7 +49,7 @@ public class DocumentsPaneController extends BaseController {
 
                 super.updateItem(aFile, anEmpty);
 
-                if (anEmpty || (aFile == null)) {
+                if (anEmpty || Objects.isNull(aFile)) {
 
                     setText(null);
                 }
@@ -75,7 +76,7 @@ public class DocumentsPaneController extends BaseController {
      */
     private void handleAllDocumentsChanged(List<File> aNewAllDocumentsList) {
 
-        if (aNewAllDocumentsList != null) {
+        if (!Objects.isNull(aNewAllDocumentsList)) {
 
             documentsListView.getItems().setAll(aNewAllDocumentsList);
         }
@@ -92,7 +93,7 @@ public class DocumentsPaneController extends BaseController {
      */
     private void handleCurrentDocumentChanged(File aNewCurrentDocument) {
 
-        if (aNewCurrentDocument != null) {
+        if (!Objects.isNull(aNewCurrentDocument)) {
 
             final ObservableList<File> tmpItems = documentsListView.getItems();
 

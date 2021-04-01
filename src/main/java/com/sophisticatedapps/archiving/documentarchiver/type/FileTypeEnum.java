@@ -16,10 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.type;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public enum FileTypeEnum {
 
@@ -111,7 +108,7 @@ public enum FileTypeEnum {
 
         FileTypeEnum tmpResult = LOOKUP.get(aFileExtension.toLowerCase());
 
-        if (tmpResult == null) {
+        if (Objects.isNull(tmpResult)) {
 
             if (aReturnUnsupportedIfNotFound) {
 

@@ -23,20 +23,27 @@ import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.util.Pair;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class MenuBarController extends BaseController {
 
     private static final Map<String,Locale> LOCALES_BY_MENU_ITEM_MAP = Map.of(
             "englishLanguageMenuItem", Locale.ENGLISH, "germanLanguageMenuItem", Locale.GERMAN);
+
     private DialogProvider dialogProvider;
+    private FileChooser fileChooser;
+    private DirectoryChooser directoryChooser;
 
     /**
      * Default constructor.
@@ -48,12 +55,28 @@ public class MenuBarController extends BaseController {
     }
 
     /**
-     * Alternative constructor which allows to pass a custom AlertProvider.
-     * @param   anDialogProvider Custom AlertProvider
+     * Alternative constructor which allows to pass a custom DialogProvider.
+     *
+     * @param   aDialogProvider Custom DialogProvider
      */
-    public MenuBarController(DialogProvider anDialogProvider) {
+    public MenuBarController(DialogProvider aDialogProvider) {
 
-        this.dialogProvider = anDialogProvider;
+        this(new FileChooser(), new DirectoryChooser(), aDialogProvider);
+    }
+
+    /**
+     * Alternative constructor which allows to pass custom File- and DirectoryChooser and DialogProvider.
+     *
+     * @param   aFileChooser        FileChooser to use.
+     * @param   aDirectoryChooser   DirectoryChooser to use.
+     * @param   aDialogProvider     DialogProvider to use.
+     */
+    public MenuBarController(FileChooser aFileChooser, DirectoryChooser aDirectoryChooser,
+                             DialogProvider aDialogProvider) {
+
+        this.fileChooser = aFileChooser;
+        this.directoryChooser = aDirectoryChooser;
+        this.dialogProvider = aDialogProvider;
     }
 
     @FXML
@@ -109,9 +132,37 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
-    protected void handleOpenFilesOrDirectoryMenuItemAction() {
+    protected void handleOpenFilesMenuItemAction() {
 
-        setNewAllDocumentsAndCurrentDocument(null, null);
+        List<File> tmpFilesList = fileChooser.showOpenMultipleDialog(stage);
+
+        if ((!Objects.isNull(tmpFilesList)) && (!tmpFilesList.isEmpty())) {
+
+            // We have to wrap the result in a new List, since the result is not modifiable.
+            setNewAllDocumentsAndCurrentDocument((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
+        }
+    }
+
+    @FXML
+    protected void handleOpenDirectoryMenuItemAction() {
+
+        File tmpDirectory = directoryChooser.showDialog(stage);
+
+        if (!Objects.isNull(tmpDirectory)) {
+
+            List<File> tmpFilesList = Arrays.asList(Objects.requireNonNull(
+                    tmpDirectory.listFiles(aFile -> (aFile.isFile() && (!aFile.isHidden())))));
+
+            if (!tmpFilesList.isEmpty()) {
+
+                // We have to wrap the result in a new List, since the result is not modifiable.
+                setNewAllDocumentsAndCurrentDocument((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
+            }
+            else {
+
+                dialogProvider.provideDirectoryDoesNotContainFilesAlert().showAndWait();
+            }
+        }
     }
 
     @FXML
@@ -139,7 +190,7 @@ public class MenuBarController extends BaseController {
         public Dialog<ButtonType> provideAboutDialog() {
 
             return (new Alert(Alert.AlertType.NONE,
-                    LanguageUtil.i18n("menu-bar-controller.alert-provider.about-alert"),
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.about-dialog"),
                     ButtonType.CLOSE));
         }
 
@@ -157,15 +208,22 @@ public class MenuBarController extends BaseController {
         public Alert providePreferencesChangedAlert() {
 
             return (new Alert(Alert.AlertType.INFORMATION,
-                    LanguageUtil.i18n("menu-bar-controller.alert-provider.preferences-changed-alert"),
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert"),
                     ButtonType.CLOSE));
         }
 
         public Alert providePreferencesChangedAlert(Locale aLanguageLocale) {
 
             return (new Alert(Alert.AlertType.INFORMATION,
-                    LanguageUtil.i18n("menu-bar-controller.alert-provider.preferences-changed-alert",
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert",
                             aLanguageLocale),
+                    ButtonType.CLOSE));
+        }
+
+        public Alert provideDirectoryDoesNotContainFilesAlert() {
+
+            return (new Alert(Alert.AlertType.WARNING,
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.directory-does-not-contain-files-alert"),
                     ButtonType.CLOSE));
         }
     }

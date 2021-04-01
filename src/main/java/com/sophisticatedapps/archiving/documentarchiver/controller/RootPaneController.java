@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -28,6 +29,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RootPaneController extends BaseController {
 
@@ -35,10 +37,11 @@ public class RootPaneController extends BaseController {
     private final List<ChangeListener<Number>> stageWidthPropertyListenersList = new ArrayList<>();
     private final List<ChangeListener<Number>> stageHeightPropertyListenersList = new ArrayList<>();
 
+    private MenuBarController menuBarController;
+
     private Pane documentsPane;
     private Pane displayFilePane;
     private Pane infoPane;
-    private Pane chooseFilesOrDirectoryPane;
 
     @FXML
     private BorderPane rootPane;
@@ -57,21 +60,18 @@ public class RootPaneController extends BaseController {
                 FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", stage);
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpInfoPaneControllerRegionPair =
                 FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", stage);
-        FXMLUtil.ControllerRegionPair<ChooseFilesOrDirectoryPaneController,Pane>
-                tmpChooseFilesOrDirectoryPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/ChooseFilesOrDirectoryPane.fxml", stage);
+
+        menuBarController = tmpMenuBarControllerRegionPair.getController();
 
         documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         displayFilePane = tmpDisplayFilePaneControllerRegionPair.getRegion();
         infoPane = tmpInfoPaneControllerRegionPair.getRegion();
-        chooseFilesOrDirectoryPane = tmpChooseFilesOrDirectoryPaneControllerRegionPair.getRegion();
 
         // Remember the controller for later
-        paneControllerList.add(tmpMenuBarControllerRegionPair.getController());
+        paneControllerList.add(menuBarController);
         paneControllerList.add(tmpDocumentsPaneControllerRegionPair.getController());
         paneControllerList.add(tmpDisplayFilePaneControllerRegionPair.getController());
         paneControllerList.add(tmpInfoPaneControllerRegionPair.getController());
-        paneControllerList.add(tmpChooseFilesOrDirectoryPaneControllerRegionPair.getController());
 
         // Set MenuBar
         rootPane.setTop(tmpMenuBarControllerRegionPair.getRegion());
@@ -142,19 +142,23 @@ public class RootPaneController extends BaseController {
      */
     private void handleCurrentDocumentChanged(File aNewCurrentDocument) {
 
-        if (aNewCurrentDocument != null) {
+        if (!Objects.isNull(aNewCurrentDocument)) {
 
-            stage.setTitle("Archiving: ".concat(aNewCurrentDocument.getPath()));
+            stage.setTitle(LanguageUtil.i18n("root-pane-controller.stage.title.archiving-now",
+                    aNewCurrentDocument.getPath()));
+
             rootPane.setLeft(documentsPane);
             rootPane.setCenter(displayFilePane);
             rootPane.setRight(infoPane);
         }
         else {
 
-            stage.setTitle("Choose file(s) or directory");
+            stage.setTitle(LanguageUtil.i18n("root-pane-controller.stage.title.choose-files"));
             rootPane.setLeft(null);
-            rootPane.setCenter(chooseFilesOrDirectoryPane);
+            rootPane.setCenter(null);
             rootPane.setRight(null);
+
+            menuBarController.handleOpenFilesMenuItemAction();
         }
     }
 

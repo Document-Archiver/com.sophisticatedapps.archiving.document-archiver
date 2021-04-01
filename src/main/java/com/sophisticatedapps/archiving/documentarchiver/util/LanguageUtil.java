@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -73,14 +74,22 @@ public class LanguageUtil {
                 (aLocale -> ResourceBundle.getBundle(I18N_BUNDLE_BASENAME, aLanguageLocale)));
     }
 
-    public static String i18n(String aPropertyKey) {
+    public static String i18n(String aPropertyKey, Object... aParams) {
 
-        return getResourceBundleForCurrentLanguage().getString(aPropertyKey);
+        return i18n(aPropertyKey, CURRENT_LANGUAGE_LOCALE, aParams);
     }
 
-    public static String i18n(String aPropertyKey, Locale aLanguageLocale) {
+    public static String i18n(String aPropertyKey, Locale aLanguageLocale, Object... aParams) {
 
-        return getResourceBundleForLanguageLocale(aLanguageLocale).getString(aPropertyKey);
+        if (aParams.length < 1) {
+
+            return getResourceBundleForLanguageLocale(aLanguageLocale).getString(aPropertyKey);
+        }
+        else {
+
+            return MessageFormat.format(
+                    getResourceBundleForLanguageLocale(aLanguageLocale).getString(aPropertyKey), aParams);
+        }
     }
 
 }

@@ -96,7 +96,7 @@ public class App extends Application {
                 (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", aPrimaryStage).getRegion();
 
         // Set files from args to stage properties
-        if ((filesFromArgs != null) && (!filesFromArgs.isEmpty())) {
+        if ((!Objects.isNull(filesFromArgs)) && (!filesFromArgs.isEmpty())) {
 
             tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, filesFromArgs);
             tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, filesFromArgs.get(0));

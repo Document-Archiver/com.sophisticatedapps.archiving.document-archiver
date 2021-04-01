@@ -19,20 +19,26 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import javafx.application.Platform;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.RootPaneController".
@@ -97,6 +103,56 @@ class RootPaneControllerTest extends BaseTest {
         assertEquals(505, ((Pane)rootPane.getLeft()).getPrefHeight());
         assertEquals(505, ((Pane)rootPane.getCenter()).getPrefHeight());
         assertEquals(505, ((Pane)rootPane.getRight()).getPrefHeight());
+    }
+
+    @Test
+    void testHandleCurrentDocumentChanged() {
+
+        Platform.runLater(() -> {
+
+            try {
+
+                MethodUtils.invokeMethod(rootPaneController, true, "handleCurrentDocumentChanged", TEST_TEXT_FILE2);
+            }
+            catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+
+                fail(e);
+            }
+        });
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertEquals("Archiving: ".concat(TEST_TEXT_FILE2.getPath()), rootPaneController.stage.getTitle());
+        assertEquals(VBox.class, rootPane.getLeft().getClass());
+        assertEquals(Pane.class, rootPane.getCenter().getClass());
+        assertEquals(VBox.class, rootPane.getRight().getClass());
+    }
+
+    @Test
+    void testHandleCurrentDocumentChanged_to_null() throws IllegalAccessException {
+
+        MenuBarController tmpMockedMenuBarController = Mockito.mock(MenuBarController.class);
+        FieldUtils.writeField(rootPaneController, "menuBarController", tmpMockedMenuBarController, true);
+
+        Platform.runLater(() -> {
+
+            try {
+
+                MethodUtils.invokeMethod(rootPaneController, true, "handleCurrentDocumentChanged", (File)null);
+            }
+            catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+
+                fail(e);
+            }
+        });
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        verify(tmpMockedMenuBarController, Mockito.times(1)).handleOpenFilesMenuItemAction();
+        assertEquals("Choose file(s)", rootPaneController.stage.getTitle());
+        assertNull(rootPane.getLeft());
+        assertNull(rootPane.getCenter());
+        assertNull(rootPane.getRight());
     }
 
 }

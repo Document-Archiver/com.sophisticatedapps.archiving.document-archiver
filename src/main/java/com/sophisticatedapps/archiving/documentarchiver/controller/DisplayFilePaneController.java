@@ -150,7 +150,7 @@ public class DisplayFilePaneController extends BaseController {
      */
     private void handleCurrentDocumentChanged(File aNewCurrentDocument) {
 
-        if (aNewCurrentDocument != null) {
+        if (!Objects.isNull(aNewCurrentDocument)) {
 
             try {
 

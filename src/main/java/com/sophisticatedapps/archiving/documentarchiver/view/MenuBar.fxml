@@ -18,7 +18,8 @@
     </Menu>
     <Menu mnemonicParsing="false" text="%menu-bar.file-menu">
       <items>
-        <MenuItem mnemonicParsing="false" onAction="#handleOpenFilesOrDirectoryMenuItemAction" text="%menu-bar.file-menu.open-files-or-directory-menu-item" />
+        <MenuItem mnemonicParsing="false" onAction="#handleOpenFilesMenuItemAction" text="%menu-bar.file-menu.open-files-menu-item" />
+            <MenuItem mnemonicParsing="false" onAction="#handleOpenDirectoryMenuItemAction" text="%menu-bar.file-menu.open-directory-menu-item" />
       </items>
     </Menu>
     <Menu mnemonicParsing="false" text="%menu-bar.help-menu">
