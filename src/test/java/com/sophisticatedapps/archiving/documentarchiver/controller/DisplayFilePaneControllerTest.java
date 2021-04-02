@@ -32,6 +32,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -119,6 +120,21 @@ class DisplayFilePaneControllerTest extends BaseTest {
 
         TextArea tmpTextArea = (TextArea)tmpDisplayPaneChildren.get(0);
         assertEquals(555, tmpTextArea.getPrefHeight());
+    }
+
+    @Test
+    void testHandleCurrentDocumentChangedToPDFFile() {
+
+        displayFilePaneController.setNewCurrentDocument(TEST_PDF_FILE);
+
+        // Wait until sub Panes are set.
+        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
+        await().atMost(10, TimeUnit.SECONDS)
+                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+
+        // Now there should be a TextArea on our display file Pane.
+        Pane tmpPDFPane = (Pane)tmpDisplayPaneChildren.get(0);
+        assertEquals(WebView.class, tmpPDFPane.getChildren().get(0).getClass());
     }
 
     @Test

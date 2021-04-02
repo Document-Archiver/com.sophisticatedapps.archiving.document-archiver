@@ -24,6 +24,7 @@ import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -49,6 +50,7 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -338,7 +340,7 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testHandleSubmitButtonAction() throws IOException {
+    void testHandleSubmitButtonAction() throws IOException, IllegalAccessException {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
         File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
@@ -360,9 +362,14 @@ class InfoPaneControllerTest extends BaseTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
+        Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
+        when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.NEXT));
+        InfoPaneController.AlertProvider tmpMockedAlertProvider = Mockito.mock(InfoPaneController.AlertProvider.class);
+        when(tmpMockedAlertProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
+        FieldUtils.writeField(infoPaneController, "alertProvider", tmpMockedAlertProvider, true);
+
         // "Click" submit
-        Button tmpSubmitButton = (Button)infoPane.lookup("#submitButton");
-        tmpSubmitButton.getOnAction().handle(null);
+        Platform.runLater(() -> infoPaneController.handleSubmitButtonAction());
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -380,6 +387,10 @@ class InfoPaneControllerTest extends BaseTest {
                 (tmpDateString + "--" + tmpDescription + "__Java_Swift.txt"));
 
         assertTrue(tmpTargetFile.exists());
+
+        // Current document and all documents list should be null/empty
+        assertNull(infoPaneController.getCurrentDocument());
+        assertTrue(infoPaneController.getAllDocuments().isEmpty());
 
         // Cleanup
         assertTrue(tmpTargetFile.delete());
@@ -504,6 +515,27 @@ class InfoPaneControllerTest extends BaseTest {
         Alert tmpAlert = tmpAlertList.get(0);
         assertNotNull(tmpAlert);
         assertEquals("This is a test", tmpAlert.getContentText());
+    }
+
+    @Test
+    void testAlertProvider_provideAllDoneAlert() {
+
+        InfoPaneController.AlertProvider tmpAlertProvider = new InfoPaneController.AlertProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.provideAllDoneAlert()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertTrue(tmpAlert.getContentText().startsWith("All done :-)"));
+
+        ObservableList<ButtonType> tmpButtonTypes = tmpAlert.getButtonTypes();
+        assertEquals("Archive another document", tmpButtonTypes.get(0).getText());
+        assertEquals(ButtonBar.ButtonData.NEXT_FORWARD, tmpButtonTypes.get(0).getButtonData());
+        assertEquals("Close App", tmpButtonTypes.get(1).getText());
+        assertEquals(ButtonBar.ButtonData.FINISH, tmpButtonTypes.get(1).getButtonData());
     }
 
 }

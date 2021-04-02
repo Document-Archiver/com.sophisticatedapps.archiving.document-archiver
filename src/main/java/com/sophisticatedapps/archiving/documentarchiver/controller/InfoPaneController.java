@@ -22,6 +22,7 @@ import com.sophisticatedapps.archiving.documentarchiver.model.Tags;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.beans.property.BooleanProperty;
@@ -234,7 +235,7 @@ public class InfoPaneController extends BaseController {
             LocalDate tmpCurrentValue = datePicker.getValue();
             LocalDate tmpValueOfText = datePicker.getConverter().fromString(datePicker.getEditor().getText());
 
-            if(!tmpCurrentValue.equals(tmpValueOfText)) {
+            if(!String.valueOf(tmpCurrentValue).equals(String.valueOf(tmpValueOfText))) {
 
                 datePicker.setValue(tmpValueOfText);
             }
@@ -350,13 +351,30 @@ public class InfoPaneController extends BaseController {
 
             List<File> tmpAllDocuments = getAllDocuments();
             tmpAllDocuments.remove(tmpCurrentDocument);
+            boolean tmpContinueWithNext = true;
 
-            // Trigger listeners by first setting the all documents List to null
-            // (just removing a file from the list will not trigger listeners).
-            setNewAllDocuments(null);
+            // All done? Show dialog asking the user to continue.
+            if (tmpAllDocuments.isEmpty()) {
 
-            setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
-                    (tmpAllDocuments.isEmpty() ? null : tmpAllDocuments.get(0)));
+                Optional<ButtonType> tmpChoice = alertProvider.provideAllDoneAlert().showAndWait();
+                if (tmpChoice.isPresent()) {
+                    tmpContinueWithNext = (ButtonBar.ButtonData.NEXT_FORWARD == tmpChoice.get().getButtonData());
+                }
+            }
+
+            if (tmpContinueWithNext) {
+
+                // Trigger listeners by first setting the all documents List to null
+                // (just removing a file from the list will not trigger listeners).
+                setNewAllDocuments(null);
+
+                setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
+                        (tmpAllDocuments.isEmpty() ? null : tmpAllDocuments.get(0)));
+            }
+            else {
+
+                stage.hide();
+            }
         }
         catch (IOException e) {
 
@@ -461,9 +479,23 @@ public class InfoPaneController extends BaseController {
 
     protected static class AlertProvider {
 
+        private static final ButtonType CONTINUE_BUTTON_TYPE = new ButtonType(
+                LanguageUtil.i18n("info-pane-controller.alert-provider.all-done-alert.continue-button.text"),
+                ButtonBar.ButtonData.NEXT_FORWARD);
+        private static final ButtonType CLOSE_APP_BUTTON_TYPE = new ButtonType(
+                LanguageUtil.i18n("info-pane-controller.alert-provider.all-done-alert.close-app-button.text"),
+                ButtonBar.ButtonData.FINISH);
+
         public Alert provideArchiveFileNotSuccessfulAlert(Exception anException) {
 
             return (new Alert(Alert.AlertType.ERROR, anException.getMessage(), ButtonType.CLOSE));
+        }
+
+        public Alert provideAllDoneAlert() {
+
+            return (new Alert(Alert.AlertType.INFORMATION,
+                    LanguageUtil.i18n("info-pane-controller.alert-provider.all-done-alert.content-text"),
+                    CONTINUE_BUTTON_TYPE, CLOSE_APP_BUTTON_TYPE));
         }
     }
 

@@ -18,12 +18,12 @@ package com.sophisticatedapps.archiving.documentarchiver.view;
 
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.controller.DocumentsPaneController;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -41,8 +41,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(ApplicationExtension.class)
 class DocumentsPaneTest extends BaseTest {
 
-    private Pane documentsPane;
     private Stage stage;
+    private Pane documentsPane;
+    private DocumentsPaneController documentsPaneController;
 
     /**
      * Will be called with {@code @Before} semantics, i. e. before each test method.
@@ -57,7 +58,10 @@ class DocumentsPaneTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        documentsPane = (VBox)FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", stage).getRegion();
+        FXMLUtil.ControllerRegionPair<DocumentsPaneController,Pane> tmpDocumentsPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", aStage);
+        documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
+        documentsPaneController = tmpDocumentsPaneControllerRegionPair.getController();
 
         aStage.setScene(new Scene(documentsPane));
         aStage.show();
@@ -67,7 +71,10 @@ class DocumentsPaneTest extends BaseTest {
     @AfterEach
     public void cleanUpEach() {
 
+        documentsPaneController.rampDown();
+
         documentsPane = null;
+        documentsPaneController = null;
         stage = null;
     }
 
@@ -77,6 +84,10 @@ class DocumentsPaneTest extends BaseTest {
     @Test
     void testDocumentsListView() {
 
+        @SuppressWarnings("unchecked")
+        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
+        tmpDocumentsListView.setPrefHeight(250);
+
         Platform.runLater(() -> {
 
             stage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, ALL_DOCUMENTS_LIST);
@@ -85,12 +96,19 @@ class DocumentsPaneTest extends BaseTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        @SuppressWarnings("unchecked")
-        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
-
         assertTrue(tmpDocumentsListView.getItems().containsAll(ALL_DOCUMENTS_LIST));
         assertSame(TEST_JPG_FILE, tmpDocumentsListView.getFocusModel().getFocusedItem());
         assertSame(TEST_JPG_FILE, tmpDocumentsListView.getSelectionModel().getSelectedItem());
+
+        Platform.runLater(() -> {
+
+            stage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
+            stage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
+        });
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertTrue(tmpDocumentsListView.getItems().isEmpty());
     }
 
 }

@@ -152,6 +152,43 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
+    void handlePreferencesMenuItemAction_with_exception() throws IllegalAccessException, IOException {
+
+        // Exchange the local properties directory
+        File tmpOriginalLocalPropertiesDirectory = (File) FieldUtils.readStaticField(
+                PropertiesUtil.class, "localPropertiesDirectory", true);
+        File tmpTempLocalPropertiesDirectory = new File(tempDir, NUL_CHARACTER_STRING);
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpTempLocalPropertiesDirectory, true);
+
+        MenuBarController.DialogProvider tmpMockedDialogProvider = Mockito.mock(MenuBarController.DialogProvider.class);
+
+        Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
+        when(tmpMockedDialogProvider.providePreferencesChangedAlert()).thenReturn(tmpMockedPreferencesChangedAlert);
+
+        Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
+        when(tmpMockedDialog.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
+
+        doAnswer(anInvocationOnMock -> {
+            Pane tmpPreferencesPane = anInvocationOnMock.getArgument(0);
+            ((TextField)tmpPreferencesPane.getChildren().get(1)).setText("/foo/bar/snafu");
+            ((TextArea)tmpPreferencesPane.getChildren().get(3)).setText("ha ,hi, ho");
+            return tmpMockedDialog;
+        }).when(tmpMockedDialogProvider).providePreferencesDialog(any(Pane.class));
+
+        FieldUtils.writeField(menuBarController,"dialogProvider", tmpMockedDialogProvider, true);
+
+        // Call method
+        Throwable tmpException =
+                assertThrows(RuntimeException.class, () -> menuBarController.handlePreferencesMenuItemAction());
+        assertEquals("Could not write properties: Invalid file path", tmpException.getMessage());
+
+        // Change local properties directory back
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpOriginalLocalPropertiesDirectory, true);
+    }
+
+    @Test
     void handleQuitMenuItemAction() {
 
         Stage tmpMockedStage = Mockito.mock(Stage.class);
