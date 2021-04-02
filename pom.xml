@@ -6,7 +6,7 @@
 
   <groupId>com.sophisticatedapps.archiving</groupId>
   <artifactId>document-archiver</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0-SNAPSHOT</version>
 
   <name>DocumentArchiver</name>
   <url>https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver</url>

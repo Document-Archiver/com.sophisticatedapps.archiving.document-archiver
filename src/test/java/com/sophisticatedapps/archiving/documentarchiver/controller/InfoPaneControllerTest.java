@@ -398,6 +398,63 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
+    void testHandleSubmitButtonAction_with_close_app() throws IOException, IllegalAccessException {
+
+        DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
+        File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
+        List<File> tmpNewAllDocuments = new ArrayList<>();
+        tmpNewAllDocuments.add(tmpNewCurrentDocument);
+
+        // Write some stuff to the new file
+        try (FileWriter tmpFileWriter = new FileWriter(tmpNewCurrentDocument)) {
+            tmpFileWriter.write("snafu");
+        }
+
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        tmpSelectedTagsListView.getItems().addAll("Java", "Swift");
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
+        when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.FINISH));
+        InfoPaneController.AlertProvider tmpMockedAlertProvider = Mockito.mock(InfoPaneController.AlertProvider.class);
+        when(tmpMockedAlertProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
+        FieldUtils.writeField(infoPaneController, "alertProvider", tmpMockedAlertProvider, true);
+
+        // "Click" submit
+        Platform.runLater(() -> infoPaneController.handleSubmitButtonAction());
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // File should be moved, so not be existing on the original path any more.
+        assertFalse(tmpNewCurrentDocument.exists());
+
+        // File should exist in (test) archiving folder
+        LocalDate tmpFileDate = ((DatePicker)infoPane.lookup("#datePicker")).getValue();
+        String tmpDateString = GlobalConstants.FILENAME_ONLY_DATE_DATE_TIME_FORMATTER.format(tmpFileDate);
+        String tmpDescription = ((TextField)infoPane.lookup("#descriptionTextField")).getText();
+
+        File tmpArchivingFolder =
+                DirectoryUtil.getArchivingFolder(FileTypeGroupEnum.TEXTS, tmpFileDate.getYear());
+        File tmpTargetFile = new File(tmpArchivingFolder,
+                (tmpDateString + "--" + tmpDescription + "__Java_Swift.txt"));
+
+        assertTrue(tmpTargetFile.exists());
+
+        // Stage should be hidden.
+        assertFalse(infoPaneController.stage.isShowing());
+
+        // Cleanup
+        assertTrue(tmpTargetFile.delete());
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+    }
+
+    @Test
     void testHandleSubmitButtonAction_file_exists_in_archive() throws IllegalAccessException {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
