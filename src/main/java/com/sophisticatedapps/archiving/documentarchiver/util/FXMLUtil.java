@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.controller.BaseController;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -39,12 +39,29 @@ public class FXMLUtil {
      * @param   aStage          Stage to set to the controller.
      * @return  A ControllerRegionPair object.
      */
-    public static <C extends BaseController,R> ControllerRegionPair<C,R> loadAndRampUpRegion(String aFxmlResource, Stage aStage) {
+    public static <C extends BaseController,R> ControllerRegionPair<C,R>
+            loadAndRampUpRegion(String aFxmlResource, Stage aStage) {
+
+        return loadAndRampUpRegion(aFxmlResource, aStage, GlobalConstants.DEFAULT_RESOURCE_LOAD_CONTEXT);
+    }
+
+    /**
+     * Loads a Region object and ramps up its controller.
+     *
+     * @param   aFxmlResource           FXML-resource to load.
+     * @param   aStage                  Stage to set to the controller.
+     * @param   aResourceLoadContext    A ResourceLoadContext to find (language-)resources.
+     * @return  A ControllerRegionPair object.
+     */
+    public static <C extends BaseController,R> ControllerRegionPair<C,R>
+            loadAndRampUpRegion(String aFxmlResource, Stage aStage, ResourceLoadContext aResourceLoadContext) {
 
         try {
 
-            FXMLLoader tmpRegionLoader = new FXMLLoader(App.class.getResource(aFxmlResource));
-            tmpRegionLoader.setResources(LanguageUtil.getResourceBundleForCurrentLanguage());
+            FXMLLoader tmpRegionLoader =
+                    new FXMLLoader(aResourceLoadContext.getSearchBase().getResource(aFxmlResource));
+            tmpRegionLoader.setResources(
+                    LanguageUtil.getResourceBundleForCurrentLanguage(aResourceLoadContext));
 
             R tmpRegion = tmpRegionLoader.load();
             C tmpBaseController = tmpRegionLoader.getController();

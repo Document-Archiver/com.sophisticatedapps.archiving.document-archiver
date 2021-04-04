@@ -16,6 +16,8 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -25,7 +27,6 @@ import java.util.ResourceBundle;
 
 public class LanguageUtil {
 
-    private static final String I18N_BUNDLE_BASENAME = "document-archiver-i18n";
     private static final Map<Locale, ResourceBundle> RESOURCE_BUNDLE_CACHE = new HashMap<>();
     private static final Locale CURRENT_LANGUAGE_LOCALE = PropertiesUtil.LANGUAGE_LOCALE;
 
@@ -68,10 +69,22 @@ public class LanguageUtil {
         return getResourceBundleForLanguageLocale(CURRENT_LANGUAGE_LOCALE);
     }
 
+    public static ResourceBundle getResourceBundleForCurrentLanguage(ResourceLoadContext aResourceLoadContext) {
+
+        return getResourceBundleForLanguageLocale(CURRENT_LANGUAGE_LOCALE, aResourceLoadContext);
+    }
+
     public static ResourceBundle getResourceBundleForLanguageLocale(Locale aLanguageLocale) {
 
+        return getResourceBundleForLanguageLocale(aLanguageLocale, GlobalConstants.DEFAULT_RESOURCE_LOAD_CONTEXT);
+    }
+
+    public static ResourceBundle getResourceBundleForLanguageLocale(Locale aLanguageLocale,
+                                                                    ResourceLoadContext aResourceLoadContext) {
+
         return RESOURCE_BUNDLE_CACHE.computeIfAbsent(aLanguageLocale,
-                (aLocale -> ResourceBundle.getBundle(I18N_BUNDLE_BASENAME, aLanguageLocale)));
+                (aLocale -> ResourceBundle.getBundle(aResourceLoadContext.getLanguageResourceBaseName(),
+                        aLanguageLocale, aResourceLoadContext.getSearchBase().getClassLoader())));
     }
 
     public static String i18n(String aPropertyKey, Object... aParams) {

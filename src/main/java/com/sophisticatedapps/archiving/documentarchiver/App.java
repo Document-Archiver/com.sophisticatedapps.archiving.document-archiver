@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import javafx.application.Application;
@@ -96,7 +97,7 @@ public class App extends Application {
                 (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", aPrimaryStage).getRegion();
 
         // Set files from args to stage properties
-        if ((!Objects.isNull(filesFromArgs)) && (!filesFromArgs.isEmpty())) {
+        if (!CollectionUtil.isNullOrEmpty(filesFromArgs)) {
 
             tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, filesFromArgs);
             tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, filesFromArgs.get(0));

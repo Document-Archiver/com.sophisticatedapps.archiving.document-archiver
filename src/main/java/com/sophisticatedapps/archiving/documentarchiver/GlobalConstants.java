@@ -16,6 +16,8 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import com.sophisticatedapps.archiving.documentarchiver.util.ResourceLoadContext;
+
 import java.time.format.DateTimeFormatter;
 
 public class GlobalConstants {
@@ -25,6 +27,9 @@ public class GlobalConstants {
      */
     private GlobalConstants() {
     }
+
+    public static final ResourceLoadContext DEFAULT_RESOURCE_LOAD_CONTEXT =
+            new ResourceLoadContext(App.class, "document-archiver-i18n");
 
     public static final DateTimeFormatter DD_MM_YYYY_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yyyy");

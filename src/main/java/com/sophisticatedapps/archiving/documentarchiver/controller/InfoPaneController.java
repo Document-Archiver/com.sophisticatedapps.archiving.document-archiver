@@ -21,10 +21,7 @@ import com.sophisticatedapps.archiving.documentarchiver.model.Archive;
 import com.sophisticatedapps.archiving.documentarchiver.model.Tags;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
-import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -292,7 +289,7 @@ public class InfoPaneController extends BaseController {
         if (aKeyEvent.getCode().equals(KeyCode.ENTER)) {
 
             String tmpNewTag = StringUtil.retrieveTagNameSafeString(tagsTextField.getText());
-            addToListIfNotContainedYet(selectedTagsListView.getItems(), tmpNewTag);
+            CollectionUtil.addToListIfNotContainedYet(selectedTagsListView.getItems(), tmpNewTag);
             tagsTextField.setText("");
         }
         else if (aKeyEvent.getCode().equals(KeyCode.DOWN) && (!existingTagsListView.getItems().isEmpty())) {
@@ -307,7 +304,7 @@ public class InfoPaneController extends BaseController {
     protected void handleExistingTagsListViewClicked() {
 
         String tmpSelectedItem = existingTagsListView.getSelectionModel().getSelectedItem();
-        addToListIfNotContainedYet(selectedTagsListView.getItems(), tmpSelectedItem);
+        CollectionUtil.addToListIfNotContainedYet(selectedTagsListView.getItems(), tmpSelectedItem);
         tagsTextField.setText("");
         tagsTextField.requestFocus();
     }
@@ -386,14 +383,6 @@ public class InfoPaneController extends BaseController {
 
         ObservableList<String> tmpObservableList = FXCollections.observableList(aNewExistingTagsList);
         existingTagsListView.setItems(new FilteredList<>(tmpObservableList));
-    }
-
-    private void addToListIfNotContainedYet(List<String> aList, String aString) {
-
-        if (!aList.contains(aString)) {
-
-            aList.add(aString);
-        }
     }
 
     /**

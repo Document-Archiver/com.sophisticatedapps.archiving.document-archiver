@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
@@ -136,7 +137,7 @@ public class MenuBarController extends BaseController {
 
         List<File> tmpFilesList = fileChooser.showOpenMultipleDialog(stage);
 
-        if ((!Objects.isNull(tmpFilesList)) && (!tmpFilesList.isEmpty())) {
+        if (!CollectionUtil.isNullOrEmpty(tmpFilesList)) {
 
             // We have to wrap the result in a new List, since the result is not modifiable.
             setNewAllDocumentsAndCurrentDocument((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));

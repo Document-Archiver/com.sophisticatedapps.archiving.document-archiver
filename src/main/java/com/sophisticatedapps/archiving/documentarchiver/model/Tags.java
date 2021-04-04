@@ -20,10 +20,7 @@ import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Tags {
 
@@ -33,16 +30,24 @@ public class Tags {
     private Tags() {
     }
 
+    public static SortedSet<String> getExistingTags() {
+
+        return getExistingTagsFromFolder(DirectoryUtil.getArchivingRootFolder());
+    }
+
     public static SortedSet<String> getExistingTags(FileTypeEnum aFileType) {
+
+        return getExistingTagsFromFolder(DirectoryUtil.getGroupingFolder(aFileType.getFileTypeGroup()));
+    }
+
+    private static SortedSet<String> getExistingTagsFromFolder(File aFolder) {
 
         SortedSet<String> tmpReturn = new TreeSet<>();
 
-        File tmpFileTypeDirectory = DirectoryUtil.getGroupingFolder(aFileType.getFileTypeGroup());
-
         // Check if folder is created yet (may not be the case before first archiving)
-        if (tmpFileTypeDirectory.exists()) {
+        if (aFolder.exists()) {
 
-            getTagsFromDirectory(tmpFileTypeDirectory, tmpReturn);
+            getTagsFromDirectory(aFolder, tmpReturn);
         }
 
         return tmpReturn;
@@ -60,16 +65,29 @@ public class Tags {
             }
             else if (tmpCurrentFile.isFile()) {
 
-                String tmpFileName = tmpCurrentFile.getName();
-                int tmpStartTagsIndex = tmpFileName.lastIndexOf("__");
-                int tmpStopTagsIndex = tmpFileName.lastIndexOf('.');
+                Set<String> tmpFoundTags = getTagsFromFile(tmpCurrentFile);
 
-                if ((tmpStartTagsIndex > 0) && (tmpStopTagsIndex > (tmpStartTagsIndex + 2))) {
+                if (!tmpFoundTags.isEmpty()) {
 
-                    Collections.addAll(aTagSet,
-                            tmpFileName.substring((tmpStartTagsIndex + 2), tmpStopTagsIndex).split("_"));
+                    aTagSet.addAll(tmpFoundTags);
                 }
             }
+        }
+    }
+
+    public static Set<String> getTagsFromFile(File aFile) {
+
+        String tmpFileName = aFile.getName();
+        int tmpStartTagsIndex = tmpFileName.lastIndexOf("__");
+        int tmpStopTagsIndex = tmpFileName.lastIndexOf('.');
+
+        if ((tmpStartTagsIndex > 0) && (tmpStopTagsIndex > (tmpStartTagsIndex + 2))) {
+
+            return Set.of(tmpFileName.substring((tmpStartTagsIndex + 2), tmpStopTagsIndex).split("_"));
+        }
+        else {
+
+            return Collections.emptySet();
         }
     }
 

@@ -10,9 +10,15 @@ module DocumentArchiver {
     requires org.apache.commons.imaging;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
-    opens com.sophisticatedapps.archiving.documentarchiver.type;
+    opens com.sophisticatedapps.archiving.documentarchiver.controller;
     opens com.sophisticatedapps.archiving.documentarchiver.model;
+    opens com.sophisticatedapps.archiving.documentarchiver.type;
     opens com.sophisticatedapps.archiving.documentarchiver.util;
     opens com.sophisticatedapps.archiving.documentarchiver.view;
-    opens com.sophisticatedapps.archiving.documentarchiver.controller;
+
+    exports com.sophisticatedapps.archiving.documentarchiver to ArchiveBrowser;
+    exports com.sophisticatedapps.archiving.documentarchiver.controller to ArchiveBrowser;
+    exports com.sophisticatedapps.archiving.documentarchiver.model to ArchiveBrowser;
+    exports com.sophisticatedapps.archiving.documentarchiver.type to ArchiveBrowser;
+	exports com.sophisticatedapps.archiving.documentarchiver.util to ArchiveBrowser;
 }

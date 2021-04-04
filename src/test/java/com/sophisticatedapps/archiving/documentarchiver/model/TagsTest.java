@@ -39,9 +39,39 @@ class TagsTest extends BaseTest {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
 
+        SortedSet<String> tmpResult = Tags.getExistingTags();
+
+        assertEquals("[bar, foo, fu, java, sna, swift]", tmpResult.toString());
+
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+    }
+
+    /**
+     * Test if existing tags are being delivered correctly.
+     */
+    @Test
+    void testGetExistingTags_with_FileType() {
+
+        DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
+
         SortedSet<String> tmpResult = Tags.getExistingTags(FileTypeEnum.TXT);
 
         assertEquals("[bar, foo, fu, sna]", tmpResult.toString());
+
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+    }
+
+    /**
+     * Test if existing tags are being delivered correctly.
+     */
+    @Test
+    void testGetExistingTags_with_FileType_non_existing_target_folder() {
+
+        DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
+
+        SortedSet<String> tmpResult = Tags.getExistingTags(FileTypeEnum.MP4);
+
+        assertEquals("[]", tmpResult.toString());
 
         DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
     }
