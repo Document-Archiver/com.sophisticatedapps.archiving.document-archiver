@@ -34,7 +34,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffField;
@@ -134,7 +133,7 @@ public class InfoPaneController extends BaseController {
                 handleCurrentDocumentChanged((File)aChange.getValueAdded()));
 
         final ChangeListener<Boolean> tmpDatePickerFocusedPropertyListener =
-                ((aChangedValue, anOldValue, aNewValue) -> handleDatePickerValueChanged(aNewValue));
+                ((aChangedValue, anOldValue, aNewValue) -> handleDatePickerFocusedPropertyValueChanged(aNewValue));
         datePickerFocusedPropertyListenersList.add(tmpDatePickerFocusedPropertyListener);
         datePicker.focusedProperty().addListener(tmpDatePickerFocusedPropertyListener);
 
@@ -224,7 +223,7 @@ public class InfoPaneController extends BaseController {
      *
      * @param   aNewValue   Value after change.
      */
-    protected void handleDatePickerValueChanged(boolean aNewValue) {
+    protected void handleDatePickerFocusedPropertyValueChanged(boolean aNewValue) {
 
         // Without this, manual set dates are not taken over
         if (!aNewValue) {
@@ -383,34 +382,6 @@ public class InfoPaneController extends BaseController {
 
         ObservableList<String> tmpObservableList = FXCollections.observableList(aNewExistingTagsList);
         existingTagsListView.setItems(new FilteredList<>(tmpObservableList));
-    }
-
-    /**
-     * StringConverter for DatePickers.
-     */
-    protected static class DatePickerStringConverter extends StringConverter<LocalDate> {
-
-        @Override
-        public String toString(LocalDate aLocalDate) {
-
-            if (Objects.isNull(aLocalDate)) {
-
-                return StringUtil.EMPTY_STRING;
-            }
-
-            return GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER.format(aLocalDate);
-        }
-
-        @Override
-        public LocalDate fromString(String aDateString) {
-
-            if(Objects.isNull(aDateString) || (aDateString.trim().isEmpty())) {
-
-                return null;
-            }
-
-            return LocalDate.parse(aDateString, GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER);
-        }
     }
 
     private interface FileTimeAgent {

@@ -27,10 +27,11 @@
         <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="%menu-bar.help-menu.help-menu-item" />
       </items>
     </Menu>
-      <Menu mnemonicParsing="false" text="%menu-bar.language-menu">
+      <Menu fx:id="languageMenu" mnemonicParsing="false" text="%menu-bar.language-menu">
         <items>
             <MenuItem fx:id="englishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.english-menu-item" />
           <MenuItem fx:id="germanLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.german-menu-item" />
+          <MenuItem fx:id="spanishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.spanish-menu-item" />
         </items>
       </Menu>
   </menus>

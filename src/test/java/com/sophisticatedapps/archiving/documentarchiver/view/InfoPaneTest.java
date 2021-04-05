@@ -113,7 +113,7 @@ class InfoPaneTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         assertEquals("1993-03-16", tmpDatePicker.getValue().toString());
-        verify(infoPaneController, times(2)).handleDatePickerValueChanged(anyBoolean());
+        verify(infoPaneController, times(2)).handleDatePickerFocusedPropertyValueChanged(anyBoolean());
     }
 
     /**
@@ -160,8 +160,8 @@ class InfoPaneTest extends BaseTest {
     private static class TestInfoPaneController extends InfoPaneController {
 
         @Override
-        protected void handleDatePickerValueChanged(boolean aNewValue) {
-            super.handleDatePickerValueChanged(aNewValue);
+        protected void handleDatePickerFocusedPropertyValueChanged(boolean aNewValue) {
+            super.handleDatePickerFocusedPropertyValueChanged(aNewValue);
         }
 
         @Override

@@ -40,7 +40,9 @@ import java.util.*;
 public class MenuBarController extends BaseController {
 
     private static final Map<String,Locale> LOCALES_BY_MENU_ITEM_MAP = Map.of(
-            "englishLanguageMenuItem", Locale.ENGLISH, "germanLanguageMenuItem", Locale.GERMAN);
+            "englishLanguageMenuItem", Locale.ENGLISH,
+            "germanLanguageMenuItem", Locale.GERMAN,
+            "spanishLanguageMenuItem", Locale.forLanguageTag("es"));
 
     private DialogProvider dialogProvider;
     private FileChooser fileChooser;

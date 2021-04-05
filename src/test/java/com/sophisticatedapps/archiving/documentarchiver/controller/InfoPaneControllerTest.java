@@ -22,7 +22,6 @@ import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -167,7 +166,7 @@ class InfoPaneControllerTest extends BaseTest {
         assertNotNull(tmpDatePicker);
 
         tmpDatePicker.getEditor().setText("20.01.1975");
-        infoPaneController.handleDatePickerValueChanged(false);
+        infoPaneController.handleDatePickerFocusedPropertyValueChanged(false);
 
         // Get the value
         LocalDate tmpLocalDate = tmpDatePicker.getValue();
@@ -491,33 +490,6 @@ class InfoPaneControllerTest extends BaseTest {
 
         // Cleanup
         DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
-    }
-
-    @Test
-    void testDatePickerStringConverterToString() {
-
-        InfoPaneController.DatePickerStringConverter tmpDatePickerStringConverter =
-                new InfoPaneController.DatePickerStringConverter();
-
-        LocalDate tmpLocalDate = LocalDate.now();
-
-        assertEquals(GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER.format(tmpLocalDate),
-                tmpDatePickerStringConverter.toString(tmpLocalDate));
-        assertEquals(StringUtil.EMPTY_STRING, tmpDatePickerStringConverter.toString(null));
-    }
-
-    @Test
-    void testDatePickerStringConverterFromString() {
-
-        InfoPaneController.DatePickerStringConverter tmpDatePickerStringConverter =
-                new InfoPaneController.DatePickerStringConverter();
-
-        LocalDate tmpLocalDate = LocalDate.now();
-
-        assertEquals(tmpLocalDate, tmpDatePickerStringConverter
-                .fromString(GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER.format(tmpLocalDate)));
-        assertNull(tmpDatePickerStringConverter.fromString(null));
-        assertNull(tmpDatePickerStringConverter.fromString(StringUtil.EMPTY_STRING));
     }
 
     @Test

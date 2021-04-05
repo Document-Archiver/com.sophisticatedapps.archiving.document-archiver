@@ -98,8 +98,7 @@ class BaseControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Verify listener was called
-        verify(mapChangeListener,
-                Mockito.times(1)).onChanged(any(MapChangeListener.Change.class));
+        verify(mapChangeListener, Mockito.times(1)).onChanged(any(MapChangeListener.Change.class));
     }
 
     @Test
