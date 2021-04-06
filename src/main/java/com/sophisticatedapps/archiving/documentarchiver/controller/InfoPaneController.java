@@ -176,7 +176,7 @@ public class InfoPaneController extends BaseController {
 
     private void setHeights() {
 
-        double tmpTagsListViewsPrefHeight = (infoPane.getPrefHeight() - 330);
+        double tmpTagsListViewsPrefHeight = (infoPane.getPrefHeight() - 350);
         existingTagsListView.setPrefHeight(tmpTagsListViewsPrefHeight);
         selectedTagsListView.setPrefHeight(tmpTagsListViewsPrefHeight);
     }

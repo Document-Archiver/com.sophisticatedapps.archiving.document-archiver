@@ -24,10 +24,7 @@ import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -202,8 +199,12 @@ public class MenuBarController extends BaseController {
             Dialog<ButtonType> tmpDialog = new Dialog<>();
             tmpDialog.setTitle(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.title"));
             tmpDialog.setHeaderText(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.header-text"));
-            tmpDialog.getDialogPane().setContent(aPreferencesPane);
-            tmpDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+            DialogPane tmpDialogPane = tmpDialog.getDialogPane();
+            tmpDialogPane.setContent(aPreferencesPane);
+            tmpDialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            tmpDialogPane.getStylesheets().add(GlobalConstants.DEFAULT_RESOURCE_LOAD_CONTEXT.getSearchBase()
+                    .getResource("view/style.css").toExternalForm());
 
             return tmpDialog;
         }

@@ -119,8 +119,8 @@ class InfoPaneControllerTest extends BaseTest {
         ListView<String> tmpSelectedTagsListView = (ListView<String>)
                 FieldUtils.readField(infoPaneController, "selectedTagsListView", true);
 
-        assertEquals(781, tmpExistingTagsListView.getPrefHeight());
-        assertEquals(781, tmpSelectedTagsListView.getPrefHeight());
+        assertEquals(761, tmpExistingTagsListView.getPrefHeight());
+        assertEquals(761, tmpSelectedTagsListView.getPrefHeight());
     }
 
     @Test
