@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="9.0.1" transformSequenceNumber="9">
-  <directoryPresets config="../../../target/document-archiver-1.3.0.jar" />
+  <directoryPresets config="${compiler:env.HOME}/.m2/repository/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar" />
   <application name="Document Archiver" applicationId="3758-6877-4173-2768" mediaDir="${compiler:env.HOME}/.documentarchiver" shortName="DocumentArchiver" publisher="Stephan Sann" publisherWeb="https://github.com/stephansann" version="1.3.0" macVolumeId="21c4ee8492181466">
     <languages skipLanguageSelection="true">
       <additionalLanguages>
@@ -16,10 +16,13 @@
   </application>
   <files>
     <mountPoints>
-      <mountPoint id="24" />
+      <mountPoint id="45" location="lib" />
     </mountPoints>
     <entries>
-      <fileEntry mountPoint="24" file="../../../target/document-archiver-1.3.0.jar" />
+      <fileEntry mountPoint="45" file="${compiler:env.HOME}/.m2/repository/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar" />
+      <fileEntry mountPoint="45" file="${compiler:env.HOME}/.m2/repository/com/github/Dansoftowner/PDFViewerFX/0.7/PDFViewerFX-0.7.jar" />
+      <fileEntry mountPoint="45" file="${compiler:env.HOME}/.m2/repository/org/apache/commons/commons-imaging/1.0-alpha2/commons-imaging-1.0-alpha2.jar" />
+      <fileEntry mountPoint="45" file="${compiler:env.HOME}/.m2/repository/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0.jar" />
     </entries>
   </files>
   <launchers>
@@ -27,7 +30,10 @@
       <executable name="DocumentArchiver" iconSet="true" executableMode="gui" />
       <java mainClass="com.sophisticatedapps.archiving.documentarchiver.Launcher">
         <classPath>
-          <archive location="document-archiver-1.3.0.jar" failOnError="false" />
+          <archive location="lib/document-archiver-1.3.0.jar" failOnError="false" />
+          <archive location="lib/slf4j-api-1.7.30.jar" failOnError="false" />
+          <archive location="lib/PDFViewerFX-0.7.jar" failOnError="false" />
+          <archive location="lib/commons-imaging-1.0-alpha2.jar" failOnError="false" />
         </classPath>
       </java>
       <vmOptionsFile mode="none" />

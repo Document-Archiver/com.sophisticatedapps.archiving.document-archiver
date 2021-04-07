@@ -45,28 +45,45 @@ Documents will be archived in this manner:
 
 ## How to get it
 
-There are three alternative ways to get Document Archiver. 
+There are four alternative ways to get Document Archiver.
 
-### Option A - Download the last release version (quick and easy 🎁)
+### Option A - Download an installer package (The Lazy Man's Way 🤷‍)
+
+Complete package including Java runtime environment - "all singing and dancing".
+For those who would like to install the application on their system and don't want to deal with things like setting up
+Java or executing commands on the command line.
 
 Depending on your system, download one of the following files:
 
-**[\[ DOWNLOAD - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-linux.jar)
+**[\[ INSTALLER - MACOS \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_macos_1_3_0.dmg)
 -or-
-[\[ DOWNLOAD - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-mac.jar)
+[\[ INSTALLER - WINDOWS \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_windows-x64_1_3_0.exe)**
+
+(Linux version to come soon)
+
+### Option B - Download the last release version JAR file (quick and easy 😌)
+
+If you already have Java on your system, don't feel like installing and don't fear the command line, you can download
+one of the following JAR files (and furthermore save some MBs on your storage).
+
+Depending on your system, download one of the following files:
+
+**[\[ JAR-FILE - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-linux.jar)
 -or-
-[\[ DOWNLOAD - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-win.jar)**
+[\[ JAR_FILE - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-mac.jar)
+-or-
+[\[ JAR-FILE - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-win.jar)**
 
 **Startup (example for macOS - possible variants "linux", "mac", "win")**
 ```
 java -jar document-archiver-1.3-0-mac.jar
 ```
 
-### Option B - Download the latest SNAPSHOT release (get the latest and greatest ✨)
+### Option C - Download the latest SNAPSHOT release (get the latest and greatest ✨)
 
 The latest SNAPSHOT releases can be downloaded here:
 
-**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/)**
+**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/1.4.0-SNAPSHOT)**
 
 Select the JAR file suitable for your system ("linux", "mac" or "win")
 
@@ -75,7 +92,7 @@ Select the JAR file suitable for your system ("linux", "mac" or "win")
 java -jar document-archiver-X.Y.Z-20210324.121919-1-mac.jar
 ```
 
-### Option C - Build it yourself (the nerdy way 🤓)
+### Option D - Build it yourself (the nerdy way 🤓)
 
 ```
 git clone https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver.git
