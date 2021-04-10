@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(ApplicationExtension.class)
 class InfoPaneTest extends BaseTest {
 
-    //private Stage stage;
+    private Stage stage;
     private Pane infoPane;
     private TestInfoPaneController infoPaneController;
 
@@ -62,7 +62,7 @@ class InfoPaneTest extends BaseTest {
     @Start
     public void start(Stage aStage) throws IOException {
 
-        //this.stage = aStage;
+        this.stage = aStage;
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
@@ -82,11 +82,19 @@ class InfoPaneTest extends BaseTest {
     @AfterEach
     public void cleanUpEach() {
 
+        Platform.runLater(() -> {
+            // Do this to trigger the "unload" listener of the InfoPane.
+            stage.getScene().setRoot(new Pane());
+            stage.hide();
+        });
+
+        WaitForAsyncUtils.waitForFxEvents();
+
         infoPaneController.rampDown();
 
         infoPane = null;
         infoPaneController = null;
-        //stage = null;
+        stage = null;
     }
 
     /**

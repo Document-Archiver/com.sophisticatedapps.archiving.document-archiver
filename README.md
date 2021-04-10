@@ -55,11 +55,11 @@ Java or executing commands on the command line.
 
 Depending on your system, download one of the following files:
 
-**[\[ INSTALLER - MACOS \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_macos_1_3_0.dmg)
+**[\[ INSTALLER - LINUX \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_unix_1_3_0.sh)
+-or-
+[\[ INSTALLER - MACOS \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_macos_1_3_0.dmg)
 -or-
 [\[ INSTALLER - WINDOWS \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_windows-x64_1_3_0.exe)**
-
-(Linux version to come soon)
 
 ### Option B - Download the last release version JAR file (quick and easy 😌)
 
