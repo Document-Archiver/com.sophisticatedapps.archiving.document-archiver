@@ -42,7 +42,7 @@ public class DocumentsPaneController extends BaseController {
         super.rampUp(aStage);
 
         // Set cell factory for documents ListView.
-        documentsListView.setCellFactory(param -> new ListCell<>() {
+        documentsListView.setCellFactory(param -> new ListCell<>() { // NOSONAR
 
             @Override
             protected void updateItem(File aFile, boolean anEmpty) {

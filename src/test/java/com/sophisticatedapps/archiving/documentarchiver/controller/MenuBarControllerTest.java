@@ -25,6 +25,7 @@ import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
@@ -281,6 +282,26 @@ class MenuBarControllerTest extends BaseTest {
         verify(tmpDirectoryDoesNotContainFilesAlert, Mockito.times(1)).showAndWait();
         assertNull(menuBarController.getAllDocuments());
         assertNull(menuBarController.getCurrentDocument());
+    }
+
+    @Test
+    void testHandleChangeThemeMenuItemAction() throws IllegalAccessException, IOException {
+
+        Platform.runLater(() -> {
+
+            menuBarController.stage.setScene(new Scene(new Pane()));
+
+            MenuItem tmpMockedMenuItem = Mockito.mock(MenuItem.class);
+            when(tmpMockedMenuItem.getId()).thenReturn("darkThemeMenuItem");
+            ActionEvent tmpMockedActionEvent = Mockito.mock(ActionEvent.class);
+            when(tmpMockedActionEvent.getSource()).thenReturn(tmpMockedMenuItem);
+
+            menuBarController.handleChangeThemeMenuItemAction(tmpMockedActionEvent);
+        });
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertEquals(GlobalConstants.DARK_THEME, menuBarController.stage.getScene().getStylesheets().get(0));
     }
 
     @Test

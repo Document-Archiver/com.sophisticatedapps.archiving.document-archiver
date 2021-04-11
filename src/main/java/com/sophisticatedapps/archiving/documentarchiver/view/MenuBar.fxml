@@ -5,7 +5,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 
-<MenuBar fx:id="menuBar" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController" stylesheets="@style.css">
+<MenuBar fx:id="menuBar" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController">
   <menus>
     <Menu mnemonicParsing="false" text="%menu-bar.document-archiver-menu">
       <items>
@@ -22,6 +22,12 @@
             <MenuItem mnemonicParsing="false" onAction="#handleOpenDirectoryMenuItemAction" text="%menu-bar.file-menu.open-directory-menu-item" />
       </items>
     </Menu>
+      <Menu mnemonicParsing="false" text="%menu-bar.view-menu">
+          <items>
+              <MenuItem fx:id="lightThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.light-theme-menu-item" />
+              <MenuItem fx:id="darkThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.dark-theme-menu-item" />
+          </items>
+      </Menu>
     <Menu mnemonicParsing="false" text="%menu-bar.help-menu">
       <items>
         <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="%menu-bar.help-menu.help-menu-item" />

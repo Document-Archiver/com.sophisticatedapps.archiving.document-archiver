@@ -53,7 +53,7 @@ public class App extends Application {
 
             if(!tmpFile.exists()) {
 
-                System.err.println("File does not exist: ".concat(args[0]));
+                System.err.println("File does not exist: ".concat(args[0])); // NOSONAR
                 return;
             }
 

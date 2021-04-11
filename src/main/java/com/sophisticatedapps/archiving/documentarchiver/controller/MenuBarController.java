@@ -22,6 +22,7 @@ import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.HostServices;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -36,7 +37,11 @@ import java.util.*;
 
 public class MenuBarController extends BaseController {
 
-    private static final Map<String,Locale> LOCALES_BY_MENU_ITEM_MAP = Map.of(
+    private static final Map<String, String> THEMES_BY_MENU_ITEM_MAP = Map.of(
+            "lightThemeMenuItem", GlobalConstants.LIGHT_THEME,
+            "darkThemeMenuItem", GlobalConstants.DARK_THEME);
+
+    private static final Map<String, Locale> LOCALES_BY_MENU_ITEM_MAP = Map.of(
             "englishLanguageMenuItem", Locale.ENGLISH,
             "germanLanguageMenuItem", Locale.GERMAN,
             "spanishLanguageMenuItem", Locale.forLanguageTag("es"));
@@ -166,6 +171,16 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
+    protected void handleChangeThemeMenuItemAction(ActionEvent anEvent) {
+
+        String tmpNewTheme = THEMES_BY_MENU_ITEM_MAP.get(((MenuItem)anEvent.getSource()).getId());
+
+        ObservableList<String> tmpSceneStylesheets = stage.getScene().getStylesheets();
+        tmpSceneStylesheets.clear();
+        tmpSceneStylesheets.add(tmpNewTheme);
+    }
+
+    @FXML
     protected void handleHelpMenuItemAction() {
 
         HostServices tmpHostServices =
@@ -203,8 +218,7 @@ public class MenuBarController extends BaseController {
             DialogPane tmpDialogPane = tmpDialog.getDialogPane();
             tmpDialogPane.setContent(aPreferencesPane);
             tmpDialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-            tmpDialogPane.getStylesheets().add(GlobalConstants.DEFAULT_RESOURCE_LOAD_CONTEXT.getSearchBase()
-                    .getResource("view/style.css").toExternalForm());
+            tmpDialogPane.getStylesheets().add(GlobalConstants.DARK_THEME);
 
             return tmpDialog;
         }

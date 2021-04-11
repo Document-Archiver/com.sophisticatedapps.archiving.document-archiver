@@ -99,7 +99,7 @@ class MenuBarTest extends BaseTest {
             return null;
         }).when(menuBarController).handleChangeLanguageMenuItemAction(any(ActionEvent.class));
 
-        Menu tmpLanguageMenu = menuBar.getMenus().get(3);
+        Menu tmpLanguageMenu = menuBar.getMenus().get(4);
         assertEquals("languageMenu", tmpLanguageMenu.getId());
         MenuItem tmpEnglishLanguageMenuItem = tmpLanguageMenu.getItems().get(0);
         assertEquals("englishLanguageMenuItem", tmpEnglishLanguageMenuItem.getId());

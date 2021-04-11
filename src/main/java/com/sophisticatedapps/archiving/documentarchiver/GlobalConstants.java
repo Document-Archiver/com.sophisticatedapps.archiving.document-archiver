@@ -31,6 +31,11 @@ public class GlobalConstants {
     public static final ResourceLoadContext DEFAULT_RESOURCE_LOAD_CONTEXT =
             new ResourceLoadContext(App.class, "document-archiver-i18n");
 
+    public static final String DARK_THEME =
+            DEFAULT_RESOURCE_LOAD_CONTEXT.getSearchBase().getResource("view/style.css").toExternalForm();
+    public static final String LIGHT_THEME =
+            DEFAULT_RESOURCE_LOAD_CONTEXT.getSearchBase().getResource("view/modena.css").toExternalForm();
+
     public static final DateTimeFormatter DD_MM_YYYY_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yyyy");
     public static final DateTimeFormatter ONLY_TIME_DATE_TIME_FORMATTER =

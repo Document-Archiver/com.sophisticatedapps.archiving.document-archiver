@@ -55,11 +55,19 @@ Java or executing commands on the command line.
 
 Depending on your system, download one of the following files:
 
-**[\[ INSTALLER - LINUX \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_unix_1_3_0.sh)
+**[\[ INSTALLER - LINUX \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.3.0/DocumentArchiver_unix_1_3_0.sh)
 -or-
-[\[ INSTALLER - MACOS \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_macos_1_3_0.dmg)
+[\[ INSTALLER - MACOS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.3.0/DocumentArchiver_macos_1_3_0.dmg)
 -or-
-[\[ INSTALLER - WINDOWS \]](https://www.sophisticatedapps.com/downloads/DocumentArchiver_windows-x64_1_3_0.exe)**
+[\[ INSTALLER - WINDOWS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.3.0/DocumentArchiver_windows-x64_1_3_0.exe)**
+
+Note:  
+The Windows installer package is not code-signed (Why? Just because the required code signing certificates are expensive
+and Document Archiver does not yield any profits.).
+Anyhow it is safe like the both other packages. You just have to tell Windows to keep the downloaded file (in the
+appearing dialog choose "Show more -> Keep anyway") and unblock it afterwards like described
+[here](https://winaero.com/how-to-unblock-files-downloaded-from-internet-in-windows-10/).  
+The macOS installer package is code-signed and notarized by Apple; Linux doesn't check for code-signing.
 
 ### Option B - Download the last release version JAR file (quick and easy 😌)
 
