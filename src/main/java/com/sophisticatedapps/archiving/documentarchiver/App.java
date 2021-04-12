@@ -31,10 +31,8 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class App extends Application {
 
@@ -62,6 +60,7 @@ public class App extends Application {
                 // We have to wrap the result in a new List, since the result is not modifiable.
                 filesFromArgs = new ArrayList<>(
                         Arrays.asList(Objects.requireNonNull(tmpFile.listFiles(File::isFile))));
+                filesFromArgs.sort(Comparator.naturalOrder());
             }
             else {
 

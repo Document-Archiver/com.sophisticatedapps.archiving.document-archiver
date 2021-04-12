@@ -11,6 +11,6 @@
    </padding>
    <children>
       <Label text="%documents-pane.documents-label" />
-      <ListView fx:id="documentsListView" onMouseClicked="#handleDocumentsListViewClicked" />
+      <ListView fx:id="documentsListView" onKeyPressed="#handleDocumentsListKeyPressed" onMouseClicked="#handleDocumentsListViewClicked" />
    </children>
 </VBox>

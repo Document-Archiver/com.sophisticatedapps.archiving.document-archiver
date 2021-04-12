@@ -144,7 +144,9 @@ public class MenuBarController extends BaseController {
         if (!CollectionUtil.isNullOrEmpty(tmpFilesList)) {
 
             // We have to wrap the result in a new List, since the result is not modifiable.
-            setNewAllDocumentsAndCurrentDocument((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
+            List<File> tmpWrapperList = new ArrayList<>(tmpFilesList);
+            tmpWrapperList.sort(Comparator.naturalOrder());
+            setNewAllDocumentsAndCurrentDocument(tmpWrapperList, tmpWrapperList.get(0));
         }
     }
 
@@ -161,7 +163,9 @@ public class MenuBarController extends BaseController {
             if (!tmpFilesList.isEmpty()) {
 
                 // We have to wrap the result in a new List, since the result is not modifiable.
-                setNewAllDocumentsAndCurrentDocument((new ArrayList<>(tmpFilesList)), tmpFilesList.get(0));
+                List<File> tmpWrapperList = new ArrayList<>(tmpFilesList);
+                tmpWrapperList.sort(Comparator.naturalOrder());
+                setNewAllDocumentsAndCurrentDocument(tmpWrapperList, tmpWrapperList.get(0));
             }
             else {
 

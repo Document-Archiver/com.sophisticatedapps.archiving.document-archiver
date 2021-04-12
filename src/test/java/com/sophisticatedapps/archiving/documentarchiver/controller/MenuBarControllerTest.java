@@ -208,8 +208,8 @@ class MenuBarControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Not same, since List will be wrapped into a new List.
-        assertEquals(ALL_DOCUMENTS_LIST, menuBarController.getAllDocuments());
-        assertSame(ALL_DOCUMENTS_LIST.get(0), menuBarController.getCurrentDocument());
+        assertTrue(menuBarController.getAllDocuments().containsAll(ALL_DOCUMENTS_LIST));
+        assertSame(TEST_JPG_FILE, menuBarController.getCurrentDocument());
     }
 
     @Test

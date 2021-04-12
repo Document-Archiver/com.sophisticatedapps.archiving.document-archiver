@@ -316,9 +316,13 @@ public class InfoPaneController extends BaseController {
     protected void handleExistingTagsListViewClicked() {
 
         String tmpSelectedItem = existingTagsListView.getSelectionModel().getSelectedItem();
-        CollectionUtil.addToListIfNotContainedYet(selectedTagsListView.getItems(), tmpSelectedItem);
-        tagsTextField.setText("");
-        tagsTextField.requestFocus();
+
+        if (!Objects.isNull(tmpSelectedItem)) {
+
+            CollectionUtil.addToListIfNotContainedYet(selectedTagsListView.getItems(), tmpSelectedItem);
+            tagsTextField.setText("");
+            tagsTextField.requestFocus();
+        }
     }
 
     @FXML

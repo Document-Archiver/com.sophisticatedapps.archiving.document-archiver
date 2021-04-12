@@ -21,6 +21,7 @@ import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.ProcessesUtil;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -46,6 +47,7 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
@@ -67,7 +69,7 @@ public class DisplayFilePaneController extends BaseController {
         tmpAssemblerMap.put(FileTypeEnum.JPG, DisplayImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.PNG, DisplayImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.GIF, DisplayImageNodeAssembler.class);
-        tmpAssemblerMap.put(FileTypeEnum.HEIC, DisplayUnsupportedFiletypeNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.HEIC, DisplayHeicImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.XML, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.DOC, DisplayUnsupportedFiletypeNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.MP3, DisplayAudioNodeAssembler.class);
@@ -265,6 +267,38 @@ public class DisplayFilePaneController extends BaseController {
             catch (Exception e) {
 
                 throw (new RuntimeException("Image could not be loaded."));
+            }
+        }
+    }
+
+    protected static class DisplayHeicImageNodeAssembler extends DisplayImageNodeAssembler {
+
+        @Override
+        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+
+            // We only support HEIC on Macs
+            if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+
+                try {
+
+                    // Create JPG from HEIC
+                    File tmpTempFile = ProcessesUtil.createTempJpg(aFile);
+
+                    Region tmpReturn = super.assemble(tmpTempFile, aStage, aPrefWidth, aPrefHeight);
+
+                    Files.delete(Paths.get(tmpTempFile.getPath()));
+
+                    return tmpReturn;
+                }
+                catch (IOException e) {
+
+                    return new StackPane(new Label("Problem while loading the HEIC file: " + e.getMessage()));
+                }
+            }
+            else {
+
+                return ((new DisplayUnsupportedFiletypeNodeAssembler())
+                        .assemble(aFile, aStage, aPrefWidth, aPrefHeight));
             }
         }
     }

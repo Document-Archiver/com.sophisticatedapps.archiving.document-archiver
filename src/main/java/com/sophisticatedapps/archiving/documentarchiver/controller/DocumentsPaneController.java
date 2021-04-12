@@ -20,6 +20,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -107,6 +109,16 @@ public class DocumentsPaneController extends BaseController {
     protected void handleDocumentsListViewClicked() {
 
         setNewCurrentDocument(documentsListView.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    protected void handleDocumentsListKeyPressed(KeyEvent aKeyEvent) {
+
+        if (aKeyEvent.getCode().equals(KeyCode.UP) || aKeyEvent.getCode().equals(KeyCode.DOWN)) {
+
+            // Same as if the user would click on an item
+            handleDocumentsListViewClicked();
+        }
     }
 
 }

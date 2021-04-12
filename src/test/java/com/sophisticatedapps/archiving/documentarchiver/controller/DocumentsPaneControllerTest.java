@@ -129,4 +129,77 @@ class DocumentsPaneControllerTest extends BaseTest {
         assertSame(TEST_PDF_FILE, documentsPaneController.getCurrentDocument());
     }
 
+    @Test
+    void testHandleDocumentsListKeyPressed_up() {
+
+        documentsPaneController.setNewAllDocumentsAndCurrentDocument(ALL_DOCUMENTS_LIST, TEST_TEXT_FILE2);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Get documents ListView
+        @SuppressWarnings("unchecked")
+        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
+        assertNotNull(tmpDocumentsListView);
+
+        // Set selection to PDF file
+        tmpDocumentsListView.getSelectionModel().select(2);
+
+        // "Click"
+        documentsPaneController.handleDocumentsListKeyPressed(MOCK_KEY_EVENT_WITH_CODE_UP);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Now the PDF file should be the current document.
+        assertSame(TEST_PDF_FILE, documentsPaneController.getCurrentDocument());
+    }
+
+    @Test
+    void testHandleDocumentsListKeyPressed_down() {
+
+        documentsPaneController.setNewAllDocumentsAndCurrentDocument(ALL_DOCUMENTS_LIST, TEST_TEXT_FILE2);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Get documents ListView
+        @SuppressWarnings("unchecked")
+        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
+        assertNotNull(tmpDocumentsListView);
+
+        // Set selection to PDF file
+        tmpDocumentsListView.getSelectionModel().select(2);
+
+        // "Click"
+        documentsPaneController.handleDocumentsListKeyPressed(MOCK_KEY_EVENT_WITH_CODE_DOWN);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Now the PDF file should be the current document.
+        assertSame(TEST_PDF_FILE, documentsPaneController.getCurrentDocument());
+    }
+
+
+    @Test
+    void testHandleDocumentsListKeyPressed_enter() {
+
+        documentsPaneController.setNewAllDocumentsAndCurrentDocument(ALL_DOCUMENTS_LIST, TEST_TEXT_FILE2);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Get documents ListView
+        @SuppressWarnings("unchecked")
+        ListView<File> tmpDocumentsListView = (ListView<File>)documentsPane.lookup("#documentsListView");
+        assertNotNull(tmpDocumentsListView);
+
+        // Set selection to PDF file
+        tmpDocumentsListView.getSelectionModel().select(2);
+
+        // "Click"
+        documentsPaneController.handleDocumentsListKeyPressed(MOCK_KEY_EVENT_WITH_CODE_ENTER);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // The current document should not be changed.
+        assertSame(TEST_TEXT_FILE2, documentsPaneController.getCurrentDocument());
+    }
+
 }
