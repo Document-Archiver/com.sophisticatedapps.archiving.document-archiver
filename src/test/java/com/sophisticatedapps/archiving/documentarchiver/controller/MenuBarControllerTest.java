@@ -21,6 +21,7 @@ import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -125,6 +126,7 @@ class MenuBarControllerTest extends BaseTest {
         Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
         when(tmpMockedDialogProvider.providePreferencesChangedAlert()).thenReturn(tmpMockedPreferencesChangedAlert);
 
+        @SuppressWarnings("unchecked")
         Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
         when(tmpMockedDialog.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
 
@@ -153,7 +155,7 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
-    void handlePreferencesMenuItemAction_with_exception() throws IllegalAccessException, IOException {
+    void handlePreferencesMenuItemAction_with_exception() throws IllegalAccessException {
 
         // Exchange the local properties directory
         File tmpOriginalLocalPropertiesDirectory = (File) FieldUtils.readStaticField(
@@ -167,6 +169,7 @@ class MenuBarControllerTest extends BaseTest {
         Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
         when(tmpMockedDialogProvider.providePreferencesChangedAlert()).thenReturn(tmpMockedPreferencesChangedAlert);
 
+        @SuppressWarnings("unchecked")
         Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
         when(tmpMockedDialog.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
 
@@ -287,6 +290,13 @@ class MenuBarControllerTest extends BaseTest {
     @Test
     void testHandleChangeThemeMenuItemAction() throws IllegalAccessException, IOException {
 
+        // Exchange the local properties directory
+        File tmpOriginalLocalPropertiesDirectory = (File) FieldUtils.readStaticField(
+                PropertiesUtil.class, "localPropertiesDirectory", true);
+        File tmpTempLocalPropertiesDirectory = new File(tempDir, ".documentarchiver");
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpTempLocalPropertiesDirectory, true);
+
         Platform.runLater(() -> {
 
             menuBarController.stage.setScene(new Scene(new Pane()));
@@ -301,7 +311,14 @@ class MenuBarControllerTest extends BaseTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        assertEquals(GlobalConstants.DARK_THEME, menuBarController.stage.getScene().getStylesheets().get(0));
+        assertEquals(ThemeUtil.ThemeEnum.DARK.getPathToCss(), menuBarController.stage.getScene().getStylesheets().get(0));
+        // Properties updated?
+        Properties tmpReadProperties = PropertiesUtil.readProperties("document-archiver.properties");
+        assertEquals("DARK", tmpReadProperties.getProperty(PropertiesUtil.KEY_APPEARANCE_THEME));
+
+        // Change local properties directory back
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpOriginalLocalPropertiesDirectory, true);
     }
 
     @Test

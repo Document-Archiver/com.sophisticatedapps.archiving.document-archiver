@@ -16,9 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.Application;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
@@ -111,7 +109,9 @@ public class App extends Application {
         placeIcons(aPrimaryStage);
 
         // Show
-        aPrimaryStage.setScene(new Scene(tmpRootPane));
+        Scene tmpScene = new Scene(tmpRootPane);
+        ThemeUtil.applyCurrentTheme(tmpScene);
+        aPrimaryStage.setScene(tmpScene);
         aPrimaryStage.show();
     }
 

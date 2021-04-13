@@ -16,12 +16,11 @@ class ProcessesUtilTest extends BaseTest {
     File tempDir;
 
     @Test
-    void createTempJpg_with_exception() throws IllegalAccessException {
+    void createTempJpg_with_exception() {
 
         File tmpBrokenFile = new File(NUL_CHARACTER_STRING);
 
-        Throwable tmpException =
-                assertThrows(IOException.class, () -> ProcessesUtil.createTempJpg(tmpBrokenFile));
+        assertThrows(IOException.class, () -> ProcessesUtil.createTempJpg(tmpBrokenFile));
     }
 
     @Test

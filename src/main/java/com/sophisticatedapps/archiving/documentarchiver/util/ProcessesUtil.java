@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.Objects;
@@ -24,10 +23,10 @@ public class ProcessesUtil {
 
     public static File createTempJpg(File aSourceFile) throws IOException {
 
-        try {
+        // Create JPG from HEIC
+        File tmpTempFile = File.createTempFile(UUID.randomUUID().toString(), ".jpg", PropertiesUtil.ARCHIVING_ROOT_FOLDER);
 
-            // Create JPG from HEIC
-            File tmpTempFile = File.createTempFile(UUID.randomUUID().toString(), ".jpg", PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        try {
 
             ProcessBuilder tmpProcessBuilder = new ProcessBuilder(getImg2JpgPath(), aSourceFile.getPath(), tmpTempFile.getPath());
             Process tmpProcess = tmpProcessBuilder.start();
@@ -38,18 +37,22 @@ public class ProcessesUtil {
         catch (InterruptedException e) {
 
             Thread.currentThread().interrupt();
+            Files.delete(tmpTempFile.toPath());
             throw (new IOException("Could not create temporary JPG file: " + e.getMessage()));
+        }
+        catch (IOException e) {
+
+            Files.delete(tmpTempFile.toPath());
+            throw e;
         }
     }
 
     protected static String getImg2JpgPath() throws IOException {
 
-        String tmpImg2JpgPath = IMG2JPG_FILE.getPath();
-
         // Is binary already copied? If not, copy and chmod.
         if (!IMG2JPG_FILE.exists()) {
 
-            Path tmpTarget = Paths.get(tmpImg2JpgPath);
+            Path tmpTarget = IMG2JPG_FILE.toPath();
             Files.copy(Objects.requireNonNull(
                     Thread.currentThread().getContextClassLoader().getResourceAsStream("img2jpg")), tmpTarget);
 
@@ -65,7 +68,7 @@ public class ProcessesUtil {
             Files.setPosixFilePermissions(tmpTarget, tmpPerms);
         }
 
-        return tmpImg2JpgPath;
+        return IMG2JPG_FILE.getPath();
     }
 
 }

@@ -26,8 +26,6 @@ import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -79,9 +77,7 @@ public class Archive {
             throw new IOException("File with name '" + tmpNewFile.getPath() + "' exists!");
         }
 
-        Path tmpSource = Paths.get(aFileToMove.getPath());
-        Path tmpTarget = Paths.get(tmpNewFile.getPath());
-        Files.move(tmpSource, tmpTarget);
+        Files.move(aFileToMove.toPath(), tmpNewFile.toPath());
     }
 
 }

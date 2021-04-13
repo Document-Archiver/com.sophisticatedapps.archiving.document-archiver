@@ -33,7 +33,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
@@ -90,7 +89,7 @@ class MenuBarTest extends BaseTest {
      * Test the language selection.
      */
     @Test
-    void testLanguageSelection(FxRobot aFxRobot) {
+    void testLanguageSelection() {
 
         final Map<String, Object> tmpFiredMenuItemMap = new HashMap<>();
 
@@ -108,23 +107,17 @@ class MenuBarTest extends BaseTest {
         MenuItem tmpSpanishLanguageMenuItem = tmpLanguageMenu.getItems().get(2);
         assertEquals("spanishLanguageMenuItem", tmpSpanishLanguageMenuItem.getId());
 
-        Platform.runLater(() -> {
-            tmpEnglishLanguageMenuItem.fire();
-        });
+        Platform.runLater(tmpEnglishLanguageMenuItem::fire);
         WaitForAsyncUtils.waitForFxEvents();
         verify(menuBarController, Mockito.times(1)).handleChangeLanguageMenuItemAction(any(ActionEvent.class));
         assertEquals("englishLanguageMenuItem", ((MenuItem)tmpFiredMenuItemMap.get("menuItem")).getId());
 
-        Platform.runLater(() -> {
-            tmpGermanLanguageMenuItem.fire();
-        });
+        Platform.runLater(tmpGermanLanguageMenuItem::fire);
         WaitForAsyncUtils.waitForFxEvents();
         verify(menuBarController, Mockito.times(2)).handleChangeLanguageMenuItemAction(any(ActionEvent.class));
         assertEquals("germanLanguageMenuItem", ((MenuItem)tmpFiredMenuItemMap.get("menuItem")).getId());
 
-        Platform.runLater(() -> {
-            tmpSpanishLanguageMenuItem.fire();
-        });
+        Platform.runLater(tmpSpanishLanguageMenuItem::fire);
         WaitForAsyncUtils.waitForFxEvents();
         verify(menuBarController, Mockito.times(3)).handleChangeLanguageMenuItemAction(any(ActionEvent.class));
         assertEquals("spanishLanguageMenuItem", ((MenuItem)tmpFiredMenuItemMap.get("menuItem")).getId());

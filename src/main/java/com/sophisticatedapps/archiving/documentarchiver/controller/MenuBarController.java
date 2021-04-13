@@ -17,12 +17,8 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
-import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.HostServices;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -37,9 +33,10 @@ import java.util.*;
 
 public class MenuBarController extends BaseController {
 
-    private static final Map<String, String> THEMES_BY_MENU_ITEM_MAP = Map.of(
-            "lightThemeMenuItem", GlobalConstants.LIGHT_THEME,
-            "darkThemeMenuItem", GlobalConstants.DARK_THEME);
+    private static final Map<String, ThemeUtil.ThemeEnum> THEMES_BY_MENU_ITEM_MAP = Map.of(
+            "lightThemeMenuItem", ThemeUtil.ThemeEnum.LIGHT,
+            "darkThemeMenuItem", ThemeUtil.ThemeEnum.DARK,
+            "autoThemeMenuItem", ThemeUtil.ThemeEnum.AUTO);
 
     private static final Map<String, Locale> LOCALES_BY_MENU_ITEM_MAP = Map.of(
             "englishLanguageMenuItem", Locale.ENGLISH,
@@ -177,11 +174,8 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleChangeThemeMenuItemAction(ActionEvent anEvent) {
 
-        String tmpNewTheme = THEMES_BY_MENU_ITEM_MAP.get(((MenuItem)anEvent.getSource()).getId());
-
-        ObservableList<String> tmpSceneStylesheets = stage.getScene().getStylesheets();
-        tmpSceneStylesheets.clear();
-        tmpSceneStylesheets.add(tmpNewTheme);
+        ThemeUtil.ThemeEnum tmpNewTheme = THEMES_BY_MENU_ITEM_MAP.get(((MenuItem)anEvent.getSource()).getId());
+        ThemeUtil.setCurrentTheme(tmpNewTheme, stage.getScene());
     }
 
     @FXML
@@ -222,7 +216,7 @@ public class MenuBarController extends BaseController {
             DialogPane tmpDialogPane = tmpDialog.getDialogPane();
             tmpDialogPane.setContent(aPreferencesPane);
             tmpDialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-            tmpDialogPane.getStylesheets().add(GlobalConstants.DARK_THEME);
+            tmpDialogPane.getStylesheets().add(ThemeUtil.getCurrentTheme().getPathToCss());
 
             return tmpDialog;
         }

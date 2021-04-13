@@ -43,7 +43,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.*;
 import java.util.ArrayList;
@@ -131,8 +130,8 @@ class InfoPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // We will need the test file's date and time
-        BasicFileAttributes tmpFileAttributes = Files
-                .readAttributes(Paths.get(TEST_TEXT_FILE2.getPath()), BasicFileAttributes.class);
+        BasicFileAttributes tmpFileAttributes =
+                Files.readAttributes(TEST_TEXT_FILE2.toPath(), BasicFileAttributes.class);
         LocalDateTime tmpFileDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(
                 tmpFileAttributes.creationTime().toMillis()), ZoneId.systemDefault());
 
@@ -277,6 +276,20 @@ class InfoPaneControllerTest extends BaseTest {
         assertEquals(1, tmpSelectedTagsListView.getItems().size());
         assertEquals("Swift", tmpSelectedTagsListView.getItems().get(0));
         assertEquals("", tmpTagsTextField.getText());
+    }
+
+    @Test
+    void testHandleExistingTagsListViewClicked_click_on_empty_list_area() {
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
+        assertEquals(0, tmpSelectedTagsListView.getItems().size());
+
+        @SuppressWarnings("unchecked")
+        ListView<String> tmpExistingTagsListView = (ListView<String>)infoPane.lookup("#existingTagsListView");
+        tmpExistingTagsListView.getOnMouseClicked().handle(null);
+
+        assertEquals(0, tmpSelectedTagsListView.getItems().size());
     }
 
     @Test
@@ -496,8 +509,8 @@ class InfoPaneControllerTest extends BaseTest {
     void testGenericFileTimeAgentDetermineFileTime() throws IOException {
 
         // We will need the test file's date and time
-        BasicFileAttributes tmpFileAttributes = Files
-                .readAttributes(Paths.get(TEST_TEXT_FILE.getPath()), BasicFileAttributes.class);
+        BasicFileAttributes tmpFileAttributes =
+                Files.readAttributes(TEST_TEXT_FILE.toPath(), BasicFileAttributes.class);
         LocalDateTime tmpExpectedFileDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(
                 tmpFileAttributes.creationTime().toMillis()), ZoneId.systemDefault());
 

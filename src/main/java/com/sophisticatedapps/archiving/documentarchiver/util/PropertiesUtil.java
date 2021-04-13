@@ -30,10 +30,12 @@ public class PropertiesUtil {
     public static final File ARCHIVING_ROOT_FOLDER;
     public static final String QUICK_DESCRIPTION_WORDS;
     public static final Locale LANGUAGE_LOCALE;
+    public static final ThemeUtil.ThemeEnum APPEARANCE_THEME;
 
     public static final String KEY_ARCHIVING_PATH = "archiving.path";
     public static final String KEY_QUICK_DESCRIPTION_WORDS = "quick.description.words";
     public static final String KEY_LANGUAGE_LOCALE = "language.locale";
+    public static final String KEY_APPEARANCE_THEME = "appearance.theme";
 
     private static final String PROPERTIES_FILE = "document-archiver.properties";
     private static final Properties APPLICATION_PROPERTIES;
@@ -58,6 +60,7 @@ public class PropertiesUtil {
             ARCHIVING_ROOT_FOLDER = new File(tmpArchivingFolderPath);
             QUICK_DESCRIPTION_WORDS = APPLICATION_PROPERTIES.getProperty(KEY_QUICK_DESCRIPTION_WORDS);
             LANGUAGE_LOCALE = Locale.forLanguageTag(APPLICATION_PROPERTIES.getProperty(KEY_LANGUAGE_LOCALE));
+            APPEARANCE_THEME = ThemeUtil.ThemeEnum.valueOf(APPLICATION_PROPERTIES.getProperty(KEY_APPEARANCE_THEME));
         }
         catch (IOException e) {
 
@@ -122,6 +125,13 @@ public class PropertiesUtil {
 
             APPLICATION_PROPERTIES.setProperty(tmpCurrentPair.getKey(), tmpCurrentPair.getValue());
         }
+
+        writeProperties(PROPERTIES_FILE, APPLICATION_PROPERTIES);
+    }
+
+    public static void updateApplicationAppearanceTheme(ThemeUtil.ThemeEnum aNewTheme) throws IOException {
+
+        APPLICATION_PROPERTIES.setProperty(KEY_APPEARANCE_THEME, aNewTheme.name());
 
         writeProperties(PROPERTIES_FILE, APPLICATION_PROPERTIES);
     }

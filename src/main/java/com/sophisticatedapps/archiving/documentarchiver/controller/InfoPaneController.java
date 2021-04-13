@@ -44,7 +44,6 @@ import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -413,8 +412,7 @@ public class InfoPaneController extends BaseController {
 
             try {
 
-                BasicFileAttributes tmpFileAttributes = Files
-                        .readAttributes(Paths.get(aFile.getPath()), BasicFileAttributes.class);
+                BasicFileAttributes tmpFileAttributes = Files.readAttributes(aFile.toPath(), BasicFileAttributes.class);
 
                 return LocalDateTime.ofInstant(Instant.ofEpochMilli(
                         tmpFileAttributes.creationTime().toMillis()), ZoneId.systemDefault());

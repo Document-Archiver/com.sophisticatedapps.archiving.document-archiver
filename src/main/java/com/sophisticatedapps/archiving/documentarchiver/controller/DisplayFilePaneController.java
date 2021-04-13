@@ -22,6 +22,7 @@ import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.ProcessesUtil;
+import com.sun.jna.Platform; // NOSONAR
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -48,7 +49,6 @@ import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 
@@ -277,7 +277,7 @@ public class DisplayFilePaneController extends BaseController {
         public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
             // We only support HEIC on Macs
-            if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+            if (Platform.isMac()) {
 
                 try {
 
@@ -286,7 +286,7 @@ public class DisplayFilePaneController extends BaseController {
 
                     Region tmpReturn = super.assemble(tmpTempFile, aStage, aPrefWidth, aPrefHeight);
 
-                    Files.delete(Paths.get(tmpTempFile.getPath()));
+                    Files.delete(tmpTempFile.toPath());
 
                     return tmpReturn;
                 }
@@ -336,7 +336,7 @@ public class DisplayFilePaneController extends BaseController {
 
             try {
 
-                MediaPlayer tmpMediaPlayer = new MediaPlayer(new Media(Paths.get(aFile.getPath()).toUri().toString()));
+                MediaPlayer tmpMediaPlayer = new MediaPlayer(new Media(aFile.toPath().toUri().toString()));
                 aController.setupMediaView(tmpMediaPlayer, aPrefWidth);
             }
             catch (MediaException e) {
