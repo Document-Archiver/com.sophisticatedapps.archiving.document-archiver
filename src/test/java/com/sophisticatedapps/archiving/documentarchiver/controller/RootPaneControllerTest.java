@@ -20,6 +20,8 @@ import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.application.Platform;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -36,9 +38,11 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.RootPaneController".
@@ -129,10 +133,11 @@ class RootPaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testHandleCurrentDocumentChanged_to_null() throws IllegalAccessException {
+    void testHandleCurrentDocumentChanged_to_null_without_welcome_dialog() throws IllegalAccessException {
 
         MenuBarController tmpMockedMenuBarController = Mockito.mock(MenuBarController.class);
         FieldUtils.writeField(rootPaneController, "menuBarController", tmpMockedMenuBarController, true);
+        FieldUtils.writeField(rootPaneController, "showWelcomeDialog", Boolean.FALSE, true);
 
         Platform.runLater(() -> {
 
@@ -149,6 +154,76 @@ class RootPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(tmpMockedMenuBarController, Mockito.times(1)).handleOpenFilesMenuItemAction();
+        assertEquals("Choose file(s)", rootPaneController.stage.getTitle());
+        assertNull(rootPane.getLeft());
+        assertNull(rootPane.getCenter());
+        assertNull(rootPane.getRight());
+    }
+
+    @Test
+    void testHandleCurrentDocumentChanged_to_null_with_welcome_dialog_selection_files() throws IllegalAccessException {
+
+        @SuppressWarnings("unchecked")
+        Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
+        when(tmpMockedDialog.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedDialog);
+        MenuBarController tmpMockedMenuBarController = Mockito.mock(MenuBarController.class);
+
+        FieldUtils.writeField(rootPaneController, "dialogProvider", tmpMockedDialogProvider, true);
+        FieldUtils.writeField(rootPaneController, "menuBarController", tmpMockedMenuBarController, true);
+
+        Platform.runLater(() -> {
+
+            try {
+
+                MethodUtils.invokeMethod(rootPaneController, true, "handleCurrentDocumentChanged", (File)null);
+            }
+            catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+
+                fail(e);
+            }
+        });
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
+        verify(tmpMockedMenuBarController, Mockito.times(1)).handleOpenFilesMenuItemAction();
+        assertEquals("Choose file(s)", rootPaneController.stage.getTitle());
+        assertNull(rootPane.getLeft());
+        assertNull(rootPane.getCenter());
+        assertNull(rootPane.getRight());
+    }
+
+    @Test
+    void testHandleCurrentDocumentChanged_to_null_with_welcome_dialog_selection_directory() throws IllegalAccessException {
+
+        @SuppressWarnings("unchecked")
+        Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
+        when(tmpMockedDialog.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedDialog);
+        MenuBarController tmpMockedMenuBarController = Mockito.mock(MenuBarController.class);
+
+        FieldUtils.writeField(rootPaneController, "dialogProvider", tmpMockedDialogProvider, true);
+        FieldUtils.writeField(rootPaneController, "menuBarController", tmpMockedMenuBarController, true);
+
+        Platform.runLater(() -> {
+
+            try {
+
+                MethodUtils.invokeMethod(rootPaneController, true, "handleCurrentDocumentChanged", (File)null);
+            }
+            catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+
+                fail(e);
+            }
+        });
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
+        verify(tmpMockedMenuBarController, Mockito.times(1)).handleOpenDirectoryMenuItemAction();
         assertEquals("Choose file(s)", rootPaneController.stage.getTitle());
         assertNull(rootPane.getLeft());
         assertNull(rootPane.getCenter());

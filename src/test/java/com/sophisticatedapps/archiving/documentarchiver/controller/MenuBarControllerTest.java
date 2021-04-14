@@ -102,7 +102,7 @@ class MenuBarControllerTest extends BaseTest {
     void handleAboutMenuItemAction() throws IllegalAccessException {
 
         Alert tmpMockedAboutAlert = Mockito.mock(Alert.class);
-        MenuBarController.DialogProvider tmpMockedDialogProvider = Mockito.mock(MenuBarController.DialogProvider.class);
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
         when(tmpMockedDialogProvider.provideAboutDialog()).thenReturn(tmpMockedAboutAlert);
         FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
 
@@ -121,7 +121,7 @@ class MenuBarControllerTest extends BaseTest {
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
                 tmpTempLocalPropertiesDirectory, true);
 
-        MenuBarController.DialogProvider tmpMockedDialogProvider = Mockito.mock(MenuBarController.DialogProvider.class);
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
 
         Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
         when(tmpMockedDialogProvider.providePreferencesChangedAlert()).thenReturn(tmpMockedPreferencesChangedAlert);
@@ -164,7 +164,7 @@ class MenuBarControllerTest extends BaseTest {
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
                 tmpTempLocalPropertiesDirectory, true);
 
-        MenuBarController.DialogProvider tmpMockedDialogProvider = Mockito.mock(MenuBarController.DialogProvider.class);
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
 
         Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
         when(tmpMockedDialogProvider.providePreferencesChangedAlert()).thenReturn(tmpMockedPreferencesChangedAlert);
@@ -272,8 +272,8 @@ class MenuBarControllerTest extends BaseTest {
                 tmpMockedDirectoryChooser, true);
 
         Alert tmpDirectoryDoesNotContainFilesAlert = Mockito.mock(Alert.class);
-        MenuBarController.DialogProvider tmpMockedDialogProvider =
-                Mockito.mock(MenuBarController.DialogProvider.class);
+        BaseController.DialogProvider tmpMockedDialogProvider =
+                Mockito.mock(BaseController.DialogProvider.class);
         when(tmpMockedDialogProvider.provideDirectoryDoesNotContainFilesAlert())
                 .thenReturn(tmpDirectoryDoesNotContainFilesAlert);
         FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
@@ -343,7 +343,7 @@ class MenuBarControllerTest extends BaseTest {
                 tmpTempLocalPropertiesDirectory, true);
 
         Alert tmpPreferencesChangedAlert = Mockito.mock(Alert.class);
-        MenuBarController.DialogProvider tmpMockedDialogProvider = Mockito.mock(MenuBarController.DialogProvider.class);
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
         when(tmpMockedDialogProvider.providePreferencesChangedAlert(any(Locale.class)))
                 .thenReturn(tmpPreferencesChangedAlert);
         FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
@@ -367,83 +367,6 @@ class MenuBarControllerTest extends BaseTest {
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
                 tmpOriginalLocalPropertiesDirectory, true);
-    }
-
-    @Test
-    void testDialogProvider_provideAboutDialog() {
-
-        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
-        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideAboutDialog()));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Dialog<ButtonType> tmpAlert = tmpDialogList.get(0);
-        assertNotNull(tmpAlert);
-        assertTrue(tmpAlert.getContentText().startsWith("Copyright"));
-    }
-
-    @Test
-    void testDialogProvider_providePreferencesDialog() {
-
-        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
-        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
-
-        Pane tmpMockedPane = new Pane();
-
-        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.providePreferencesDialog(tmpMockedPane)));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
-        assertNotNull(tmpDialog);
-        assertSame(tmpMockedPane, tmpDialog.getDialogPane().getContent());
-    }
-
-    @Test
-    void testDialogProvider_providePreferencesChangedAlert() {
-
-        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
-        final List<Alert> tmpAlertList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePreferencesChangedAlert()));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Alert tmpAlert = tmpAlertList.get(0);
-        assertNotNull(tmpAlert);
-        assertTrue(tmpAlert.getContentText().startsWith("Preferences have been saved"));
-    }
-
-    @Test
-    void testDialogProvider_providePreferencesChangedAlert_with_Locale() {
-
-        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
-        final List<Alert> tmpAlertList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePreferencesChangedAlert(Locale.GERMAN)));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Alert tmpAlert = tmpAlertList.get(0);
-        assertNotNull(tmpAlert);
-        assertTrue(tmpAlert.getContentText().startsWith("Einstellungen wurden gespeichert"));
-    }
-
-    @Test
-    void testDialogProvider_provideDirectoryDoesNotContainFilesAlert() {
-
-        MenuBarController.DialogProvider tmpDialogProvider = new MenuBarController.DialogProvider();
-        final List<Alert> tmpAlertList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideDirectoryDoesNotContainFilesAlert()));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Alert tmpAlert = tmpAlertList.get(0);
-        assertNotNull(tmpAlert);
-        assertEquals("The chosen directory doesn't contain files.", tmpAlert.getContentText());
     }
 
 }

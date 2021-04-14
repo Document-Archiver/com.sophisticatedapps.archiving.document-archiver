@@ -9,39 +9,10 @@
 
 # Document Archiver
 
-We all store different kind of documents (office documents, miscellaneous types of PDFs, Images, Audio-Files, etc.) on our systems.
+How can Document Archiver help you to get a handle on your multitude of documents with ease? Find out on
+[this project's website](https://document-archiver.github.io/):
 
-The challenge here is to find a consistent approach which will help us to retrieve the documents later in a fast and easy way.
-
-Traditionally many people tend to establish some kind of folder structure on their storage space, which will then hold documents by a topic, a year, or whatever seems to fit.
-Anyhow, this approach often leads to a clutter of heterogeneous folder arrangements (over time one finds that another subfolder is needed at some place - and already consistency is broken).
-It may also lead to duplicates (Should one store a document regarding a car insurance in a folder "car" or in a folder "insurances"? Maintaining a copy in both places is not really a good idea.).
-
-Document Archiver is inspired by the project "PDF Archiver" (https://github.com/PDF-Archiver/PDF-Archiver), which utilizes a consistent way to store PDF files in a defined folder structure and by using a fixed file naming pattern.
-This application picks up this core idea and makes it available for all document types and on all mayor platforms. Thanks to Julian Kahnert for agreeing to build on his great work!
-
-### Convention
-
-Documents will be archived in this manner:
-```
-└── ~/Documents/DocumentArchiver
-    ├── pdfs
-    │   ├── 2020
-    │   │   ├── 2020-01-05--invoice__car_insurance.pdf
-    │   │   └── 2020-07-01--invoice__house_insurance.pdf
-    │   └── 2021
-    │       └── 2021-01-05--invoice__car_insurance.pdf
-    └── images
-        ├── 2020
-        │   ├── 2020-01-20-00-03-17--cake__birthday_stephan.jpg
-        │   ├── 2020-01-20-00-03-54--cake__birthday_stephan.jpg
-        │   └── 2020-03-16-15-32-23--party__birthday_natalia.jpg
-        └── 2021
-            └── 2021-01-20-00-02-42--party__birthday_stephan.jpg
-```
-* **Date\[-Time\]:** `yyyy-MM-dd` or `yyyy-MM-dd-HH-mm-ss` Date (and - if requested - time) of the document content.
-* **Description:** `--invoice` Meaningful description of the document.
-* **Tags:** `__car_insurance` Tags which will help you find the document in your archive.
+[![Screenshot website](https://user-images.githubusercontent.com/9678681/114724957-5daab800-9d3c-11eb-97f7-e962a571c2a0.png)](https://document-archiver.github.io/)
 
 ## How to get it
 
@@ -55,11 +26,11 @@ Java or executing commands on the command line.
 
 Depending on your system, download one of the following files:
 
-**[\[ INSTALLER - LINUX \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.3.0/DocumentArchiver_unix_1_3_0.sh)
+**[\[ INSTALLER - LINUX \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.4.0/DocumentArchiver_unix_1_4_0.sh)
 -or-
-[\[ INSTALLER - MACOS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.3.0/DocumentArchiver_macos_1_3_0.dmg)
+[\[ INSTALLER - MACOS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.4.0/DocumentArchiver_macos_1_4_0.dmg)
 -or-
-[\[ INSTALLER - WINDOWS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.3.0/DocumentArchiver_windows-x64_1_3_0.exe)**
+[\[ INSTALLER - WINDOWS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.4.0/DocumentArchiver_windows-x64_1_4_0.exe)**
 
 Note:  
 The Windows installer package is not code-signed (Why? Just because the required code signing certificates are expensive
@@ -76,22 +47,22 @@ one of the following JAR files (and furthermore save some MBs on your storage).
 
 Depending on your system, download one of the following files:
 
-**[\[ JAR-FILE - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-linux.jar)
+**[\[ JAR-FILE - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.4.0/document-archiver-1.4.0-linux.jar)
 -or-
-[\[ JAR_FILE - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-mac.jar)
+[\[ JAR_FILE - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.4.0/document-archiver-1.4.0-mac.jar)
 -or-
-[\[ JAR-FILE - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.3.0/document-archiver-1.3.0-win.jar)**
+[\[ JAR-FILE - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.4.0/document-archiver-1.4.0-win.jar)**
 
 **Startup (example for macOS - possible variants "linux", "mac", "win")**
 ```
-java -jar document-archiver-1.3-0-mac.jar
+java -jar document-archiver-1.4-0-mac.jar
 ```
 
 ### Option C - Download the latest SNAPSHOT release (get the latest and greatest ✨)
 
 The latest SNAPSHOT releases can be downloaded here:
 
-**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/1.4.0-SNAPSHOT)**
+**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/1.5.0-SNAPSHOT)**
 
 Select the JAR file suitable for your system ("linux", "mac" or "win")
 
@@ -123,5 +94,9 @@ https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-ar
 ---
 
 Copyright 2021 by Stephan Sann
+
+Document Archiver makes grateful use of these libraries:
+- **PDFViewerFX** ([Dansoftowner/PDFViewerFX](https://github.com/Dansoftowner/PDFViewerFX "Dansoftowner/PDFViewerFX"))
+- **jSystemThemeDetector** ([Dansoftowner/jSystemThemeDetector](https://github.com/Dansoftowner/jSystemThemeDetector "Dansoftowner/jSystemThemeDetector"))
 
 Application icons made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")

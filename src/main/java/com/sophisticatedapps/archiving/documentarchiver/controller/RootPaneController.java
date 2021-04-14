@@ -21,6 +21,8 @@ import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -30,6 +32,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class RootPaneController extends BaseController {
 
@@ -42,6 +45,8 @@ public class RootPaneController extends BaseController {
     private Pane documentsPane;
     private Pane displayFilePane;
     private Pane infoPane;
+
+    private boolean showWelcomeDialog = true;
 
     @FXML
     private BorderPane rootPane;
@@ -153,13 +158,35 @@ public class RootPaneController extends BaseController {
         }
         else {
 
+            if (showWelcomeDialog) {
+
+                Optional<ButtonType> tmpResult = dialogProvider.provideWelcomeDialog().showAndWait();
+
+                // Deal with result
+                tmpResult.ifPresent(aButtonType -> {
+
+                    if (ButtonBar.ButtonData.NO == aButtonType.getButtonData()) {
+
+                        menuBarController.handleOpenDirectoryMenuItemAction();
+                    }
+                    else {
+
+                        menuBarController.handleOpenFilesMenuItemAction();
+                    }
+                });
+            }
+            else {
+
+                menuBarController.handleOpenFilesMenuItemAction();
+            }
+
             stage.setTitle(LanguageUtil.i18n("root-pane-controller.stage.title.choose-files"));
             rootPane.setLeft(null);
             rootPane.setCenter(null);
             rootPane.setRight(null);
-
-            menuBarController.handleOpenFilesMenuItemAction();
         }
+
+        showWelcomeDialog = false;
     }
 
 }

@@ -16,12 +16,14 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.util.*;
+import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
 import javafx.application.Application;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -117,12 +119,8 @@ public class App extends Application {
 
     private static void placeIcons(Stage aStage) {
 
-        // JavaFX Image
-        Image tmpIconImage = new Image(
-                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("binder-icon.png")));
-
         // Set stage icon
-        aStage.getIcons().add(tmpIconImage);
+        aStage.getIcons().add(GlobalConstants.APP_ICON);
 
         // AWT Image
         final URL imageResource =

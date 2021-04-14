@@ -43,7 +43,6 @@ public class MenuBarController extends BaseController {
             "germanLanguageMenuItem", Locale.GERMAN,
             "spanishLanguageMenuItem", Locale.forLanguageTag("es"));
 
-    private DialogProvider dialogProvider;
     private FileChooser fileChooser;
     private DirectoryChooser directoryChooser;
 
@@ -195,52 +194,6 @@ public class MenuBarController extends BaseController {
 
             LanguageUtil.setNewLanguage(tmpNewLocale);
             dialogProvider.providePreferencesChangedAlert(tmpNewLocale).showAndWait();
-        }
-    }
-
-    protected static class DialogProvider {
-
-        public Dialog<ButtonType> provideAboutDialog() {
-
-            return (new Alert(Alert.AlertType.NONE,
-                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.about-dialog"),
-                    ButtonType.CLOSE));
-        }
-
-        public Dialog<ButtonType> providePreferencesDialog(Pane aPreferencesPane) {
-
-            Dialog<ButtonType> tmpDialog = new Dialog<>();
-            tmpDialog.setTitle(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.title"));
-            tmpDialog.setHeaderText(LanguageUtil.i18n("menu-bar-controller.preferences-dialog.header-text"));
-
-            DialogPane tmpDialogPane = tmpDialog.getDialogPane();
-            tmpDialogPane.setContent(aPreferencesPane);
-            tmpDialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-            tmpDialogPane.getStylesheets().add(ThemeUtil.getCurrentTheme().getPathToCss());
-
-            return tmpDialog;
-        }
-
-        public Alert providePreferencesChangedAlert() {
-
-            return (new Alert(Alert.AlertType.INFORMATION,
-                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert"),
-                    ButtonType.CLOSE));
-        }
-
-        public Alert providePreferencesChangedAlert(Locale aLanguageLocale) {
-
-            return (new Alert(Alert.AlertType.INFORMATION,
-                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert",
-                            aLanguageLocale),
-                    ButtonType.CLOSE));
-        }
-
-        public Alert provideDirectoryDoesNotContainFilesAlert() {
-
-            return (new Alert(Alert.AlertType.WARNING,
-                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.directory-does-not-contain-files-alert"),
-                    ButtonType.CLOSE));
         }
     }
 

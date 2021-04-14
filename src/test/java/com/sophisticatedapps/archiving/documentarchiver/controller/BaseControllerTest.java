@@ -18,7 +18,13 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,11 +36,12 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -166,6 +173,101 @@ class BaseControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         assertSame(TEST_TEXT_FILE2, baseController.getCurrentDocument());
+    }
+
+    @Test
+    void testDialogProvider_provideWelcomeDialog() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideWelcomeDialog()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
+        assertNotNull(tmpDialog);
+        assertSame(GlobalConstants.APP_ICON, ((ImageView)tmpDialog.getGraphic()).getImage());
+        assertEquals("Welcome to Document Archiver", tmpDialog.getTitle());
+        assertEquals("Thanks for using Document Archiver!", tmpDialog.getHeaderText());
+        assertTrue(tmpDialog.getContentText().startsWith("Next you will have to choose what you want to archive."));
+    }
+
+    @Test
+    void testDialogProvider_provideAboutDialog() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideAboutDialog()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Dialog<ButtonType> tmpAlert = tmpDialogList.get(0);
+        assertNotNull(tmpAlert);
+        assertTrue(tmpAlert.getContentText().startsWith("Copyright"));
+    }
+
+    @Test
+    void testDialogProvider_providePreferencesDialog() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
+
+        Pane tmpMockedPane = new Pane();
+
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.providePreferencesDialog(tmpMockedPane)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
+        assertNotNull(tmpDialog);
+        assertSame(tmpMockedPane, tmpDialog.getDialogPane().getContent());
+    }
+
+    @Test
+    void testDialogProvider_providePreferencesChangedAlert() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePreferencesChangedAlert()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertTrue(tmpAlert.getContentText().startsWith("Preferences have been saved"));
+    }
+
+    @Test
+    void testDialogProvider_providePreferencesChangedAlert_with_Locale() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePreferencesChangedAlert(Locale.GERMAN)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertTrue(tmpAlert.getContentText().startsWith("Einstellungen wurden gespeichert"));
+    }
+
+    @Test
+    void testDialogProvider_provideDirectoryDoesNotContainFilesAlert() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideDirectoryDoesNotContainFilesAlert()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertEquals("The chosen directory doesn't contain files.", tmpAlert.getContentText());
     }
 
 }

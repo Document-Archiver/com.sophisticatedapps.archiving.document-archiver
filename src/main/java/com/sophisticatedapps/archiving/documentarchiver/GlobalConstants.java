@@ -17,8 +17,10 @@
 package com.sophisticatedapps.archiving.documentarchiver;
 
 import com.sophisticatedapps.archiving.documentarchiver.util.ResourceLoadContext;
+import javafx.scene.image.Image;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class GlobalConstants {
 
@@ -27,6 +29,9 @@ public class GlobalConstants {
      */
     private GlobalConstants() {
     }
+
+    public static final Image APP_ICON = new Image(Objects.requireNonNull(
+            Thread.currentThread().getContextClassLoader().getResourceAsStream("binder-icon.png")));
 
     public static final ResourceLoadContext DEFAULT_RESOURCE_LOAD_CONTEXT =
             new ResourceLoadContext(App.class, "document-archiver-i18n");
