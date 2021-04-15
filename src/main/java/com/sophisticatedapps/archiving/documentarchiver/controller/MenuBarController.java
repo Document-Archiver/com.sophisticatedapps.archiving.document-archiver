@@ -153,13 +153,11 @@ public class MenuBarController extends BaseController {
 
         if (!Objects.isNull(tmpDirectory)) {
 
-            List<File> tmpFilesList = Arrays.asList(Objects.requireNonNull(
-                    tmpDirectory.listFiles(aFile -> (aFile.isFile() && (!aFile.isHidden())))));
+            List<File> tmpWrapperList = new ArrayList<>();
+            DirectoryUtil.readDirectoryRecursive(tmpDirectory, tmpWrapperList, (aFile -> (!aFile.isHidden())));
 
-            if (!tmpFilesList.isEmpty()) {
+            if (!tmpWrapperList.isEmpty()) {
 
-                // We have to wrap the result in a new List, since the result is not modifiable.
-                List<File> tmpWrapperList = new ArrayList<>(tmpFilesList);
                 tmpWrapperList.sort(Comparator.naturalOrder());
                 setNewAllDocumentsAndCurrentDocument(tmpWrapperList, tmpWrapperList.get(0));
             }

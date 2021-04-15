@@ -16,10 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.Application;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
@@ -58,8 +55,8 @@ public class App extends Application {
             if (tmpFile.isDirectory()) {
 
                 // We have to wrap the result in a new List, since the result is not modifiable.
-                filesFromArgs = new ArrayList<>(
-                        Arrays.asList(Objects.requireNonNull(tmpFile.listFiles(File::isFile))));
+                filesFromArgs = new ArrayList<>();
+                DirectoryUtil.readDirectoryRecursive(tmpFile, filesFromArgs, (aFile -> (!aFile.isHidden())));
                 filesFromArgs.sort(Comparator.naturalOrder());
             }
             else {

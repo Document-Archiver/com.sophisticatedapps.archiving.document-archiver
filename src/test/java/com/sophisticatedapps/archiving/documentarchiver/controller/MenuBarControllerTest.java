@@ -77,7 +77,7 @@ class MenuBarControllerTest extends BaseTest {
         FileChooser tmpMockedFileChooser = Mockito.mock(FileChooser.class);
         when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(ALL_DOCUMENTS_LIST);
         DirectoryChooser tmpMockedDirectoryChooser = Mockito.mock(DirectoryChooser.class);
-        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_RESOURCES_DIRECTORY);
+        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_SOURCE_FOLDER);
 
         FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MenuBar.fxml"));
         tmpLoader.setResources(LanguageUtil.getResourceBundleForCurrentLanguage());
@@ -212,7 +212,7 @@ class MenuBarControllerTest extends BaseTest {
 
         // Not same, since List will be wrapped into a new List.
         assertTrue(menuBarController.getAllDocuments().containsAll(ALL_DOCUMENTS_LIST));
-        assertSame(TEST_JPG_FILE, menuBarController.getCurrentDocument());
+        assertSame(TEST_JPG_FILE2, menuBarController.getCurrentDocument());
     }
 
     @Test
@@ -264,10 +264,10 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
-    void handleOpenDirectoryMenuItemAction__with_empty_folder() throws IllegalAccessException {
+    void handleOpenDirectoryMenuItemAction_with_empty_folder() throws IllegalAccessException {
 
         DirectoryChooser tmpMockedDirectoryChooser = Mockito.mock(DirectoryChooser.class);
-        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_ARCHIVING_FOLDER);
+        when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_EMPTY_SOURCE_FOLDER);
         FieldUtils.writeField(menuBarController, "directoryChooser",
                 tmpMockedDirectoryChooser, true);
 

@@ -19,6 +19,10 @@ package com.sophisticatedapps.archiving.documentarchiver.util;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class DirectoryUtil {
 
@@ -58,6 +62,30 @@ public class DirectoryUtil {
     public static File getArchivingFolder(FileTypeGroupEnum aFileTypeGroup, int aYear) {
 
         return (new File(getGroupingFolder(aFileTypeGroup), String.valueOf(aYear)));
+    }
+
+    /**
+     * Read a directory recursive and put all matching file into the given List.
+     *
+     * @param   aDirectoryPath  Path to read.
+     * @param   aFileList       List to put the files in.
+     * @param   aFileFilter     A FileFilter to apply.
+     */
+    public static void readDirectoryRecursive(File aDirectoryPath, List<File> aFileList, FileFilter aFileFilter) {
+
+        List<File> tmpFilesList = Arrays.asList(Objects.requireNonNull(aDirectoryPath.listFiles(aFileFilter)));
+
+        for (File tmpCurrentFile : tmpFilesList) {
+
+            if (tmpCurrentFile.isDirectory()) {
+
+                readDirectoryRecursive(tmpCurrentFile, aFileList, aFileFilter);
+            }
+            else if (tmpCurrentFile.isFile()) {
+
+                aFileList.add(tmpCurrentFile);
+            }
+        }
     }
 
 }

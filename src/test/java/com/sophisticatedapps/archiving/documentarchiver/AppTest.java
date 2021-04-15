@@ -141,7 +141,7 @@ class AppTest extends BaseTest {
 
         try {
 
-            App.main(new String[]{ TEST_RESOURCES_DIRECTORY.getPath() });
+            App.main(new String[]{ TEST_SOURCE_FOLDER.getPath() });
         }
         catch (IllegalStateException e) {
 
