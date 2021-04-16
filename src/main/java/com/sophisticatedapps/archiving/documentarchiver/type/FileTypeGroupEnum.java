@@ -20,6 +20,7 @@ public enum FileTypeGroupEnum {
 
     PDFS("pdfs"),
     TEXTS("texts"),
+    MARKUP("markup"),
     IMAGES("images"),
     OFFICE("office"),
     AUDIO("audio"),

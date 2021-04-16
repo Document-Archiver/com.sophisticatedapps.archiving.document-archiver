@@ -55,7 +55,7 @@ Depending on your system, download one of the following files:
 
 **Startup (example for macOS - possible variants "linux", "mac", "win")**
 ```
-java -jar document-archiver-1.4-0-mac.jar
+java -jar document-archiver-1.4.0-mac.jar
 ```
 
 ### Option C - Download the latest SNAPSHOT release (get the latest and greatest ✨)

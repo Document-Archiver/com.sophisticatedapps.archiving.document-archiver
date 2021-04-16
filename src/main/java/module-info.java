@@ -5,8 +5,10 @@ module DocumentArchiver {
     requires javafx.web;
     requires javafx.fxml;
     requires javafx.media;
+    requires com.sun.jna;
     requires PDFViewerFX;
-    requires com.jthemedetector;
+    requires jSystemThemeDetector;
+    requires jfa;
     requires java.desktop;
     requires org.apache.commons.imaging;
 

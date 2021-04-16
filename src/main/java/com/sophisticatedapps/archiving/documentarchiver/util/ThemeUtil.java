@@ -31,23 +31,6 @@ public class ThemeUtil {
     public static void setCurrentTheme(ThemeEnum aTheme, Scene aScene) {
 
         currentTheme = aTheme;
-
-        if (ThemeEnum.AUTO == aTheme) {
-
-            Consumer<Boolean> tmpOsThemeDetectorListener = (aBoolean -> applyCurrentTheme(aScene));
-            osThemeDetector.registerListener(tmpOsThemeDetectorListener);
-            OS_THEME_DETECTOR_LISTENERS.add(tmpOsThemeDetectorListener);
-        }
-        else if (!OS_THEME_DETECTOR_LISTENERS.isEmpty()) {
-
-            for (Consumer<Boolean> tmpCurrentListener : OS_THEME_DETECTOR_LISTENERS) {
-
-                osThemeDetector.removeListener(tmpCurrentListener);
-            }
-
-            OS_THEME_DETECTOR_LISTENERS.clear();
-        }
-
         applyCurrentTheme(aScene);
 
         try {
@@ -66,6 +49,22 @@ public class ThemeUtil {
     }
 
     public static void applyTheme(ThemeEnum aTheme, Scene aScene) {
+
+        if (ThemeEnum.AUTO == aTheme) {
+
+            Consumer<Boolean> tmpOsThemeDetectorListener = (aBoolean -> applyCurrentTheme(aScene));
+            osThemeDetector.registerListener(tmpOsThemeDetectorListener);
+            OS_THEME_DETECTOR_LISTENERS.add(tmpOsThemeDetectorListener);
+        }
+        else if (!OS_THEME_DETECTOR_LISTENERS.isEmpty()) {
+
+            for (Consumer<Boolean> tmpCurrentListener : OS_THEME_DETECTOR_LISTENERS) {
+
+                osThemeDetector.removeListener(tmpCurrentListener);
+            }
+
+            OS_THEME_DETECTOR_LISTENERS.clear();
+        }
 
         List<String> tmpSceneStylesheets = aScene.getStylesheets();
         tmpSceneStylesheets.clear();
