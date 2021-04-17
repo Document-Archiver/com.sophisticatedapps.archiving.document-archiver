@@ -42,12 +42,14 @@ public abstract class BaseTest {
             .getClassLoader().getResource("test-source-folder/2/test2.jpg")).getFile()));
     protected static final File TEST_MP3_FILE = (new File(Objects.requireNonNull(App.class
             .getClassLoader().getResource("test-source-folder/test.mp3")).getFile()));
+    protected static final File TEST_DOCX_FILE = (new File(Objects.requireNonNull(App.class
+            .getClassLoader().getResource("test-source-folder/test.docx")).getFile()));
 
     protected static final File TEST_PNG_FILE = (new File(Objects.requireNonNull(App.class
             .getClassLoader().getResource("binder-icon.png")).getFile()));
 
-    protected static final List<File> ALL_DOCUMENTS_LIST =
-            Arrays.asList(TEST_TEXT_FILE, TEST_TEXT_FILE2, TEST_PDF_FILE, TEST_JPG_FILE, TEST_JPG_FILE2, TEST_MP3_FILE);
+    protected static final List<File> ALL_DOCUMENTS_LIST = Arrays.asList(TEST_TEXT_FILE, TEST_TEXT_FILE2, TEST_PDF_FILE,
+            TEST_JPG_FILE, TEST_JPG_FILE2, TEST_MP3_FILE, TEST_DOCX_FILE);
 
     protected static final File TEST_RESOURCES_DIRECTORY = TEST_TEXT_FILE.getParentFile().getParentFile();
     protected static final File TEST_SOURCE_FOLDER = TEST_TEXT_FILE.getParentFile();

@@ -10,6 +10,7 @@ module DocumentArchiver {
     requires com.jthemedetector;
     requires java.desktop;
     requires org.apache.commons.imaging;
+    requires mammoth;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.controller;

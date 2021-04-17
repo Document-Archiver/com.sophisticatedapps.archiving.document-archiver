@@ -193,6 +193,21 @@ class DisplayFilePaneControllerTest extends BaseTest {
     }
 
     @Test
+    void testHandleCurrentDocumentChangedToDocxFile() {
+
+        displayFilePaneController.setNewCurrentDocument(TEST_DOCX_FILE);
+
+        // Wait until sub Panes are set.
+        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
+        await().atMost(10, TimeUnit.SECONDS)
+                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+
+        // Now there should be a Pane on our display file Pane containing a WebView.
+        Pane tmpWrapperPane = (Pane)tmpDisplayPaneChildren.get(0);
+        assertSame(WebView.class, tmpWrapperPane.getChildren().get(0).getClass());
+    }
+
+    @Test
     void testPaneRemovalCleanup() {
 
         DisplayFilePaneController.DisplayAudioNodeAssembler tmpDisplayAudioNodeAssembler =

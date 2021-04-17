@@ -44,6 +44,8 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import org.zwobble.mammoth.DocumentConverter;
+import org.zwobble.mammoth.Result;
 
 import java.awt.*;
 import java.io.*;
@@ -77,6 +79,7 @@ public class DisplayFilePaneController extends BaseController {
         tmpAssemblerMap.put(FileTypeEnum.YAML, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.PAGES, DisplayUnsupportedFiletypeNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.DOC, DisplayUnsupportedFiletypeNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.DOCX, DisplayDocxNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.MP3, DisplayAudioNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.M4A, DisplayAudioNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.WAV, DisplayAudioNodeAssembler.class);
@@ -421,6 +424,43 @@ public class DisplayFilePaneController extends BaseController {
             catch (Exception e) {
 
                 throw (new RuntimeException("Text could not be loaded."));
+            }
+        }
+    }
+
+    protected static class DisplayDocxNodeAssembler implements DisplayFileNodeAssembler {
+
+        private static final DocumentConverter DOCUMENT_CONVERTER = new DocumentConverter();
+
+        @Override
+        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+
+            try {
+
+                // Convert the DOCX to HTML
+                Result<String> tmpConverterResult = DOCUMENT_CONVERTER.convertToHtml(aFile);
+
+                // Creating a WebView for the HTML
+                WebView tmpWebView = new WebView();
+                tmpWebView.setPrefWidth(aPrefWidth);
+                tmpWebView.setPrefHeight(aPrefHeight);
+
+                // Setting HTML to the WebView
+                String tmpNote =
+                        LanguageUtil.i18n("display-file-pane-controller.display-docx-node-assembler.preview-note");
+                tmpWebView.getEngine().loadContent(tmpNote.concat(tmpConverterResult.getValue()));
+
+                Pane tmpPane = new Pane(tmpWebView);
+                tmpPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                        tmpWebView.setPrefWidth(aNewValue.doubleValue()));
+                tmpPane.heightProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                        tmpWebView.setPrefHeight(aNewValue.doubleValue()));
+
+                return (tmpPane);
+            }
+            catch (IOException e) {
+
+                throw (new RuntimeException("DOCX could not be loaded."));
             }
         }
     }

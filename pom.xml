@@ -6,7 +6,7 @@
 
   <groupId>com.sophisticatedapps.archiving</groupId>
   <artifactId>document-archiver</artifactId>
-  <version>1.5.0-SNAPSHOT</version>
+  <version>1.5.0</version>
 
   <name>DocumentArchiver</name>
   <url>https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver</url>
@@ -393,6 +393,11 @@
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
       <version>5.6.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.zwobble.mammoth</groupId>
+      <artifactId>mammoth</artifactId>
+      <version>1.4.2</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-imaging -->
