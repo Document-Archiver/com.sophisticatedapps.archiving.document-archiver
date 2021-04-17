@@ -44,9 +44,21 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import org.apache.poi.hwpf.HWPFDocumentCore;
+import org.apache.poi.hwpf.converter.AbstractWordUtils;
+import org.apache.poi.hwpf.converter.WordToHtmlConverter;
+import org.w3c.dom.Document;
 import org.zwobble.mammoth.DocumentConverter;
-import org.zwobble.mammoth.Result;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
@@ -78,7 +90,7 @@ public class DisplayFilePaneController extends BaseController {
         tmpAssemblerMap.put(FileTypeEnum.JSON, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.YAML, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.PAGES, DisplayUnsupportedFiletypeNodeAssembler.class);
-        tmpAssemblerMap.put(FileTypeEnum.DOC, DisplayUnsupportedFiletypeNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.DOC, DisplayDocNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.DOCX, DisplayDocxNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.MP3, DisplayAudioNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.M4A, DisplayAudioNodeAssembler.class);
@@ -428,17 +440,12 @@ public class DisplayFilePaneController extends BaseController {
         }
     }
 
-    protected static class DisplayDocxNodeAssembler implements DisplayFileNodeAssembler {
-
-        private static final DocumentConverter DOCUMENT_CONVERTER = new DocumentConverter();
+    protected abstract static class AbstractDisplayDocNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
         public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
             try {
-
-                // Convert the DOCX to HTML
-                Result<String> tmpConverterResult = DOCUMENT_CONVERTER.convertToHtml(aFile);
 
                 // Creating a WebView for the HTML
                 WebView tmpWebView = new WebView();
@@ -448,7 +455,7 @@ public class DisplayFilePaneController extends BaseController {
                 // Setting HTML to the WebView
                 String tmpNote =
                         LanguageUtil.i18n("display-file-pane-controller.display-docx-node-assembler.preview-note");
-                tmpWebView.getEngine().loadContent(tmpNote.concat(tmpConverterResult.getValue()));
+                tmpWebView.getEngine().loadContent(tmpNote.concat(convertDocToHtml(aFile)));
 
                 Pane tmpPane = new Pane(tmpWebView);
                 tmpPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
@@ -458,10 +465,57 @@ public class DisplayFilePaneController extends BaseController {
 
                 return (tmpPane);
             }
-            catch (IOException e) {
+            catch (IOException | TransformerException | ParserConfigurationException e) {
 
-                throw (new RuntimeException("DOCX could not be loaded."));
+                throw (new RuntimeException("DOC(X) could not be loaded."));
             }
+        }
+
+        protected abstract String convertDocToHtml(File aFile)
+                throws TransformerException, IOException, ParserConfigurationException;
+    }
+
+    protected static class DisplayDocxNodeAssembler extends AbstractDisplayDocNodeAssembler {
+
+        private static final DocumentConverter DOCUMENT_CONVERTER = new DocumentConverter();
+
+        @Override
+        protected String convertDocToHtml(File aFile) throws IOException {
+
+            return DOCUMENT_CONVERTER.convertToHtml(aFile).getValue();
+        }
+    }
+
+    protected static class DisplayDocNodeAssembler extends AbstractDisplayDocNodeAssembler {
+
+        @Override
+        protected String convertDocToHtml(File aFile)
+                throws TransformerException, IOException, ParserConfigurationException {
+
+            HWPFDocumentCore tmpWordDocument = AbstractWordUtils.loadDoc(aFile);
+            DocumentBuilderFactory tmpDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
+            tmpDocumentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            tmpDocumentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            WordToHtmlConverter tmpWordToHtmlConverter = new WordToHtmlConverter(tmpDocumentBuilderFactory
+                    .newDocumentBuilder().newDocument());
+            tmpWordToHtmlConverter.processDocument(tmpWordDocument);
+            Document tmpHtmlDocument = tmpWordToHtmlConverter.getDocument();
+
+            ByteArrayOutputStream tmpOut = new ByteArrayOutputStream();
+            DOMSource tmpDomSource = new DOMSource(tmpHtmlDocument);
+            StreamResult tmpStreamResult = new StreamResult(tmpOut);
+
+            TransformerFactory tmpTransformerFactory = TransformerFactory.newInstance();
+            tmpTransformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            tmpTransformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            Transformer tmpSerializer = tmpTransformerFactory.newTransformer();
+            tmpSerializer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            tmpSerializer.setOutputProperty(OutputKeys.INDENT, "yes");
+            tmpSerializer.setOutputProperty(OutputKeys.METHOD, "html");
+            tmpSerializer.transform(tmpDomSource, tmpStreamResult);
+            tmpOut.close();
+
+            return tmpOut.toString();
         }
     }
 

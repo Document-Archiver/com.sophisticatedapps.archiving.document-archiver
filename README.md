@@ -26,11 +26,11 @@ Java or executing commands on the command line.
 
 Depending on your system, download one of the following files:
 
-**[\[ INSTALLER - LINUX \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.4.0/DocumentArchiver_unix_1_4_0.sh)
+**[\[ INSTALLER - LINUX \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.5.0/DocumentArchiver_unix_1_5_0.sh)
 -or-
-[\[ INSTALLER - MACOS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.4.0/DocumentArchiver_macos_1_4_0.dmg)
+[\[ INSTALLER - MACOS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.5.0/DocumentArchiver_macos_1_5_0.dmg)
 -or-
-[\[ INSTALLER - WINDOWS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.4.0/DocumentArchiver_windows-x64_1_4_0.exe)**
+[\[ INSTALLER - WINDOWS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.5.0/DocumentArchiver_windows-x64_1_5_0.exe)**
 
 Note:  
 The Windows installer package is not code-signed (Why? Just because the required code signing certificates are expensive
@@ -47,22 +47,22 @@ one of the following JAR files (and furthermore save some MBs on your storage).
 
 Depending on your system, download one of the following files:
 
-**[\[ JAR-FILE - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.4.0/document-archiver-1.4.0-linux.jar)
+**[\[ JAR-FILE - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.5.0/document-archiver-1.5.0-linux.jar)
 -or-
-[\[ JAR_FILE - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.4.0/document-archiver-1.4.0-mac.jar)
+[\[ JAR_FILE - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.5.0/document-archiver-1.5.0-mac.jar)
 -or-
-[\[ JAR-FILE - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.4.0/document-archiver-1.4.0-win.jar)**
+[\[ JAR-FILE - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.5.0/document-archiver-1.5.0-win.jar)**
 
 **Startup (example for macOS - possible variants "linux", "mac", "win")**
 ```
-java -jar document-archiver-1.4.0-mac.jar
+java -jar document-archiver-1.5.0-mac.jar
 ```
 
 ### Option C - Download the latest SNAPSHOT release (get the latest and greatest ✨)
 
 The latest SNAPSHOT releases can be downloaded here:
 
-**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/1.5.0-SNAPSHOT)**
+**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/1.6.0-SNAPSHOT)**
 
 Select the JAR file suitable for your system ("linux", "mac" or "win")
 
@@ -98,5 +98,6 @@ Copyright 2021 by Stephan Sann
 Document Archiver makes grateful use of these libraries:
 - **PDFViewerFX** ([Dansoftowner/PDFViewerFX](https://github.com/Dansoftowner/PDFViewerFX "Dansoftowner/PDFViewerFX"))
 - **jSystemThemeDetector** ([Dansoftowner/jSystemThemeDetector](https://github.com/Dansoftowner/jSystemThemeDetector "Dansoftowner/jSystemThemeDetector"))
+- **Mammoth** ([mwilliamson/java-mammoth](https://github.com/mwilliamson/java-mammoth "mwilliamson/java-mammoth"))
 
 Application icons made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")

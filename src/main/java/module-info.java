@@ -11,6 +11,7 @@ module DocumentArchiver {
     requires java.desktop;
     requires org.apache.commons.imaging;
     requires mammoth;
+    requires org.apache.poi.scratchpad;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.controller;
