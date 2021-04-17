@@ -349,6 +349,7 @@ public class InfoPaneController extends BaseController {
     }
 
     @FXML
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleSubmitButtonAction() {
 
         File tmpCurrentDocument = getCurrentDocument();
@@ -369,9 +370,7 @@ public class InfoPaneController extends BaseController {
             if (tmpAllDocuments.isEmpty()) {
 
                 Optional<ButtonType> tmpChoice = alertProvider.provideAllDoneAlert().showAndWait();
-                if (tmpChoice.isPresent()) {
-                    tmpContinueWithNext = (ButtonBar.ButtonData.NEXT_FORWARD == tmpChoice.get().getButtonData());
-                }
+                tmpContinueWithNext = (ButtonBar.ButtonData.NEXT_FORWARD == tmpChoice.get().getButtonData()); // NOSONAR
             }
 
             if (tmpContinueWithNext) {

@@ -7,8 +7,7 @@ module DocumentArchiver {
     requires javafx.media;
     requires com.sun.jna;
     requires PDFViewerFX;
-    requires jSystemThemeDetector;
-    requires jfa;
+    requires com.jthemedetector;
     requires java.desktop;
     requires org.apache.commons.imaging;
 

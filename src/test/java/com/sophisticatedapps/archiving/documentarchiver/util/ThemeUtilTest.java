@@ -7,8 +7,10 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
+import org.testfx.framework.junit5.ApplicationExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(ApplicationExtension.class)
 class ThemeUtilTest extends BaseTest {
 
     @TempDir
@@ -96,6 +99,10 @@ class ThemeUtilTest extends BaseTest {
         assertEquals(ThemeUtil.ThemeEnum.AUTO, ThemeUtil.getCurrentTheme());
         // There should be a new Listener registered
         assertEquals(1, tmpMockRegisteredListenerList.size());
+
+        // Trigger the Listener
+        Consumer<Boolean> tmpListener = tmpMockRegisteredListenerList.get(0);
+        tmpListener.accept(Boolean.TRUE);
 
         // Set non-auto-theme
         ThemeUtil.setCurrentTheme(ThemeUtil.ThemeEnum.DARK, tmpMockedScene);

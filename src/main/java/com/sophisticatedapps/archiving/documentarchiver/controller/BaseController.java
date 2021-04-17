@@ -221,15 +221,16 @@ public abstract class BaseController {
 
             return (new Alert(Alert.AlertType.INFORMATION,
                     LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert"),
-                    ButtonType.CLOSE));
+                    (new ButtonType(LanguageUtil.i18n("global.button-type.no.text"), ButtonBar.ButtonData.NO)),
+                    (new ButtonType(LanguageUtil.i18n("global.button-type.yes.text"), ButtonBar.ButtonData.YES))));
         }
 
         public Alert providePreferencesChangedAlert(Locale aLanguageLocale) {
 
             return (new Alert(Alert.AlertType.INFORMATION,
-                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert",
-                            aLanguageLocale),
-                    ButtonType.CLOSE));
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert", aLanguageLocale),
+                    (new ButtonType(LanguageUtil.i18n("global.button-type.no.text", aLanguageLocale), ButtonBar.ButtonData.NO)),
+                    (new ButtonType(LanguageUtil.i18n("global.button-type.yes.text", aLanguageLocale), ButtonBar.ButtonData.YES))));
         }
 
         public Alert provideDirectoryDoesNotContainFilesAlert() {

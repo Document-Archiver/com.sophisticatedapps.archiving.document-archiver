@@ -21,7 +21,9 @@ import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -87,6 +89,7 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handlePreferencesMenuItemAction() {
 
         // Load preferences Pane
@@ -100,28 +103,32 @@ public class MenuBarController extends BaseController {
         Optional<ButtonType> tmpResult = dialogProvider.providePreferencesDialog(tmpPreferencesPane).showAndWait();
 
         // Deal with result
-        tmpResult.ifPresent(aButtonType -> {
+        if (ButtonType.OK == tmpResult.get()) { // NOSONAR
 
-            if (ButtonType.OK == aButtonType) {
+            Pair<String, String> tmpArchivingPathPropertiesPair = new Pair<>(
+                    PropertiesUtil.KEY_ARCHIVING_PATH, tmpPreferencesPaneController.getArchivingFolder());
+            Pair<String, String> tmpQuickDescriptionWordsPropertiesPair = new Pair<>(
+                    PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS,
+                    tmpPreferencesPaneController.getQuickDescriptionWords());
 
-                Pair<String, String> tmpArchivingPathPropertiesPair = new Pair<>(
-                        PropertiesUtil.KEY_ARCHIVING_PATH, tmpPreferencesPaneController.getArchivingFolder());
-                Pair<String, String> tmpQuickDescriptionWordsPropertiesPair = new Pair<>(
-                        PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS,
-                        tmpPreferencesPaneController.getQuickDescriptionWords());
+            try {
 
-                try {
+                PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
+                        tmpQuickDescriptionWordsPropertiesPair);
 
-                    PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
-                            tmpQuickDescriptionWordsPropertiesPair);
-                    dialogProvider.providePreferencesChangedAlert().showAndWait();
-                }
-                catch (IOException e) {
+                Optional<ButtonType> tmpCloseResult = dialogProvider.providePreferencesChangedAlert().showAndWait();
 
-                    throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
+                // Should App be closed?
+                if (ButtonBar.ButtonData.YES == tmpCloseResult.get().getButtonData()) { // NOSONAR
+
+                    stage.hide();
                 }
             }
-        });
+            catch (IOException e) {
+
+                throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
+            }
+        }
 
         tmpPreferencesPaneController.rampDown();
     }
@@ -184,6 +191,7 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleChangeLanguageMenuItemAction(ActionEvent anEvent) {
 
         Locale tmpNewLocale = LOCALES_BY_MENU_ITEM_MAP.get(((MenuItem)anEvent.getSource()).getId());
@@ -191,7 +199,15 @@ public class MenuBarController extends BaseController {
         if (!LanguageUtil.getCurrentLanguageLocale().equals(tmpNewLocale)) {
 
             LanguageUtil.setNewLanguage(tmpNewLocale);
-            dialogProvider.providePreferencesChangedAlert(tmpNewLocale).showAndWait();
+
+            Optional<ButtonType> tmpCloseResult =
+                    dialogProvider.providePreferencesChangedAlert(tmpNewLocale).showAndWait();
+
+            // Should App be closed?
+            if (ButtonBar.ButtonData.YES == tmpCloseResult.get().getButtonData()) { // NOSONAR
+
+                stage.hide();
+            }
         }
     }
 

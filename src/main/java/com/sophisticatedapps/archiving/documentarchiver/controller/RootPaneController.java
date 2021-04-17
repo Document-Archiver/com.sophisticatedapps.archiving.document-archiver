@@ -145,6 +145,7 @@ public class RootPaneController extends BaseController {
      *
      * @param   aNewCurrentDocument The new current document.
      */
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     private void handleCurrentDocumentChanged(File aNewCurrentDocument) {
 
         if (!Objects.isNull(aNewCurrentDocument)) {
@@ -162,18 +163,15 @@ public class RootPaneController extends BaseController {
 
                 Optional<ButtonType> tmpResult = dialogProvider.provideWelcomeDialog().showAndWait();
 
-                // Deal with result
-                tmpResult.ifPresent(aButtonType -> {
+                // ButtonData.NO means open a directory, YES means open a file.
+                if (ButtonBar.ButtonData.NO == tmpResult.get().getButtonData()) { // NOSONAR
 
-                    if (ButtonBar.ButtonData.NO == aButtonType.getButtonData()) {
+                    menuBarController.handleOpenDirectoryMenuItemAction();
+                }
+                else {
 
-                        menuBarController.handleOpenDirectoryMenuItemAction();
-                    }
-                    else {
-
-                        menuBarController.handleOpenFilesMenuItemAction();
-                    }
-                });
+                    menuBarController.handleOpenFilesMenuItemAction();
+                }
             }
             else {
 

@@ -2,6 +2,7 @@ package com.sophisticatedapps.archiving.documentarchiver.util;
 
 import com.jthemedetecor.OsThemeDetector;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 
 import java.io.IOException;
@@ -52,7 +53,8 @@ public class ThemeUtil {
 
         if (ThemeEnum.AUTO == aTheme) {
 
-            Consumer<Boolean> tmpOsThemeDetectorListener = (aBoolean -> applyCurrentTheme(aScene));
+            Consumer<Boolean> tmpOsThemeDetectorListener =
+                    (aBoolean -> Platform.runLater(() -> applyStylesheets(aTheme, aScene)));
             osThemeDetector.registerListener(tmpOsThemeDetectorListener);
             OS_THEME_DETECTOR_LISTENERS.add(tmpOsThemeDetectorListener);
         }
@@ -65,6 +67,11 @@ public class ThemeUtil {
 
             OS_THEME_DETECTOR_LISTENERS.clear();
         }
+
+        applyStylesheets(aTheme, aScene);
+    }
+
+    private static void applyStylesheets(ThemeEnum aTheme, Scene aScene) {
 
         List<String> tmpSceneStylesheets = aScene.getStylesheets();
         tmpSceneStylesheets.clear();
