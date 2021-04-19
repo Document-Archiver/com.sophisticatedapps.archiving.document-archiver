@@ -126,7 +126,8 @@ public class RootPaneController extends BaseController {
 
     private void setWidths() {
 
-        final double tmpStageWidthTenth = (stage.getWidth() / 10);
+        // Windows has a quirky bug, which reports the stage 16px wider than it is. Deduct 16px - doesn't hurt.
+        final double tmpStageWidthTenth = ((stage.getWidth() - 16) / 10);
         documentsPane.setPrefWidth(tmpStageWidthTenth * 2);
         displayFilePane.setPrefWidth(tmpStageWidthTenth * 5);
         infoPane.setPrefWidth(tmpStageWidthTenth * 3);

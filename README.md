@@ -98,6 +98,7 @@ Copyright 2021 by Stephan Sann
 Document Archiver makes grateful use of these libraries:
 - **PDFViewerFX** ([Dansoftowner/PDFViewerFX](https://github.com/Dansoftowner/PDFViewerFX "Dansoftowner/PDFViewerFX"))
 - **jSystemThemeDetector** ([Dansoftowner/jSystemThemeDetector](https://github.com/Dansoftowner/jSystemThemeDetector "Dansoftowner/jSystemThemeDetector"))
+- **Restart4j** ([Dansoftowner/Restart4j](https://github.com/Dansoftowner/Restart4j "Dansoftowner/Restart4j"))
 - **Mammoth** ([mwilliamson/java-mammoth](https://github.com/mwilliamson/java-mammoth "mwilliamson/java-mammoth"))
 
 Application icons made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")
