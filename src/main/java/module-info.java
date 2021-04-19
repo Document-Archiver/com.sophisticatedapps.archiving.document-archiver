@@ -12,6 +12,7 @@ module DocumentArchiver {
     requires org.apache.commons.imaging;
     requires mammoth;
     requires org.apache.poi.scratchpad;
+    requires Restart4j;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.controller;

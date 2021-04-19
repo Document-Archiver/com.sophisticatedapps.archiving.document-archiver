@@ -151,10 +151,14 @@ class MenuBarControllerTest extends BaseTest {
         assertEquals("ha,hi,ho", tmpReadProperties.getProperty(PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS));
 
         // Run again - this time with closing the App
+        SecurityManager tmpMockedSecurityManager = Mockito.mock(SecurityManager.class);
+        doThrow(new SecurityException("Nope.")).when(tmpMockedSecurityManager).checkExit(anyInt());
+        System.setSecurityManager(tmpMockedSecurityManager);
         when(tmpMockedPreferencesChangedAlert.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
-        Platform.runLater(() -> menuBarController.handlePreferencesMenuItemAction());
+        Platform.runLater(() -> assertThrows(SecurityException.class, () ->
+                menuBarController.handlePreferencesMenuItemAction()));
         WaitForAsyncUtils.waitForFxEvents();
-        assertFalse(menuBarController.stage.isShowing());
+        System.setSecurityManager(null);
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
@@ -373,10 +377,14 @@ class MenuBarControllerTest extends BaseTest {
         assertEquals("de", tmpReadProperties.getProperty(PropertiesUtil.KEY_LANGUAGE_LOCALE));
 
         // Run again - this time with closing the App
+        SecurityManager tmpMockedSecurityManager = Mockito.mock(SecurityManager.class);
+        doThrow(new SecurityException("Nope.")).when(tmpMockedSecurityManager).checkExit(anyInt());
+        System.setSecurityManager(tmpMockedSecurityManager);
         when(tmpMockedPreferencesChangedAlert.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
-        Platform.runLater(() -> menuBarController.handleChangeLanguageMenuItemAction(tmpMockedActionEvent));
+        Platform.runLater(() -> assertThrows(SecurityException.class, () ->
+                        menuBarController.handleChangeLanguageMenuItemAction(tmpMockedActionEvent)));
         WaitForAsyncUtils.waitForFxEvents();
-        assertFalse(menuBarController.stage.isShowing());
+        System.setSecurityManager(null);
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",

@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.restart4j.ApplicationRestart;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.HostServices;
@@ -116,12 +117,12 @@ public class MenuBarController extends BaseController {
                 PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
                         tmpQuickDescriptionWordsPropertiesPair);
 
-                Optional<ButtonType> tmpCloseResult = dialogProvider.providePreferencesChangedAlert().showAndWait();
+                Optional<ButtonType> tmpRestartResult = dialogProvider.providePreferencesChangedAlert().showAndWait();
 
-                // Should App be closed?
-                if (ButtonBar.ButtonData.YES == tmpCloseResult.get().getButtonData()) { // NOSONAR
+                // Should App be restarted?
+                if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
 
-                    stage.hide();
+                    ApplicationRestart.builder().build().restartApp();
                 }
             }
             catch (IOException e) {
@@ -200,13 +201,13 @@ public class MenuBarController extends BaseController {
 
             LanguageUtil.setNewLanguage(tmpNewLocale);
 
-            Optional<ButtonType> tmpCloseResult =
+            Optional<ButtonType> tmpRestartResult =
                     dialogProvider.providePreferencesChangedAlert(tmpNewLocale).showAndWait();
 
-            // Should App be closed?
-            if (ButtonBar.ButtonData.YES == tmpCloseResult.get().getButtonData()) { // NOSONAR
+            // Should App be restarted?
+            if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
 
-                stage.hide();
+                ApplicationRestart.builder().build().restartApp();
             }
         }
     }
