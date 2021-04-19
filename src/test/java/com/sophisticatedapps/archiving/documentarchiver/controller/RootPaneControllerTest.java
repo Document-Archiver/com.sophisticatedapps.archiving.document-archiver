@@ -86,12 +86,12 @@ class RootPaneControllerTest extends BaseTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        rootPaneController.stage.setWidth(888);
+        rootPaneController.stage.setWidth(1016);
         MethodUtils.invokeMethod(rootPaneController, true, "setWidths");
 
-        assertEquals(177.6, ((Pane)rootPane.getLeft()).getPrefWidth());
-        assertEquals(444.0, ((Pane)rootPane.getCenter()).getPrefWidth());
-        assertEquals(266.4, ((Pane)rootPane.getRight()).getPrefWidth());
+        assertEquals(200, ((Pane)rootPane.getLeft()).getPrefWidth());
+        assertEquals(500, ((Pane)rootPane.getCenter()).getPrefWidth());
+        assertEquals(300, ((Pane)rootPane.getRight()).getPrefWidth());
     }
 
     @Test
