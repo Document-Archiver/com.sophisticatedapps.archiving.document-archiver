@@ -22,32 +22,40 @@ import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+
 public class MenuBarController extends BaseController {
 
-    private static final Map<String, ThemeUtil.ThemeEnum> THEMES_BY_MENU_ITEM_MAP = Map.of(
+    private static final BidiMap<String, ThemeUtil.ThemeEnum> THEMES_BY_MENU_ITEM_MAP = new DualHashBidiMap<>(Map.of(
             "lightThemeMenuItem", ThemeUtil.ThemeEnum.LIGHT,
             "darkThemeMenuItem", ThemeUtil.ThemeEnum.DARK,
-            "autoThemeMenuItem", ThemeUtil.ThemeEnum.AUTO);
+            "autoThemeMenuItem", ThemeUtil.ThemeEnum.AUTO));
 
-    private static final Map<String, Locale> LOCALES_BY_MENU_ITEM_MAP = Map.of(
+    private static final BidiMap<String, Locale> LOCALES_BY_MENU_ITEM_MAP = new DualHashBidiMap<>(Map.of(
             "englishLanguageMenuItem", Locale.ENGLISH,
             "germanLanguageMenuItem", Locale.GERMAN,
-            "spanishLanguageMenuItem", Locale.forLanguageTag("es"));
+            "spanishLanguageMenuItem", Locale.forLanguageTag("es")));
 
     private FileChooser fileChooser;
     private DirectoryChooser directoryChooser;
+
+    @FXML
+    Menu viewMenu;
+
+    @FXML
+    Menu languageMenu;
 
     /**
      * Default constructor.
@@ -81,6 +89,33 @@ public class MenuBarController extends BaseController {
         this.fileChooser = aFileChooser;
         this.directoryChooser = aDirectoryChooser;
         this.dialogProvider = aDialogProvider;
+    }
+
+    @Override
+    public void rampUp(Stage aStage) {
+
+        super.rampUp(aStage);
+
+        selectCurrentThemeRadioMenuItem(THEMES_BY_MENU_ITEM_MAP.getKey(PropertiesUtil.APPEARANCE_THEME));
+        selectCurrentLanguageRadioMenuItem(LOCALES_BY_MENU_ITEM_MAP.getKey(LanguageUtil.getCurrentLanguageLocale()));
+    }
+
+    private void selectCurrentThemeRadioMenuItem(String aLanguageRadioMenuItemId) {
+
+        selectCurrentRadioMenuItem(viewMenu, aLanguageRadioMenuItemId);
+    }
+
+    private void selectCurrentLanguageRadioMenuItem(String aLanguageRadioMenuItemId) {
+
+        selectCurrentRadioMenuItem(languageMenu, aLanguageRadioMenuItemId);
+    }
+
+    private void selectCurrentRadioMenuItem(Menu aMenu, String aRadioMenuItemId) {
+
+        for (MenuItem tmpCurrentMenuItem : aMenu.getItems()) {
+
+            ((RadioMenuItem)tmpCurrentMenuItem).setSelected(tmpCurrentMenuItem.getId().equals(aRadioMenuItemId));
+        }
     }
 
     @FXML

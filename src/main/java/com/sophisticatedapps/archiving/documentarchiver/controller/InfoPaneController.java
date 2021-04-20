@@ -22,6 +22,7 @@ import com.sophisticatedapps.archiving.documentarchiver.model.Tags;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
+import com.sun.jna.platform.FileUtils; // NOSONAR
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -94,7 +95,7 @@ public class InfoPaneController extends BaseController {
     @FXML
     private CheckBox takeOverDescriptionAndTagsCheckBox;
 
-    private AlertProvider alertProvider;
+    private DialogProvider infoPaneDialogProvider;
 
     /**
      * Default constructor.
@@ -102,17 +103,17 @@ public class InfoPaneController extends BaseController {
     @SuppressWarnings("unused")
     public InfoPaneController() {
 
-        this(new AlertProvider());
+        this(new DialogProvider());
     }
 
     /**
      * Alternative constructor which allows to pass a custom AlertProvider.
      *
-     * @param   anAlertProvider AlertProvider to use.
+     * @param   anInfoPaneDialogProvider AlertProvider to use.
      */
-    public InfoPaneController(AlertProvider anAlertProvider) {
+    public InfoPaneController(DialogProvider anInfoPaneDialogProvider) {
 
-        this.alertProvider = anAlertProvider;
+        this.infoPaneDialogProvider = anInfoPaneDialogProvider;
     }
 
     @Override
@@ -154,7 +155,7 @@ public class InfoPaneController extends BaseController {
         // Listener for when the pane "gets" or "loses" a Scene (aNewScene) -> set/remove shortcuts.
         infoPane.sceneProperty().addListener((anObs, anOldScene, aNewScene) -> {
             if (!Objects.isNull(aNewScene)) {
-                aNewScene.getAccelerators().put(SHORTCUT_R_KEYCODE_COMBINATION, this::handleSubmitButtonAction);
+                aNewScene.getAccelerators().put(SHORTCUT_R_KEYCODE_COMBINATION, this::handleArchiveButtonAction);
             }
             else {
                 anOldScene.getAccelerators().remove(SHORTCUT_R_KEYCODE_COMBINATION);
@@ -349,8 +350,7 @@ public class InfoPaneController extends BaseController {
     }
 
     @FXML
-    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
-    protected void handleSubmitButtonAction() {
+    protected void handleArchiveButtonAction() {
 
         File tmpCurrentDocument = getCurrentDocument();
 
@@ -361,35 +361,79 @@ public class InfoPaneController extends BaseController {
         try {
 
             Archive.moveFileToArchive(tmpCurrentDocument, tmpDfp);
+            moveOnAfterFileOperation(tmpCurrentDocument);
+        }
+        catch (IOException e) {
 
-            List<File> tmpAllDocuments = getAllDocuments();
-            tmpAllDocuments.remove(tmpCurrentDocument);
-            boolean tmpContinueWithNext = true;
+            infoPaneDialogProvider.provideExceptionAlert(e).showAndWait();
+        }
+    }
 
-            // All done? Show dialog asking the user to continue.
-            if (tmpAllDocuments.isEmpty()) {
+    @FXML
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
+    protected void handleDeleteButtonAction() {
 
-                Optional<ButtonType> tmpChoice = alertProvider.provideAllDoneAlert().showAndWait();
-                tmpContinueWithNext = (ButtonBar.ButtonData.NEXT_FORWARD == tmpChoice.get().getButtonData()); // NOSONAR
+        File tmpCurrentDocument = getCurrentDocument();
+
+        Optional<ButtonType> tmpChoice =
+                infoPaneDialogProvider.provideConfirmDeletionAlert(tmpCurrentDocument).showAndWait();
+        ButtonBar.ButtonData tmpButtonData = tmpChoice.get().getButtonData(); // NOSONAR
+
+        try {
+
+            if (ButtonBar.ButtonData.OK_DONE == tmpButtonData) {
+
+                FileUtils tmpFileUtils = FileUtils.getInstance();
+
+                if (tmpFileUtils.hasTrash()) {
+
+                    tmpFileUtils.moveToTrash(tmpCurrentDocument);
+                    moveOnAfterFileOperation(tmpCurrentDocument);
+                }
+                else {
+
+                    infoPaneDialogProvider.provideExceptionAlert(new IOException("Trash not available.")).showAndWait();
+                }
             }
+            else if (ButtonBar.ButtonData.OTHER == tmpButtonData) {
 
-            if (tmpContinueWithNext) {
-
-                // Trigger listeners by first setting the all documents List to null
-                // (just removing a file from the list will not trigger listeners).
-                setNewAllDocuments(null);
-
-                setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
-                        (tmpAllDocuments.isEmpty() ? null : tmpAllDocuments.get(0)));
-            }
-            else {
-
-                stage.hide();
+                Files.delete(tmpCurrentDocument.toPath());
+                moveOnAfterFileOperation(tmpCurrentDocument);
             }
         }
         catch (IOException e) {
 
-            alertProvider.provideArchiveFileNotSuccessfulAlert(e).showAndWait();
+            infoPaneDialogProvider.provideExceptionAlert(e).showAndWait();
+        }
+    }
+
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
+    protected void moveOnAfterFileOperation(File aProcessedFile) {
+
+        List<File> tmpAllDocuments = getAllDocuments();
+        tmpAllDocuments.remove(aProcessedFile);
+
+        boolean tmpContinueWithNext = true;
+
+        // All done? Show dialog asking the user to continue.
+        if (tmpAllDocuments.isEmpty()) {
+
+            Optional<ButtonType> tmpChoice = infoPaneDialogProvider.provideAllDoneAlert().showAndWait();
+            tmpContinueWithNext = (ButtonBar.ButtonData.NEXT_FORWARD == tmpChoice.get().getButtonData()); // NOSONAR
+        }
+
+        if (tmpContinueWithNext) {
+
+            // Trigger listeners by first setting the all documents List to null
+            // (just removing a file from the list will not trigger listeners).
+            setNewAllDocuments(null);
+
+            setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
+                    (tmpAllDocuments.isEmpty() ? null : tmpAllDocuments.get(0)));
+        }
+        else {
+
+            stage.hide();
         }
     }
 
@@ -451,7 +495,7 @@ public class InfoPaneController extends BaseController {
         }
     }
 
-    protected static class AlertProvider {
+    protected static class DialogProvider {
 
         private static final ButtonType CONTINUE_BUTTON_TYPE = new ButtonType(
                 LanguageUtil.i18n("info-pane-controller.alert-provider.all-done-alert.continue-button.text"),
@@ -460,7 +504,14 @@ public class InfoPaneController extends BaseController {
                 LanguageUtil.i18n("info-pane-controller.alert-provider.all-done-alert.close-app-button.text"),
                 ButtonBar.ButtonData.FINISH);
 
-        public Alert provideArchiveFileNotSuccessfulAlert(Exception anException) {
+        private static final ButtonType MOVE_FILE_TO_TRASH_BUTTON_TYPE = new ButtonType(
+                LanguageUtil.i18n("info-pane-controller.dialog-provider.confirm-deletion-alert.move-file-to-trash-button.text"),
+                ButtonBar.ButtonData.OK_DONE);
+        private static final ButtonType DELETE_FILE_BUTTON_TYPE = new ButtonType(
+                LanguageUtil.i18n("info-pane-controller.dialog-provider.confirm-deletion-alert.delete-file-button.text"),
+                ButtonBar.ButtonData.OTHER);
+
+        public Alert provideExceptionAlert(Exception anException) {
 
             return (new Alert(Alert.AlertType.ERROR, anException.getMessage(), ButtonType.CLOSE));
         }
@@ -470,6 +521,13 @@ public class InfoPaneController extends BaseController {
             return (new Alert(Alert.AlertType.INFORMATION,
                     LanguageUtil.i18n("info-pane-controller.alert-provider.all-done-alert.content-text"),
                     CONTINUE_BUTTON_TYPE, CLOSE_APP_BUTTON_TYPE));
+        }
+
+        public Alert provideConfirmDeletionAlert(File aFile) {
+
+            return (new Alert(Alert.AlertType.WARNING,
+                    LanguageUtil.i18n("info-pane-controller.dialog-provider.confirm-deletion-alert.content-text", aFile.getName()),
+                    MOVE_FILE_TO_TRASH_BUTTON_TYPE, DELETE_FILE_BUTTON_TYPE, ButtonType.CANCEL));
         }
     }
 

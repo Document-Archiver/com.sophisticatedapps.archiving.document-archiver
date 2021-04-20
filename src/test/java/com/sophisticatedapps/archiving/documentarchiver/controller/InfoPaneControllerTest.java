@@ -352,7 +352,7 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testHandleSubmitButtonAction() throws IOException, IllegalAccessException {
+    void testHandleArchiveButtonAction() throws IOException, IllegalAccessException {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
         File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
@@ -376,12 +376,13 @@ class InfoPaneControllerTest extends BaseTest {
 
         Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
         when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.NEXT));
-        InfoPaneController.AlertProvider tmpMockedAlertProvider = Mockito.mock(InfoPaneController.AlertProvider.class);
-        when(tmpMockedAlertProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
-        FieldUtils.writeField(infoPaneController, "alertProvider", tmpMockedAlertProvider, true);
+        InfoPaneController.DialogProvider tmpMockedDialogProvider =
+                Mockito.mock(InfoPaneController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
+        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedDialogProvider, true);
 
-        // "Click" submit
-        Platform.runLater(() -> infoPaneController.handleSubmitButtonAction());
+        // "Click" archive button
+        Platform.runLater(() -> infoPaneController.handleArchiveButtonAction());
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -410,7 +411,7 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testHandleSubmitButtonAction_with_close_app() throws IOException, IllegalAccessException {
+    void testHandleArchiveButtonAction_with_close_app() throws IOException, IllegalAccessException {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
         File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
@@ -434,12 +435,13 @@ class InfoPaneControllerTest extends BaseTest {
 
         Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
         when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.FINISH));
-        InfoPaneController.AlertProvider tmpMockedAlertProvider = Mockito.mock(InfoPaneController.AlertProvider.class);
-        when(tmpMockedAlertProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
-        FieldUtils.writeField(infoPaneController, "alertProvider", tmpMockedAlertProvider, true);
+        InfoPaneController.DialogProvider tmpMockedDialogProvider =
+                Mockito.mock(InfoPaneController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
+        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedDialogProvider, true);
 
-        // "Click" submit
-        Platform.runLater(() -> infoPaneController.handleSubmitButtonAction());
+        // "Click" archive button
+        Platform.runLater(() -> infoPaneController.handleArchiveButtonAction());
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -467,7 +469,7 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testHandleSubmitButtonAction_file_exists_in_archive() throws IllegalAccessException {
+    void testHandleArchiveButtonAction_file_exists_in_archive() throws IllegalAccessException {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
         File tmpNewCurrentDocument = new File(tempDir, "test.txt");
@@ -475,10 +477,11 @@ class InfoPaneControllerTest extends BaseTest {
         tmpNewAllDocuments.add(tmpNewCurrentDocument);
 
         Alert tmpMockedAlert = Mockito.mock(Alert.class);
-        InfoPaneController.AlertProvider tmpMockedDialogProvider = Mockito.mock(InfoPaneController.AlertProvider.class);
-        when(tmpMockedDialogProvider.provideArchiveFileNotSuccessfulAlert(any(Exception.class)))
+        InfoPaneController.DialogProvider tmpMockedDialogProvider =
+                Mockito.mock(InfoPaneController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideExceptionAlert(any(Exception.class)))
                 .thenReturn(tmpMockedAlert);
-        FieldUtils.writeField(infoPaneController, "alertProvider", tmpMockedDialogProvider, true);
+        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedDialogProvider, true);
 
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
 
@@ -493,9 +496,9 @@ class InfoPaneControllerTest extends BaseTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        // "Click" submit
-        Button tmpSubmitButton = (Button)infoPane.lookup("#submitButton");
-        tmpSubmitButton.getOnAction().handle(null);
+        // "Click" archive button
+        Button tmpArchiveButton = (Button)infoPane.lookup("#archiveButton");
+        tmpArchiveButton.getOnAction().handle(null);
 
         // Document should still be current document and alert should have been triggered.
         assertSame(tmpNewCurrentDocument, infoPaneController.getCurrentDocument());
@@ -503,6 +506,151 @@ class InfoPaneControllerTest extends BaseTest {
 
         // Cleanup
         DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+    }
+
+    @Test
+    void testHandleDeleteButtonAction_with_cancel() throws IOException, IllegalAccessException {
+
+        File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
+        List<File> tmpNewAllDocuments = new ArrayList<>();
+        tmpNewAllDocuments.add(tmpNewCurrentDocument);
+
+        // Write some stuff to the new file
+        try (FileWriter tmpFileWriter = new FileWriter(tmpNewCurrentDocument)) {
+            tmpFileWriter.write("text");
+        }
+
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpMockedConfirmDeletionAlert = Mockito.mock(Alert.class);
+        when(tmpMockedConfirmDeletionAlert.showAndWait()).thenReturn(Optional.of(ButtonType.CANCEL));
+        InfoPaneController.DialogProvider tmpMockedDialogProvider =
+                Mockito.mock(InfoPaneController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideConfirmDeletionAlert(tmpNewCurrentDocument))
+                .thenReturn(tmpMockedConfirmDeletionAlert);
+        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedDialogProvider, true);
+
+        // "Click" delete button
+        Platform.runLater(() -> infoPaneController.handleDeleteButtonAction());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // File should not be removed.
+        assertTrue(tmpNewCurrentDocument.exists());
+
+        // Cleanup
+        assertTrue(tmpNewCurrentDocument.delete());
+    }
+
+    @Test
+    void testHandleDeleteButtonAction_with_move_to_trash() throws IOException, IllegalAccessException {
+
+        File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
+        List<File> tmpNewAllDocuments = new ArrayList<>();
+        tmpNewAllDocuments.add(tmpNewCurrentDocument);
+
+        // Write some stuff to the new file
+        try (FileWriter tmpFileWriter = new FileWriter(tmpNewCurrentDocument)) {
+            tmpFileWriter.write("text");
+        }
+
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        InfoPaneController.DialogProvider tmpMockedDialogProvider =
+                Mockito.mock(InfoPaneController.DialogProvider.class);
+
+        Alert tmpMockedConfirmDeletionAlert = Mockito.mock(Alert.class);
+        when(tmpMockedConfirmDeletionAlert.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
+        when(tmpMockedDialogProvider.provideConfirmDeletionAlert(tmpNewCurrentDocument))
+                .thenReturn(tmpMockedConfirmDeletionAlert);
+
+        Alert tmpMockedExceptionAlert = Mockito.mock(Alert.class);
+        when(tmpMockedDialogProvider.provideExceptionAlert(any(Exception.class))).thenReturn(tmpMockedExceptionAlert);
+
+        Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
+        when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.FINISH));
+        when(tmpMockedDialogProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
+
+        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedDialogProvider, true);
+
+        // "Click" delete button
+        Platform.runLater(() -> infoPaneController.handleDeleteButtonAction());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // File should be found in trash. If trash not available, the Exception alert should have been triggered.
+        File tmpTrashDirectory = getTrashDirectory();
+        if (tmpTrashDirectory.exists()) {
+            // File should be removed from its original place.
+            assertFalse(tmpNewCurrentDocument.exists());
+            // And be in the trash now.
+            File tmpFileInTrash = new File(tmpTrashDirectory, tmpNewCurrentDocument.getName());
+            assertTrue(tmpFileInTrash.exists());
+            // Cleanup
+            assertTrue(tmpFileInTrash.delete());
+        }
+        else {
+            verify(tmpMockedExceptionAlert, Mockito.times(1)).showAndWait();
+        }
+    }
+
+    private File getTrashDirectory() {
+        File home = new File(System.getProperty("user.home"));
+        File trash = new File(home, ".Trash");
+        if (!trash.exists()) {
+            trash = new File(home, "Trash");
+            if (!trash.exists()) {
+                File desktop = new File(home, "Desktop");
+                if (desktop.exists()) {
+                    trash = new File(desktop, ".Trash");
+                    if (!trash.exists()) {
+                        trash = new File(desktop, "Trash");
+                        if (!trash.exists()) {
+                            trash = new File(System.getProperty("fileutils.trash", "Trash"));
+                        }
+                    }
+                }
+            }
+        }
+
+        return trash;
+    }
+
+    @Test
+    void testHandleDeleteButtonAction_with_delete() throws IOException, IllegalAccessException {
+
+        File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
+        List<File> tmpNewAllDocuments = new ArrayList<>();
+        tmpNewAllDocuments.add(tmpNewCurrentDocument);
+
+        // Write some stuff to the new file
+        try (FileWriter tmpFileWriter = new FileWriter(tmpNewCurrentDocument)) {
+            tmpFileWriter.write("text");
+        }
+
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        InfoPaneController.DialogProvider tmpMockedDialogProvider =
+                Mockito.mock(InfoPaneController.DialogProvider.class);
+
+        Alert tmpMockedConfirmDeletionAlert = Mockito.mock(Alert.class);
+        when(tmpMockedConfirmDeletionAlert.showAndWait()).thenReturn(Optional.of(new ButtonType("other")));
+        when(tmpMockedDialogProvider.provideConfirmDeletionAlert(tmpNewCurrentDocument))
+                .thenReturn(tmpMockedConfirmDeletionAlert);
+
+        Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
+        when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.FINISH));
+        when(tmpMockedDialogProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
+
+        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedDialogProvider, true);
+
+        // "Click" delete button
+        Platform.runLater(() -> infoPaneController.handleDeleteButtonAction());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // File should be removed.
+        assertFalse(tmpNewCurrentDocument.exists());
     }
 
     @Test
@@ -544,13 +692,13 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testAlertProvider_provideArchiveFileNotSuccessfulAlert() {
+    void testDialogProvider_provideExceptionAlert() {
 
-        InfoPaneController.AlertProvider tmpAlertProvider = new InfoPaneController.AlertProvider();
+        InfoPaneController.DialogProvider tmpDialogProvider = new InfoPaneController.DialogProvider();
         Exception tmpException = new Exception("This is a test");
         final List<Alert> tmpAlertList = new ArrayList<>();
 
-        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.provideArchiveFileNotSuccessfulAlert(tmpException)));
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideExceptionAlert(tmpException)));
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -560,12 +708,36 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
-    void testAlertProvider_provideAllDoneAlert() {
+    void testDialogProvider_provideConfirmDeletionAlert() {
 
-        InfoPaneController.AlertProvider tmpAlertProvider = new InfoPaneController.AlertProvider();
+        File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
+
+        InfoPaneController.DialogProvider tmpDialogProvider = new InfoPaneController.DialogProvider();
         final List<Alert> tmpAlertList = new ArrayList<>();
 
-        Platform.runLater(() -> tmpAlertList.add(tmpAlertProvider.provideAllDoneAlert()));
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideConfirmDeletionAlert(tmpNewCurrentDocument)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertEquals("Please confirm the deletion of file \"foobar.txt\".", tmpAlert.getContentText());
+
+        ObservableList<ButtonType> tmpButtonTypes = tmpAlert.getButtonTypes();
+        assertEquals("Move to trash", tmpButtonTypes.get(0).getText());
+        assertEquals(ButtonBar.ButtonData.OK_DONE, tmpButtonTypes.get(0).getButtonData());
+        assertEquals("Delete file", tmpButtonTypes.get(1).getText());
+        assertEquals(ButtonBar.ButtonData.OTHER, tmpButtonTypes.get(1).getButtonData());
+        assertEquals(ButtonType.CANCEL, tmpButtonTypes.get(2));
+    }
+
+    @Test
+    void testDialogProvider_provideAllDoneAlert() {
+
+        InfoPaneController.DialogProvider tmpDialogProvider = new InfoPaneController.DialogProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideAllDoneAlert()));
 
         WaitForAsyncUtils.waitForFxEvents();
 

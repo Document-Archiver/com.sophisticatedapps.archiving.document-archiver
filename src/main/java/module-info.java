@@ -6,6 +6,7 @@ module DocumentArchiver {
     requires javafx.fxml;
     requires javafx.media;
     requires com.sun.jna;
+    requires com.sun.jna.platform;
     requires PDFViewerFX;
     requires com.jthemedetector;
     requires java.desktop;
@@ -13,6 +14,7 @@ module DocumentArchiver {
     requires mammoth;
     requires org.apache.poi.scratchpad;
     requires Restart4j;
+    requires org.apache.commons.collections4;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.controller;

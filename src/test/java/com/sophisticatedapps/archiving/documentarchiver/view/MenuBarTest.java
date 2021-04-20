@@ -28,6 +28,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -65,7 +68,7 @@ class MenuBarTest extends BaseTest {
 
         FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MenuBar.fxml"));
         tmpLoader.setResources(LanguageUtil.getResourceBundleForCurrentLanguage());
-        tmpLoader.setControllerFactory(aParam -> Mockito.mock(TestMenuBarController.class));
+        tmpLoader.setControllerFactory(aParam -> Mockito.spy(new TestMenuBarController()));
         menuBar = tmpLoader.load();
         menuBarController = tmpLoader.getController();
         menuBarController.rampUp(aStage);
@@ -100,12 +103,15 @@ class MenuBarTest extends BaseTest {
 
         Menu tmpLanguageMenu = menuBar.getMenus().get(4);
         assertEquals("languageMenu", tmpLanguageMenu.getId());
-        MenuItem tmpEnglishLanguageMenuItem = tmpLanguageMenu.getItems().get(0);
+        RadioMenuItem tmpEnglishLanguageMenuItem = (RadioMenuItem)tmpLanguageMenu.getItems().get(0);
         assertEquals("englishLanguageMenuItem", tmpEnglishLanguageMenuItem.getId());
-        MenuItem tmpGermanLanguageMenuItem = tmpLanguageMenu.getItems().get(1);
+        assertTrue(tmpEnglishLanguageMenuItem.isSelected());
+        RadioMenuItem tmpGermanLanguageMenuItem = (RadioMenuItem)tmpLanguageMenu.getItems().get(1);
         assertEquals("germanLanguageMenuItem", tmpGermanLanguageMenuItem.getId());
-        MenuItem tmpSpanishLanguageMenuItem = tmpLanguageMenu.getItems().get(2);
+        assertFalse(tmpGermanLanguageMenuItem.isSelected());
+        RadioMenuItem tmpSpanishLanguageMenuItem = (RadioMenuItem)tmpLanguageMenu.getItems().get(2);
         assertEquals("spanishLanguageMenuItem", tmpSpanishLanguageMenuItem.getId());
+        assertFalse(tmpSpanishLanguageMenuItem.isSelected());
 
         Platform.runLater(tmpEnglishLanguageMenuItem::fire);
         WaitForAsyncUtils.waitForFxEvents();

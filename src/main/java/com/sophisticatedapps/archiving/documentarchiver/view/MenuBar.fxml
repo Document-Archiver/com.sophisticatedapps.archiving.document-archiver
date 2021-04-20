@@ -3,7 +3,9 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.ToggleGroup?>
 
 <MenuBar fx:id="menuBar" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController">
   <menus>
@@ -22,11 +24,14 @@
             <MenuItem mnemonicParsing="false" onAction="#handleOpenDirectoryMenuItemAction" text="%menu-bar.file-menu.open-directory-menu-item" />
       </items>
     </Menu>
-      <Menu mnemonicParsing="false" text="%menu-bar.view-menu">
+      <fx:define>
+          <ToggleGroup fx:id="themeToggleGroup"/>
+      </fx:define>
+      <Menu fx:id="viewMenu" mnemonicParsing="false" text="%menu-bar.view-menu">
           <items>
-              <MenuItem fx:id="lightThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.light-theme-menu-item" />
-              <MenuItem fx:id="darkThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.dark-theme-menu-item" />
-              <MenuItem fx:id="autoThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.auto-theme-menu-item" />
+              <RadioMenuItem fx:id="lightThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.light-theme-menu-item" toggleGroup="$themeToggleGroup" />
+              <RadioMenuItem fx:id="darkThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.dark-theme-menu-item" toggleGroup="$themeToggleGroup" />
+              <RadioMenuItem fx:id="autoThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.auto-theme-menu-item" toggleGroup="$themeToggleGroup" />
           </items>
       </Menu>
     <Menu mnemonicParsing="false" text="%menu-bar.help-menu">
@@ -34,11 +39,14 @@
         <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="%menu-bar.help-menu.help-menu-item" />
       </items>
     </Menu>
+      <fx:define>
+          <ToggleGroup fx:id="languageToggleGroup"/>
+      </fx:define>
       <Menu fx:id="languageMenu" mnemonicParsing="false" text="%menu-bar.language-menu">
         <items>
-            <MenuItem fx:id="englishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.english-menu-item" />
-          <MenuItem fx:id="germanLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.german-menu-item" />
-          <MenuItem fx:id="spanishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.spanish-menu-item" />
+            <RadioMenuItem fx:id="englishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.english-menu-item" toggleGroup="$languageToggleGroup" />
+          <RadioMenuItem fx:id="germanLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.german-menu-item" toggleGroup="$languageToggleGroup" />
+          <RadioMenuItem fx:id="spanishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.spanish-menu-item" toggleGroup="$languageToggleGroup" />
         </items>
       </Menu>
   </menus>
