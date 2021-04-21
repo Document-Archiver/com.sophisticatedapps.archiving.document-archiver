@@ -24,6 +24,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -128,7 +129,7 @@ class RootPaneControllerTest extends BaseTest {
 
         assertEquals("Archiving: ".concat(TEST_TEXT_FILE2.getPath()), rootPaneController.stage.getTitle());
         assertEquals(VBox.class, rootPane.getLeft().getClass());
-        assertEquals(Pane.class, rootPane.getCenter().getClass());
+        assertEquals(StackPane.class, rootPane.getCenter().getClass());
         assertEquals(VBox.class, rootPane.getRight().getClass());
     }
 

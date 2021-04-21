@@ -34,6 +34,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -41,19 +42,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
 class DisplayFilePaneControllerTest extends BaseTest {
@@ -92,16 +92,12 @@ class DisplayFilePaneControllerTest extends BaseTest {
     void testSetWidths() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         displayFilePaneController.setNewCurrentDocument(TEST_TEXT_FILE);
-
-        // Wait until sub Panes are set.
-        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+        WaitForAsyncUtils.waitForFxEvents();
 
         displayFilePane.setPrefWidth(999);
         MethodUtils.invokeMethod(displayFilePaneController, true, "setWidths");
 
-        TextArea tmpTextArea = (TextArea)tmpDisplayPaneChildren.get(0);
+        TextArea tmpTextArea = (TextArea)displayFilePane.getChildren().get(0);
         assertEquals(999, tmpTextArea.getPrefWidth());
     }
 
@@ -109,31 +105,82 @@ class DisplayFilePaneControllerTest extends BaseTest {
     void testSetHeights() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
         displayFilePaneController.setNewCurrentDocument(TEST_TEXT_FILE);
-
-        // Wait until sub Panes are set.
-        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+        WaitForAsyncUtils.waitForFxEvents();
 
         displayFilePane.setPrefHeight(555);
         MethodUtils.invokeMethod(displayFilePaneController, true, "setHeights");
 
-        TextArea tmpTextArea = (TextArea)tmpDisplayPaneChildren.get(0);
+        TextArea tmpTextArea = (TextArea)displayFilePane.getChildren().get(0);
         assertEquals(555, tmpTextArea.getPrefHeight());
+    }
+
+    @Test
+    void testHandleOpenExternalViewerButtonAction() throws IllegalAccessException, IOException {
+
+        // Set a mocked DesktopProvider to the DisplayFilePaneController
+        Desktop tmpMockedDesktop = Mockito.mock(Desktop.class);
+        DisplayFilePaneController.DesktopProvider tmpMockedDesktopProvider =
+                Mockito.mock(DisplayFilePaneController.DesktopProvider.class);
+        doReturn(tmpMockedDesktop).when(tmpMockedDesktopProvider).provideDesktop();
+        FieldUtils.writeField(displayFilePaneController, "desktopProvider", tmpMockedDesktopProvider, true);
+
+        displayFilePaneController.setNewCurrentDocument(TEST_TEXT_FILE);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        displayFilePaneController.handleOpenExternalViewerButtonAction();
+
+        verify(tmpMockedDesktop, Mockito.times(1)).open(any(File.class));
+    }
+
+    @Test
+    void testHandleOpenExternalViewerButtonAction_with_exception() throws IllegalAccessException, IOException {
+
+        // Set a mocked DesktopProvider to the DisplayFilePaneController
+        Desktop tmpMockedDesktop = Mockito.mock(Desktop.class);
+        doThrow(new IOException("nope")).when(tmpMockedDesktop).open(any(File.class));
+        DisplayFilePaneController.DesktopProvider tmpMockedDesktopProvider =
+                Mockito.mock(DisplayFilePaneController.DesktopProvider.class);
+        doReturn(tmpMockedDesktop).when(tmpMockedDesktopProvider).provideDesktop();
+        FieldUtils.writeField(displayFilePaneController, "desktopProvider", tmpMockedDesktopProvider, true);
+
+        displayFilePaneController.setNewCurrentDocument(TEST_TEXT_FILE);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        RuntimeException tmpRuntimeException = assertThrows(RuntimeException.class,
+                (() -> displayFilePaneController.handleOpenExternalViewerButtonAction()));
+        assertEquals("Desktop app could not be opened: nope", tmpRuntimeException.getMessage());
+    }
+
+    @Test
+    void testHandleCurrentDocumentChangedToUnsupportedFile() throws IOException, IllegalAccessException {
+
+        // Set a mocked DesktopProvider to the DisplayFilePaneController
+        Desktop tmpMockedDesktop = Mockito.mock(Desktop.class);
+        DisplayFilePaneController.DesktopProvider tmpMockedDesktopProvider =
+                Mockito.mock(DisplayFilePaneController.DesktopProvider.class);
+        doReturn(tmpMockedDesktop).when(tmpMockedDesktopProvider).provideDesktop();
+        FieldUtils.writeField(displayFilePaneController, "desktopProvider", tmpMockedDesktopProvider, true);
+
+        File tmpUnsupportedFile = new File("snafu.foobar");
+
+        displayFilePaneController.setNewCurrentDocument(tmpUnsupportedFile);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Now there should be a TextArea on our display file Pane.
+        Pane tmpPane = (Pane)displayFilePane.getChildren().get(0);
+        assertEquals(Label.class, tmpPane.getChildren().get(0).getClass());
+
+        verify(tmpMockedDesktop, Mockito.times(1)).open(any(File.class));
     }
 
     @Test
     void testHandleCurrentDocumentChangedToPDFFile() {
 
         displayFilePaneController.setNewCurrentDocument(TEST_PDF_FILE);
-
-        // Wait until sub Panes are set.
-        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Now there should be a TextArea on our display file Pane.
-        Pane tmpPDFPane = (Pane)tmpDisplayPaneChildren.get(0);
+        Pane tmpPDFPane = (Pane)displayFilePane.getChildren().get(0);
         assertEquals(WebView.class, tmpPDFPane.getChildren().get(0).getClass());
     }
 
@@ -141,14 +188,10 @@ class DisplayFilePaneControllerTest extends BaseTest {
     void testHandleCurrentDocumentChangedToTextFile() {
 
         displayFilePaneController.setNewCurrentDocument(TEST_TEXT_FILE);
-
-        // Wait until sub Panes are set.
-        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Now there should be a TextArea on our display file Pane.
-        TextArea tmpTextArea = (TextArea)tmpDisplayPaneChildren.get(0);
+        TextArea tmpTextArea = (TextArea)displayFilePane.getChildren().get(0);
         assertEquals("Simple text for testing.", tmpTextArea.getText());
     }
 
@@ -156,14 +199,10 @@ class DisplayFilePaneControllerTest extends BaseTest {
     void testHandleCurrentDocumentChangedToPngFile() {
 
         displayFilePaneController.setNewCurrentDocument(TEST_PNG_FILE);
-
-        // Wait until sub Panes are set.
-        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Now there should be a Pane on our display file Pane.
-        Pane tmpWrapperPane = (Pane)tmpDisplayPaneChildren.get(0);
+        Pane tmpWrapperPane = (Pane)displayFilePane.getChildren().get(0);
         assertSame(ImageView.class, tmpWrapperPane.getChildren().get(0).getClass());
     }
 
@@ -171,14 +210,10 @@ class DisplayFilePaneControllerTest extends BaseTest {
     void testHandleCurrentDocumentChangedToMp3File() {
 
         displayFilePaneController.setNewCurrentDocument(TEST_MP3_FILE);
-
-        // Wait until sub Panes are set.
-        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Now there should be a "play" Button or a message on the assembled pane.
-        VBox tmpMediaTypePane = (VBox)tmpDisplayPaneChildren.get(0);
+        VBox tmpMediaTypePane = (VBox)displayFilePane.getChildren().get(0);
         ObservableList<Node> tmpChildNodeList = tmpMediaTypePane.getChildren();
         Node tmpLastNode = tmpChildNodeList.get(tmpChildNodeList.size() - 1);
 
@@ -196,14 +231,10 @@ class DisplayFilePaneControllerTest extends BaseTest {
     void testHandleCurrentDocumentChangedToDocxFile() {
 
         displayFilePaneController.setNewCurrentDocument(TEST_DOCX_FILE);
-
-        // Wait until sub Panes are set.
-        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Now there should be a Pane on our display file Pane containing a WebView.
-        Pane tmpWrapperPane = (Pane)tmpDisplayPaneChildren.get(0);
+        Pane tmpWrapperPane = (Pane)displayFilePane.getChildren().get(0);
         assertSame(WebView.class, tmpWrapperPane.getChildren().get(0).getClass());
     }
 
@@ -211,14 +242,10 @@ class DisplayFilePaneControllerTest extends BaseTest {
     void testHandleCurrentDocumentChangedToDocFile() {
 
         displayFilePaneController.setNewCurrentDocument(TEST_DOC_FILE);
-
-        // Wait until sub Panes are set.
-        ObservableList<Node> tmpDisplayPaneChildren = displayFilePane.getChildren();
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(tmpDisplayPaneChildren::isEmpty, Predicate.isEqual(Boolean.FALSE));
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Now there should be a Pane on our display file Pane containing a WebView.
-        Pane tmpWrapperPane = (Pane)tmpDisplayPaneChildren.get(0);
+        Pane tmpWrapperPane = (Pane)displayFilePane.getChildren().get(0);
         assertSame(WebView.class, tmpWrapperPane.getChildren().get(0).getClass());
     }
 
@@ -232,7 +259,8 @@ class DisplayFilePaneControllerTest extends BaseTest {
         MediaPlayer tmpMockedMediaPlayer = Mockito.mock(MediaPlayer.class);
         when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PLAYING);
 
-        Region tmpPane = tmpDisplayAudioNodeAssembler.assemble(TEST_MP3_FILE, null, 250, 250);
+        Region tmpPane = tmpDisplayAudioNodeAssembler.assemble(
+                displayFilePaneController, TEST_MP3_FILE, null, 250, 250);
         tmpPane.setUserData(tmpMockedMediaPlayer);
 
         // Set and remove Pane to and from a parent Pane

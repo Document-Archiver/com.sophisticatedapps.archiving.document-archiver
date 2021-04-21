@@ -30,6 +30,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -74,6 +75,14 @@ public class DisplayFilePaneController extends BaseController {
     private final List<ChangeListener<Number>> paneWidthPropertyListenersList = new ArrayList<>();
     private final List<ChangeListener<Number>> paneHeightPropertyListenersList = new ArrayList<>();
 
+    @FXML
+    private Pane displayFilePane;
+
+    @FXML
+    private Button openExternalViewerButton;
+
+    private DesktopProvider desktopProvider;
+
     static {
 
         Map<FileTypeEnum, Class<? extends DisplayFileNodeAssembler>> tmpAssemblerMap =
@@ -102,8 +111,23 @@ public class DisplayFilePaneController extends BaseController {
         NODE_ASSEMBLER_BY_FILETYPE = Collections.unmodifiableMap(tmpAssemblerMap);
     }
 
-    @FXML
-    private Pane displayFilePane;
+    /**
+     * Default constructor.
+     */
+    public DisplayFilePaneController() {
+
+        this(new DesktopProvider());
+    }
+
+    /**
+     * Alternative constructor which allows to pass a custom DesktopProvider.
+     *
+     * @param   aDesktopProvider DesktopProvider to use.
+     */
+    public DisplayFilePaneController(DesktopProvider aDesktopProvider) {
+
+        this.desktopProvider = aDesktopProvider;
+    }
 
     @Override
     public void rampUp(Stage aStage) {
@@ -160,8 +184,12 @@ public class DisplayFilePaneController extends BaseController {
 
         if (!tmpDisplayFilePaneChildren.isEmpty()) {
 
+            double tmpPrefHeight = displayFilePane.getPrefHeight();
+
             Region tmpMediaRegion = (Region)tmpDisplayFilePaneChildren.get(0);
-            tmpMediaRegion.setPrefHeight(displayFilePane.getPrefHeight());
+            tmpMediaRegion.setPrefHeight(tmpPrefHeight);
+
+            openExternalViewerButton.setTranslateY(tmpPrefHeight - 64);
         }
     }
 
@@ -176,13 +204,26 @@ public class DisplayFilePaneController extends BaseController {
 
             try {
 
+                double tmpPrefHeight = displayFilePane.getPrefHeight();
+
                 Class<? extends DisplayFileNodeAssembler> tmpFileNodeAssemblerClass =
                         NODE_ASSEMBLER_BY_FILETYPE.get(FileUtil.getFiletype(aNewCurrentDocument));
-                Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance()
-                        .assemble(aNewCurrentDocument, stage, displayFilePane.getPrefWidth(),
-                                displayFilePane.getPrefHeight());
+                Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance().assemble(
+                        this, aNewCurrentDocument, stage, displayFilePane.getPrefWidth(), tmpPrefHeight);
 
-                displayFilePane.getChildren().setAll(tmpFileDisplayNode);
+                boolean tmpFileTypeInternallySupported =
+                        (DisplayUnsupportedFiletypeNodeAssembler.class != tmpFileNodeAssemblerClass);
+                openExternalViewerButton.setVisible(tmpFileTypeInternallySupported);
+
+                if (tmpFileTypeInternallySupported) {
+
+                    openExternalViewerButton.setText(
+                            LanguageUtil.i18n("display-file-pane-controller.open-external-viewer-button.txt",
+                                    FileUtil.getFileExtension(aNewCurrentDocument)));
+                    openExternalViewerButton.setTranslateY(tmpPrefHeight - 64);
+                }
+
+                displayFilePane.getChildren().setAll(tmpFileDisplayNode, openExternalViewerButton);
             }
             catch (Exception e) {
 
@@ -195,20 +236,37 @@ public class DisplayFilePaneController extends BaseController {
         }
     }
 
+    @FXML
+    protected void handleOpenExternalViewerButtonAction() {
+
+        try {
+
+            desktopProvider.provideDesktop().open(getCurrentDocument());
+        }
+        catch (IOException e) {
+
+            throw (new RuntimeException("Desktop app could not be opened: ".concat(e.getMessage())));
+        }
+    }
+
     private interface DisplayFileNodeAssembler {
 
-        Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight);
+        Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                        double aPrefWidth, double aPrefHeight);
     }
 
     protected static class DisplayUnsupportedFiletypeNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
 
             try {
-                Desktop.getDesktop().open(aFile);
+
+                aDisplayFilePaneController.desktopProvider.provideDesktop().open(aFile);
             }
             catch (Exception e) {
+
                 throw (new RuntimeException("Desktop app could not be opened: ".concat(e.getMessage())));
             }
 
@@ -232,7 +290,8 @@ public class DisplayFilePaneController extends BaseController {
         }
 
         @Override
-        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
 
             try {
 
@@ -259,7 +318,8 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayImageNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
 
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 
@@ -294,7 +354,8 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayHeicImageNodeAssembler extends DisplayImageNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController,
+                               File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
 
             // We only support HEIC on Macs
             if (Platform.isMac()) {
@@ -304,7 +365,8 @@ public class DisplayFilePaneController extends BaseController {
                     // Create JPG from HEIC
                     File tmpTempFile = ProcessesUtil.createTempJpg(aFile);
 
-                    Region tmpReturn = super.assemble(tmpTempFile, aStage, aPrefWidth, aPrefHeight);
+                    Region tmpReturn =
+                            super.assemble(aDisplayFilePaneController, tmpTempFile, aStage, aPrefWidth, aPrefHeight);
 
                     Files.delete(tmpTempFile.toPath());
 
@@ -318,7 +380,7 @@ public class DisplayFilePaneController extends BaseController {
             else {
 
                 return ((new DisplayUnsupportedFiletypeNodeAssembler())
-                        .assemble(aFile, aStage, aPrefWidth, aPrefHeight));
+                        .assemble(aDisplayFilePaneController, aFile, aStage, aPrefWidth, aPrefHeight));
             }
         }
     }
@@ -326,7 +388,8 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayAudioNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
 
             try {
 
@@ -377,7 +440,8 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayVideoNodeAssembler extends DisplayAudioNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
 
             try {
 
@@ -408,7 +472,8 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayTextNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
 
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 
@@ -443,7 +508,8 @@ public class DisplayFilePaneController extends BaseController {
     protected abstract static class AbstractDisplayDocNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
 
             try {
 
@@ -516,6 +582,14 @@ public class DisplayFilePaneController extends BaseController {
             tmpOut.close();
 
             return tmpOut.toString();
+        }
+    }
+
+    protected static class DesktopProvider {
+
+        public Desktop provideDesktop() {
+
+            return Desktop.getDesktop();
         }
     }
 

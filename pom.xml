@@ -468,13 +468,6 @@
       <version>3.12.0</version>
       <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
-    <dependency>
-      <groupId>org.awaitility</groupId>
-      <artifactId>awaitility</artifactId>
-      <version>4.0.3</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
