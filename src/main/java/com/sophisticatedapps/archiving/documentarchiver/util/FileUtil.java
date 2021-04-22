@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 
 public class FileUtil {
 
@@ -77,21 +78,29 @@ public class FileUtil {
         return tmpFileName;
     }
 
-    public static String getFileExtension(File aFile) {
+    public static String getFileExtension(String aFilename) {
 
         String tmpFileExtension = "";
 
-        // Get file Name first
-        String tmpFileName = aFile.getName();
-        final int tmpLastIndexOfDot = tmpFileName.lastIndexOf(".");
+        final int tmpLastIndexOfDot = aFilename.lastIndexOf(".");
 
         // If fileName do not contain "." or starts with "." then it is not a valid file
         if (tmpLastIndexOfDot >= 1) {
 
-            tmpFileExtension = tmpFileName.substring(tmpLastIndexOfDot + 1);
+            tmpFileExtension = aFilename.substring(tmpLastIndexOfDot + 1);
         }
 
         return tmpFileExtension;
+    }
+
+    public static String getFileExtension(File aFile) {
+
+        return getFileExtension(aFile.getName());
+    }
+
+    public static String getFileExtension(Path aPath) {
+
+        return getFileExtension(aPath.getFileName().toString());
     }
 
     public static FileTypeEnum getFiletype(File aFile) {

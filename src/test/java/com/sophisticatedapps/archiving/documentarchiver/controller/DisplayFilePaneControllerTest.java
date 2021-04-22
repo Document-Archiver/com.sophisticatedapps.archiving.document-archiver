@@ -25,6 +25,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -119,8 +120,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
 
         // Set a mocked DesktopProvider to the DisplayFilePaneController
         Desktop tmpMockedDesktop = Mockito.mock(Desktop.class);
-        DisplayFilePaneController.DesktopProvider tmpMockedDesktopProvider =
-                Mockito.mock(DisplayFilePaneController.DesktopProvider.class);
+        BaseController.DesktopProvider tmpMockedDesktopProvider = Mockito.mock(BaseController.DesktopProvider.class);
         doReturn(tmpMockedDesktop).when(tmpMockedDesktopProvider).provideDesktop();
         FieldUtils.writeField(displayFilePaneController, "desktopProvider", tmpMockedDesktopProvider, true);
 
@@ -138,8 +138,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
         // Set a mocked DesktopProvider to the DisplayFilePaneController
         Desktop tmpMockedDesktop = Mockito.mock(Desktop.class);
         doThrow(new IOException("nope")).when(tmpMockedDesktop).open(any(File.class));
-        DisplayFilePaneController.DesktopProvider tmpMockedDesktopProvider =
-                Mockito.mock(DisplayFilePaneController.DesktopProvider.class);
+        BaseController.DesktopProvider tmpMockedDesktopProvider = Mockito.mock(BaseController.DesktopProvider.class);
         doReturn(tmpMockedDesktop).when(tmpMockedDesktopProvider).provideDesktop();
         FieldUtils.writeField(displayFilePaneController, "desktopProvider", tmpMockedDesktopProvider, true);
 
@@ -156,8 +155,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
 
         // Set a mocked DesktopProvider to the DisplayFilePaneController
         Desktop tmpMockedDesktop = Mockito.mock(Desktop.class);
-        DisplayFilePaneController.DesktopProvider tmpMockedDesktopProvider =
-                Mockito.mock(DisplayFilePaneController.DesktopProvider.class);
+        BaseController.DesktopProvider tmpMockedDesktopProvider = Mockito.mock(BaseController.DesktopProvider.class);
         doReturn(tmpMockedDesktop).when(tmpMockedDesktopProvider).provideDesktop();
         FieldUtils.writeField(displayFilePaneController, "desktopProvider", tmpMockedDesktopProvider, true);
 
@@ -250,6 +248,17 @@ class DisplayFilePaneControllerTest extends BaseTest {
     }
 
     @Test
+    void testHandleCurrentDocumentChangedToZipFile() {
+
+        displayFilePaneController.setNewCurrentDocument(TEST_ZIP_FILE);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Now there should be a TextArea on our display file Pane.
+        Pane tmpZipPane = (Pane)displayFilePane.getChildren().get(0);
+        assertEquals(TableView.class, tmpZipPane.getChildren().get(0).getClass());
+    }
+
+    @Test
     void testPaneRemovalCleanup() {
 
         DisplayFilePaneController.DisplayAudioNodeAssembler tmpDisplayAudioNodeAssembler =
@@ -320,6 +329,18 @@ class DisplayFilePaneControllerTest extends BaseTest {
         // Pane should contain a warning message
         assertEquals("Sorry - media not supported.",
                 ((Label)tmpMediaTypeAudioVideoPane.getChildren().get(2)).getText());
+    }
+
+    @Test
+    void testDisplayZipNodeAssembler_with_exception() {
+
+        DisplayFilePaneController.DisplayZipNodeAssembler tmpDisplayZipNodeAssembler =
+                new DisplayFilePaneController.DisplayZipNodeAssembler();
+
+        // Give an encrypted ZIP to the assembler
+        RuntimeException tmpException = assertThrows(RuntimeException.class, () -> tmpDisplayZipNodeAssembler.assemble(
+                displayFilePaneController, TEST_TEXT_FILE, displayFilePaneController.stage, 250, 250));
+        assertEquals("ZIP file could not be opened: zip END header not found", tmpException.getMessage());
     }
 
 }

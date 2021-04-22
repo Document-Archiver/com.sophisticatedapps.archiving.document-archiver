@@ -25,6 +25,7 @@ public enum FileTypeGroupEnum {
     OFFICE("office"),
     AUDIO("audio"),
     VIDEOS("videos"),
+    ARCHIVES("archives"),
     MISC("misc");
 
     private final String groupingFolder;

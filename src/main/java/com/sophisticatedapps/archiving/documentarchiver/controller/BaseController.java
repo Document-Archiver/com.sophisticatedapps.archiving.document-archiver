@@ -22,12 +22,15 @@ import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
 import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -38,13 +41,14 @@ public abstract class BaseController {
 
     protected Stage stage;
     protected DialogProvider dialogProvider;
+    protected DesktopProvider desktopProvider;
 
     /**
      * Default constructor.
      */
     protected BaseController() {
 
-        this(new DialogProvider());
+        this(new DialogProvider(), new DesktopProvider());
     }
 
     /**
@@ -54,7 +58,29 @@ public abstract class BaseController {
      */
     protected BaseController(DialogProvider aDialogProvider) {
 
+        this(aDialogProvider, new DesktopProvider());
+    }
+
+    /**
+     * Alternative constructor which allows to pass a custom DesktopProvider.
+     *
+     * @param   aDesktopProvider DesktopProvider to use.
+     */
+    protected BaseController(DesktopProvider aDesktopProvider) {
+
+        this(new DialogProvider(), aDesktopProvider);
+    }
+
+    /**
+     * Alternative constructor which allows to pass a custom DialogProvider and a custom DesktopProvider.
+     *
+     * @param   aDialogProvider     DialogProvider to use.
+     * @param   aDesktopProvider    DesktopProvider to use.
+     */
+    protected BaseController(DialogProvider aDialogProvider, DesktopProvider aDesktopProvider) {
+
         this.dialogProvider = aDialogProvider;
+        this.desktopProvider = aDesktopProvider;
     }
 
     /**
@@ -171,6 +197,18 @@ public abstract class BaseController {
         });
     }
 
+    protected void openExternalViewer(File aFile) {
+
+        try {
+
+            desktopProvider.provideDesktop().open(aFile);
+        }
+        catch (IOException e) {
+
+            throw (new RuntimeException("Desktop app could not be opened: ".concat(e.getMessage())));
+        }
+    }
+
     protected static class DialogProvider {
 
         public Dialog<ButtonType> provideWelcomeDialog() {
@@ -238,6 +276,14 @@ public abstract class BaseController {
             return (new Alert(Alert.AlertType.WARNING,
                     LanguageUtil.i18n("menu-bar-controller.dialog-provider.directory-does-not-contain-files-alert"),
                     ButtonType.CLOSE));
+        }
+    }
+
+    protected static class DesktopProvider {
+
+        public Desktop provideDesktop() {
+
+            return Desktop.getDesktop();
         }
     }
 

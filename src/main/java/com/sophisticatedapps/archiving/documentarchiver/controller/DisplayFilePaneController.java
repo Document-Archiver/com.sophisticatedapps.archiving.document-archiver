@@ -19,6 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
+import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.ProcessesUtil;
@@ -60,12 +61,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.*;
+import java.util.zip.ZipFile;
 
 public class DisplayFilePaneController extends BaseController {
 
@@ -80,8 +80,6 @@ public class DisplayFilePaneController extends BaseController {
 
     @FXML
     private Button openExternalViewerButton;
-
-    private DesktopProvider desktopProvider;
 
     static {
 
@@ -106,27 +104,10 @@ public class DisplayFilePaneController extends BaseController {
         tmpAssemblerMap.put(FileTypeEnum.WAV, DisplayAudioNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.MP4, DisplayVideoNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.MOV, DisplayUnsupportedFiletypeNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.ZIP, DisplayZipNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.UNSUPPORTED, DisplayUnsupportedFiletypeNodeAssembler.class);
 
         NODE_ASSEMBLER_BY_FILETYPE = Collections.unmodifiableMap(tmpAssemblerMap);
-    }
-
-    /**
-     * Default constructor.
-     */
-    public DisplayFilePaneController() {
-
-        this(new DesktopProvider());
-    }
-
-    /**
-     * Alternative constructor which allows to pass a custom DesktopProvider.
-     *
-     * @param   aDesktopProvider DesktopProvider to use.
-     */
-    public DisplayFilePaneController(DesktopProvider aDesktopProvider) {
-
-        this.desktopProvider = aDesktopProvider;
     }
 
     @Override
@@ -239,14 +220,7 @@ public class DisplayFilePaneController extends BaseController {
     @FXML
     protected void handleOpenExternalViewerButtonAction() {
 
-        try {
-
-            desktopProvider.provideDesktop().open(getCurrentDocument());
-        }
-        catch (IOException e) {
-
-            throw (new RuntimeException("Desktop app could not be opened: ".concat(e.getMessage())));
-        }
+        openExternalViewer(getCurrentDocument());
     }
 
     private interface DisplayFileNodeAssembler {
@@ -261,14 +235,7 @@ public class DisplayFilePaneController extends BaseController {
         public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
                                double aPrefWidth, double aPrefHeight) {
 
-            try {
-
-                aDisplayFilePaneController.desktopProvider.provideDesktop().open(aFile);
-            }
-            catch (Exception e) {
-
-                throw (new RuntimeException("Desktop app could not be opened: ".concat(e.getMessage())));
-            }
+            aDisplayFilePaneController.openExternalViewer(aFile);
 
             StackPane tmpStackPane = new StackPane();
             tmpStackPane.setPrefWidth(aPrefWidth);
@@ -585,11 +552,31 @@ public class DisplayFilePaneController extends BaseController {
         }
     }
 
-    protected static class DesktopProvider {
+    protected static class DisplayZipNodeAssembler implements DisplayFileNodeAssembler {
 
-        public Desktop provideDesktop() {
+        @Override
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
 
-            return Desktop.getDesktop();
+            FXMLUtil.ControllerRegionPair<FileSystemViewPaneController, Pane> tmpDisplayFilePaneControllerRegionPair =
+                    FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", aStage);
+            Pane tmpFileSystemViewPane = tmpDisplayFilePaneControllerRegionPair.getRegion();
+            FileSystemViewPaneController tmpFileSystemViewPaneController =
+                    tmpDisplayFilePaneControllerRegionPair.getController();
+
+            try (ZipFile tmpZipFile = new ZipFile(aFile)) {
+
+                tmpFileSystemViewPaneController.setZipFile(tmpZipFile);
+
+                tmpFileSystemViewPane.setPrefWidth(aPrefWidth);
+                tmpFileSystemViewPane.setPrefHeight(aPrefHeight);
+
+                return tmpFileSystemViewPane;
+            }
+            catch (IOException e) {
+
+                throw (new RuntimeException("ZIP file could not be opened: ".concat(e.getMessage())));
+            }
         }
     }
 
