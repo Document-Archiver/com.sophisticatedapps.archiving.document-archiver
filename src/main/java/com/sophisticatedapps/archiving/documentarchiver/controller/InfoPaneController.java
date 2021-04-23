@@ -30,6 +30,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -53,7 +54,10 @@ import java.util.*;
 public class InfoPaneController extends BaseController {
 
     private static final Map<FileTypeEnum, Class<? extends FileTimeAgent>> TIME_AGENTS_BY_FILETYPE;
-    private static final KeyCodeCombination SHORTCUT_R_KEYCODE_COMBINATION = new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN);
+    private static final KeyCodeCombination SHORTCUT_R_KEYCODE_COMBINATION =
+            new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN);
+    private static final KeyCodeCombination SHORTCUT_D_KEYCODE_COMBINATION =
+            new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN);
 
     private final List<ChangeListener<Boolean>> datePickerFocusedPropertyListenersList = new ArrayList<>();
     private final List<ChangeListener<Boolean>> utilizeTimeInformationCheckBoxSelectedPropertyListenersList =
@@ -153,14 +157,8 @@ public class InfoPaneController extends BaseController {
                 handleTagsTextFieldTextChanged(aNewValue));
 
         // Listener for when the pane "gets" or "loses" a Scene (aNewScene) -> set/remove shortcuts.
-        infoPane.sceneProperty().addListener((anObs, anOldScene, aNewScene) -> {
-            if (!Objects.isNull(aNewScene)) {
-                aNewScene.getAccelerators().put(SHORTCUT_R_KEYCODE_COMBINATION, this::handleArchiveButtonAction);
-            }
-            else {
-                anOldScene.getAccelerators().remove(SHORTCUT_R_KEYCODE_COMBINATION);
-            }
-        });
+        infoPane.sceneProperty().addListener((anObs, anOldScene, aNewScene) ->
+                handleScenePropertyValueChanged(anOldScene, aNewScene));
     }
 
     @Override
@@ -192,6 +190,21 @@ public class InfoPaneController extends BaseController {
         double tmpTagsListViewsPrefHeight = (infoPane.getPrefHeight() - 350);
         existingTagsListView.setPrefHeight(tmpTagsListViewsPrefHeight);
         selectedTagsListView.setPrefHeight(tmpTagsListViewsPrefHeight);
+    }
+
+    private void handleScenePropertyValueChanged(Scene anOldScene, Scene aNewScene) {
+
+        // When the pane "gets" or "loses" a Scene (aNewScene) -> set/remove shortcuts.
+        if (!Objects.isNull(aNewScene)) {
+
+            aNewScene.getAccelerators().put(SHORTCUT_R_KEYCODE_COMBINATION, this::handleArchiveButtonAction);
+            aNewScene.getAccelerators().put(SHORTCUT_D_KEYCODE_COMBINATION, this::handleDeleteButtonAction);
+        }
+        else {
+
+            anOldScene.getAccelerators().remove(SHORTCUT_R_KEYCODE_COMBINATION);
+            anOldScene.getAccelerators().remove(SHORTCUT_D_KEYCODE_COMBINATION);
+        }
     }
 
     /**

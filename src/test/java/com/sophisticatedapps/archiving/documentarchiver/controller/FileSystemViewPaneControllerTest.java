@@ -24,9 +24,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
 class FileSystemViewPaneControllerTest extends BaseTest {
@@ -100,6 +100,21 @@ class FileSystemViewPaneControllerTest extends BaseTest {
         }
 
         verify(tmpMockedDesktop, Mockito.times(1)).open(any(File.class));
+    }
+
+    @Test
+    void testOpenZipEntryInExternalViewer_with_exception() {
+
+        fileSystemViewPaneController.setNewCurrentDocument(TEST_ZIP_FILE);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ZipEntry tmpMockedZipEntry = Mockito.mock(ZipEntry.class);
+        when(tmpMockedZipEntry.getName()).thenReturn("../../foo");
+
+        InvocationTargetException tmpException = assertThrows(InvocationTargetException.class, (() -> MethodUtils.invokeMethod(
+                fileSystemViewPaneController, true, "openZipEntryInExternalViewer", tmpMockedZipEntry)));
+        assertEquals("Could not get ZIP file contents: Entry is outside of the target directory",
+                tmpException.getCause().getMessage());
     }
 
 }
