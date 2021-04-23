@@ -90,6 +90,7 @@ public class DisplayFilePaneController extends BaseController {
         tmpAssemblerMap.put(FileTypeEnum.JPG, DisplayImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.PNG, DisplayImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.GIF, DisplayImageNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.BMP, DisplayImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.HEIC, DisplayHeicImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.XML, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.XHTML, DisplayTextNodeAssembler.class);
