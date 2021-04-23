@@ -109,13 +109,21 @@ public class FileSystemViewPaneController extends BaseController {
 
     private void openZipEntryInExternalViewer(ZipEntry aZipEntry) {
 
-        try (FileSystem tmpFileSystem = FileSystems.newFileSystem(getCurrentDocument().toPath(), null)) {
+        try (FileSystem tmpZipFileSystem = FileSystems.newFileSystem(getCurrentDocument().toPath(), null)) {
 
-            Path tmpFileToExtract = tmpFileSystem.getPath(aZipEntry.getName());
+            // Check if ZipEntry is faulty (file names can contain path traversal attacks (eg: ../../../etc/password))
+            File tmpFileToExtract = new File(aZipEntry.getName());
+            String tmpCanonicalDestinationPath = tmpFileToExtract.getCanonicalPath();
 
+            if (!tmpCanonicalDestinationPath.startsWith((new File("")).getCanonicalPath())) {
+
+                throw (new IOException("Entry is outside of the target directory"));
+            }
+
+            Path tmpPathToExtract = tmpZipFileSystem.getPath(tmpFileToExtract.getPath());
             File tmpTempFile = new File(System.getProperty("java.io.tmpdir"),
-                    (UUID.randomUUID().toString() + '.' + FileUtil.getFileExtension(tmpFileToExtract)));
-            Files.copy(tmpFileToExtract, tmpTempFile.toPath());
+                    (UUID.randomUUID().toString() + '.' + FileUtil.getFileExtension(tmpPathToExtract)));
+            Files.copy(tmpPathToExtract, tmpTempFile.toPath());
 
             openExternalViewer(tmpTempFile);
         }
