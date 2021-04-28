@@ -71,6 +71,7 @@ public class DirectoryUtil {
      * @param   aFileList       List to put the files in.
      * @param   aFileFilter     A FileFilter to apply.
      */
+    @SuppressWarnings("RedundantCollectionOperation")
     public static void readDirectoryRecursive(File aDirectoryPath, List<File> aFileList, FileFilter aFileFilter) {
 
         List<File> tmpFilesList = Arrays.asList(Objects.requireNonNull(aDirectoryPath.listFiles(aFileFilter)));

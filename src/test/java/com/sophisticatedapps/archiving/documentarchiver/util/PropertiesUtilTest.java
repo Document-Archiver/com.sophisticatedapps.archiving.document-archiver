@@ -135,9 +135,7 @@ class PropertiesUtilTest {
     @Test
     void testRetrieveLocalPropertiesDirectory() {
 
-        File tmpExpectedFile = new File(System.getProperty("user.home").concat("/.documentarchiver"));
-
-        assertEquals(tmpExpectedFile, PropertiesUtil.retrieveLocalPropertiesDirectory(false));
+        assertEquals(AppDirUtil.getUserDataDir(), PropertiesUtil.retrieveLocalPropertiesDirectory(false));
     }
 
 }

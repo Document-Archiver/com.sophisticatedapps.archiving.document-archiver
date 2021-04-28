@@ -420,6 +420,11 @@
       <artifactId>commons-collections4</artifactId>
       <version>4.4</version>
     </dependency>
+    <dependency>
+      <groupId>net.harawata</groupId>
+      <artifactId>appdirs</artifactId>
+      <version>1.2.1</version>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-imaging -->
     <dependency>

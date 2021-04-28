@@ -12,8 +12,7 @@ import java.util.UUID;
 
 public class ProcessesUtil {
 
-    private static final File IMG2JPG_FILE = new File(
-            PropertiesUtil.retrieveLocalPropertiesDirectory(true), "img2jpg");
+    private static final File IMG2JPG_FILE = new File(AppDirUtil.getUserDataDir(), "img2jpg");
 
     /**
      * Private constructor.

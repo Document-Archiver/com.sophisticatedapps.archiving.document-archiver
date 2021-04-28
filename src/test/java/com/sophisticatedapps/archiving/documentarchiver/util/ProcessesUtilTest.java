@@ -7,6 +7,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,14 +27,15 @@ class ProcessesUtilTest extends BaseTest {
     @Test
     void testGetImg2JpgPath() throws IllegalAccessException, IOException {
 
-        // Exchange the local properties directory
-        File tmpOriginalLocalPropertiesDirectory = (File) FieldUtils.readStaticField(
-                PropertiesUtil.class, "localPropertiesDirectory", true);
-        File tmpTempLocalPropertiesDirectory = new File(tempDir, ".documentarchiver");
-        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
-                tmpTempLocalPropertiesDirectory, true);
+        // Exchange the user data directory
+        File tmpOriginalUserDataDirectory = (File) FieldUtils.readStaticField(
+                AppDirUtil.class, "userDataDir", true);
+        File tmpTempUserDataDirectory = new File(tempDir, ".documentarchiver");
+        Files.createDirectories(tmpTempUserDataDirectory.toPath());
+        FieldUtils.writeStaticField(AppDirUtil.class,"userDataDir",
+                tmpTempUserDataDirectory, true);
 
-        File tmpImg2JpgBinary = new File(tmpTempLocalPropertiesDirectory, "img2jpg");
+        File tmpImg2JpgBinary = new File(tmpTempUserDataDirectory, "img2jpg");
 
         // First time -> Copy binary
         String tmpResult = ProcessesUtil.getImg2JpgPath();
@@ -46,8 +48,8 @@ class ProcessesUtilTest extends BaseTest {
         assertTrue(tmpImg2JpgBinary.exists());
 
         // Change local properties directory back
-        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
-                tmpOriginalLocalPropertiesDirectory, true);
+        FieldUtils.writeStaticField(AppDirUtil.class,"userDataDir",
+                tmpOriginalUserDataDirectory, true);
     }
 
 }

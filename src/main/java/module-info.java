@@ -15,6 +15,7 @@ module DocumentArchiver {
     requires org.apache.poi.scratchpad;
     requires Restart4j;
     requires org.apache.commons.collections4;
+    requires net.harawata.appdirs;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.controller;

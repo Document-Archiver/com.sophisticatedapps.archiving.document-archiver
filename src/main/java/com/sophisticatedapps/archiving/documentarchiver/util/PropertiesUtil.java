@@ -42,8 +42,7 @@ public class PropertiesUtil {
 
     private static final Pattern HOME_DIR_PATTERN = Pattern.compile("^~(.*)$");
 
-    private static File localPropertiesDirectory =
-            new File(System.getProperty("user.home").concat("/.documentarchiver"));
+    private static File localPropertiesDirectory = AppDirUtil.getUserDataDir();
 
     static {
 
