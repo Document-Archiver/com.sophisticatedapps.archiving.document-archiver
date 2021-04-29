@@ -211,6 +211,9 @@ public abstract class BaseController {
 
     protected static class DialogProvider {
 
+        private static final String GLOBAL_BUTTON_TYPE_NO_TEXT = "global.button-type.no.text";
+        private static final String GLOBAL_BUTTON_TYPE_YES_TEXT = "global.button-type.yes.text";
+
         public Dialog<ButtonType> provideWelcomeDialog() {
 
             ImageView tmpImageView = new ImageView(GlobalConstants.APP_ICON);
@@ -236,8 +239,14 @@ public abstract class BaseController {
 
         public Dialog<ButtonType> provideAboutDialog() {
 
+            StringBuilder tmpPropertiesSb = new StringBuilder();
+            System.getProperties().entrySet().stream()
+                    .sorted((e1, e2) -> e1.getKey().toString().compareToIgnoreCase(e2.getKey().toString()))
+                    .forEach(anEntry -> tmpPropertiesSb.append(anEntry).append("\n"));
+
             return (new Alert(Alert.AlertType.NONE,
-                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.about-dialog"),
+                    (LanguageUtil.i18n("menu-bar-controller.dialog-provider.about-dialog") +
+                            "\n\n" + tmpPropertiesSb),
                     ButtonType.CLOSE));
         }
 
@@ -259,16 +268,16 @@ public abstract class BaseController {
 
             return (new Alert(Alert.AlertType.INFORMATION,
                     LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert"),
-                    (new ButtonType(LanguageUtil.i18n("global.button-type.no.text"), ButtonBar.ButtonData.NO)),
-                    (new ButtonType(LanguageUtil.i18n("global.button-type.yes.text"), ButtonBar.ButtonData.YES))));
+                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_NO_TEXT), ButtonBar.ButtonData.NO)),
+                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT), ButtonBar.ButtonData.YES))));
         }
 
         public Alert providePreferencesChangedAlert(Locale aLanguageLocale) {
 
             return (new Alert(Alert.AlertType.INFORMATION,
                     LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert", aLanguageLocale),
-                    (new ButtonType(LanguageUtil.i18n("global.button-type.no.text", aLanguageLocale), ButtonBar.ButtonData.NO)),
-                    (new ButtonType(LanguageUtil.i18n("global.button-type.yes.text", aLanguageLocale), ButtonBar.ButtonData.YES))));
+                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_NO_TEXT, aLanguageLocale), ButtonBar.ButtonData.NO)),
+                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT, aLanguageLocale), ButtonBar.ButtonData.YES))));
         }
 
         public Alert provideDirectoryDoesNotContainFilesAlert() {
@@ -276,6 +285,14 @@ public abstract class BaseController {
             return (new Alert(Alert.AlertType.WARNING,
                     LanguageUtil.i18n("menu-bar-controller.dialog-provider.directory-does-not-contain-files-alert"),
                     ButtonType.CLOSE));
+        }
+
+        public Alert providePluginNotAvailableAlert() {
+
+            return (new Alert(Alert.AlertType.INFORMATION,
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.plugin-not-available-alert"),
+                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_NO_TEXT), ButtonBar.ButtonData.NO)),
+                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT), ButtonBar.ButtonData.YES))));
         }
     }
 

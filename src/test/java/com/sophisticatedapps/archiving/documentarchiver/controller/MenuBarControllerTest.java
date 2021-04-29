@@ -333,6 +333,20 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
+    void handleArchiveBrowserMenuItemAction() throws IllegalAccessException {
+
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        Alert tmpMockedPluginNotAvailableAlert = Mockito.mock(Alert.class);
+        when(tmpMockedPluginNotAvailableAlert.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
+        when(tmpMockedDialogProvider.providePluginNotAvailableAlert()).thenReturn(tmpMockedPluginNotAvailableAlert);
+        FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
+
+        menuBarController.handleArchiveBrowserMenuItemAction();
+
+        verify(tmpMockedPluginNotAvailableAlert, Mockito.times(1)).showAndWait();
+    }
+
+    @Test
     void handleHelpMenuItemAction() {
 
         HostServices tmpMockedHostServices = Mockito.mock(HostServices.class);

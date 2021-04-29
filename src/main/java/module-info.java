@@ -18,15 +18,19 @@ module DocumentArchiver {
     requires net.harawata.appdirs;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
+    opens com.sophisticatedapps.archiving.documentarchiver.api;
     opens com.sophisticatedapps.archiving.documentarchiver.controller;
     opens com.sophisticatedapps.archiving.documentarchiver.model;
     opens com.sophisticatedapps.archiving.documentarchiver.type;
     opens com.sophisticatedapps.archiving.documentarchiver.util;
     opens com.sophisticatedapps.archiving.documentarchiver.view;
 
-    exports com.sophisticatedapps.archiving.documentarchiver to ArchiveBrowser;
-    exports com.sophisticatedapps.archiving.documentarchiver.controller to ArchiveBrowser;
-    exports com.sophisticatedapps.archiving.documentarchiver.model to ArchiveBrowser;
-    exports com.sophisticatedapps.archiving.documentarchiver.type to ArchiveBrowser;
-	exports com.sophisticatedapps.archiving.documentarchiver.util to ArchiveBrowser;
+    exports com.sophisticatedapps.archiving.documentarchiver;
+    exports com.sophisticatedapps.archiving.documentarchiver.api;
+    exports com.sophisticatedapps.archiving.documentarchiver.controller;
+    exports com.sophisticatedapps.archiving.documentarchiver.model;
+    exports com.sophisticatedapps.archiving.documentarchiver.type;
+	exports com.sophisticatedapps.archiving.documentarchiver.util;
+
+    uses com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 }

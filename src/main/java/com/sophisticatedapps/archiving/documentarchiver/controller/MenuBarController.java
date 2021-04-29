@@ -28,13 +28,12 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 public class MenuBarController extends BaseController {
 
@@ -216,6 +215,19 @@ public class MenuBarController extends BaseController {
 
         ThemeUtil.ThemeEnum tmpNewTheme = THEMES_BY_MENU_ITEM_MAP.get(((MenuItem)anEvent.getSource()).getId());
         ThemeUtil.setCurrentTheme(tmpNewTheme, stage.getScene());
+    }
+
+    @FXML
+    protected void handleArchiveBrowserMenuItemAction() {
+
+        if (!PluginUtil.isPluginAvailable("ArchiveBrowserX")) {
+
+            dialogProvider.providePluginNotAvailableAlert().showAndWait();
+        }
+        else {
+
+            PluginUtil.fireArchiveBrowsingPlugin();
+        }
     }
 
     @FXML

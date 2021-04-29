@@ -34,11 +34,16 @@
               <RadioMenuItem fx:id="autoThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.auto-theme-menu-item" toggleGroup="$themeToggleGroup" />
           </items>
       </Menu>
-    <Menu mnemonicParsing="false" text="%menu-bar.help-menu">
-      <items>
-        <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="%menu-bar.help-menu.help-menu-item" />
-      </items>
-    </Menu>
+      <Menu mnemonicParsing="false" text="%menu-bar.tools-menu">
+          <items>
+              <MenuItem mnemonicParsing="false" onAction="#handleArchiveBrowserMenuItemAction" text="%menu-bar.tools-menu.archive-browser-menu-item" />
+          </items>
+      </Menu>
+      <Menu mnemonicParsing="false" text="%menu-bar.help-menu">
+          <items>
+              <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="%menu-bar.help-menu.help-menu-item" />
+          </items>
+      </Menu>
       <fx:define>
           <ToggleGroup fx:id="languageToggleGroup"/>
       </fx:define>

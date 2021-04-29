@@ -270,4 +270,19 @@ class BaseControllerTest extends BaseTest {
         assertEquals("The chosen directory doesn't contain files.", tmpAlert.getContentText());
     }
 
+    @Test
+    void testDialogProvider_providePluginNotAvailableAlert() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePluginNotAvailableAlert()));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertEquals("The required plugin is not installed yet. Download it now?", tmpAlert.getContentText());
+    }
+
 }
