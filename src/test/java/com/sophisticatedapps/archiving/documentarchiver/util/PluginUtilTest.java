@@ -28,12 +28,10 @@ class PluginUtilTest {
         assertFalse(PluginUtil.isPluginAvailable("foobar"));
     }
 
-    //@Test
-    void xtestFireArchiveBrowsingPlugin() {
+    @Test
+    void testFireArchiveBrowsingPlugin() {
 
-        PluginUtil.fireArchiveBrowsingPlugin();
-
-        assertTrue(true);
+        assertAll(PluginUtil::fireArchiveBrowsingPlugin);
     }
 
 }
