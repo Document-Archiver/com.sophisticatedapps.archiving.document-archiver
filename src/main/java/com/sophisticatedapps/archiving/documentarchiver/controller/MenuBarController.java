@@ -218,15 +218,27 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleArchiveBrowserMenuItemAction() {
 
-        if (!PluginUtil.isPluginAvailable("ArchiveBrowserX")) {
+        if (!PluginUtil.isPluginAvailable("ArchiveBrowser")) {
 
-            dialogProvider.providePluginNotAvailableAlert().showAndWait();
+            Optional<ButtonType> tmpShallDownloadResult = dialogProvider.providePluginNotAvailableAlert().showAndWait();
+
+            /*
+            // Should the plugin be downloaded?
+            if (ButtonBar.ButtonData.YES == tmpShallDownloadResult.get().getButtonData()) { // NOSONAR
+
+                InputStream in = new URL(FILE_URL).openStream();
+                Files.copy(in, Paths.get(FILE_NAME), StandardCopyOption.REPLACE_EXISTING);
+            }
+            */
         }
         else {
 
-            PluginUtil.fireArchiveBrowsingPlugin();
+            Stage tmpPluginStage = assemblePluginStage();
+            PluginUtil.fireArchiveBrowsingPlugin(tmpPluginStage);
+            tmpPluginStage.show();
         }
     }
 

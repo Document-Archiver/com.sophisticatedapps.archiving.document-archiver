@@ -16,10 +16,18 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.testfx.framework.junit5.ApplicationExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
+@ExtendWith(ApplicationExtension.class)
 class PluginUtilTest {
 
     @Test
@@ -31,7 +39,11 @@ class PluginUtilTest {
     @Test
     void testFireArchiveBrowsingPlugin() {
 
-        assertAll(PluginUtil::fireArchiveBrowsingPlugin);
+        Stage tmpMockedStage = Mockito.mock(Stage.class);
+
+        PluginUtil.fireArchiveBrowsingPlugin(tmpMockedStage);
+
+        verify(tmpMockedStage, Mockito.times(1)).setScene(any(Scene.class));
     }
 
 }

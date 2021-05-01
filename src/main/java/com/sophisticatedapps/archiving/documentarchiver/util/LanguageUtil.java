@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 
 public class LanguageUtil {
 
-    private static final Map<Locale, ResourceBundle> RESOURCE_BUNDLE_CACHE = new HashMap<>();
+    private static final Map<String, ResourceBundle> RESOURCE_BUNDLE_CACHE = new HashMap<>();
     private static final Locale CURRENT_LANGUAGE_LOCALE = PropertiesUtil.LANGUAGE_LOCALE;
 
     /**
@@ -82,8 +82,10 @@ public class LanguageUtil {
     public static ResourceBundle getResourceBundleForLanguageLocale(Locale aLanguageLocale,
                                                                     ResourceLoadContext aResourceLoadContext) {
 
-        return RESOURCE_BUNDLE_CACHE.computeIfAbsent(aLanguageLocale,
-                (aLocale -> ResourceBundle.getBundle(aResourceLoadContext.getLanguageResourceBaseName(),
+        String tmpBundleCacheKey =
+                aResourceLoadContext.getLanguageResourceBaseName().concat(aLanguageLocale.toLanguageTag());
+        return RESOURCE_BUNDLE_CACHE.computeIfAbsent(tmpBundleCacheKey,
+                (aKey -> ResourceBundle.getBundle(aResourceLoadContext.getLanguageResourceBaseName(),
                         aLanguageLocale, aResourceLoadContext.getSearchBase().getClassLoader())));
     }
 

@@ -209,6 +209,22 @@ public abstract class BaseController {
         }
     }
 
+    protected Stage assemblePluginStage() {
+
+        double tmpPluginStageX = (stage.getX() + (stage.getWidth() / 20));
+        double tmpPluginStageY = (stage.getY() + (stage.getHeight() / 20));
+        double tmpPluginStageWidth = (stage.getWidth() * 0.9);
+        double tmpPluginStageHeight = (stage.getHeight() * 0.9);
+
+        Stage tmpPluginStage = new Stage();
+        tmpPluginStage.setX(tmpPluginStageX);
+        tmpPluginStage.setY(tmpPluginStageY);
+        tmpPluginStage.setWidth(tmpPluginStageWidth);
+        tmpPluginStage.setHeight(tmpPluginStageHeight);
+
+        return tmpPluginStage;
+    }
+
     protected static class DialogProvider {
 
         private static final String GLOBAL_BUTTON_TYPE_NO_TEXT = "global.button-type.no.text";

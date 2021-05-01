@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.lang.module.Configuration;
@@ -97,13 +98,13 @@ public class PluginUtil {
         return pluginNamesList.contains(aPluginName);
     }
 
-    public static void fireArchiveBrowsingPlugin() {
+    public static void fireArchiveBrowsingPlugin(Stage aStage) {
 
         Thread.currentThread().setContextClassLoader(pluginClassLoader);
         ServiceLoader<ArchiveBrowsingService> loader =
                 ServiceLoader.load(pluginModuleLayer, ArchiveBrowsingService.class);
         ArchiveBrowsingService service = loader.iterator().next();
-        service.startBrowsing();
+        service.assemble(aStage);
     }
 
 }

@@ -176,6 +176,26 @@ class BaseControllerTest extends BaseTest {
     }
 
     @Test
+    void testAssemblePluginStage() {
+
+        baseController.stage.setX(50);
+        baseController.stage.setY(30);
+        baseController.stage.setWidth(240);
+        baseController.stage.setHeight(100);
+
+        final List<Stage> tmpStageList = new ArrayList<>();
+        Platform.runLater(() -> tmpStageList.add(baseController.assemblePluginStage()));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Stage tmpStage = tmpStageList.get(0);
+        assertNotNull(tmpStage);
+        assertEquals(62, tmpStage.getX());
+        assertEquals(35, tmpStage.getY());
+        assertEquals(216, tmpStage.getWidth());
+        assertEquals(90, tmpStage.getHeight());
+    }
+
+    @Test
     void testDialogProvider_provideWelcomeDialog() {
 
         BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
