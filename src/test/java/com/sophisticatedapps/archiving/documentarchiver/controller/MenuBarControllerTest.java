@@ -20,6 +20,7 @@ import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.PluginUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
 import javafx.application.HostServices;
@@ -333,11 +334,12 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
-    void handleArchiveBrowserMenuItemAction_with_download() throws IllegalAccessException {
+    void handleArchiveBrowserMenuItemAction() throws IllegalAccessException {
 
+        // First round with download denied
         BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
         Alert tmpMockedPluginNotAvailableAlert = Mockito.mock(Alert.class);
-        when(tmpMockedPluginNotAvailableAlert.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
+        when(tmpMockedPluginNotAvailableAlert.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
         when(tmpMockedDialogProvider.providePluginNotAvailableAlert()).thenReturn(tmpMockedPluginNotAvailableAlert);
         FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
 
@@ -345,20 +347,18 @@ class MenuBarControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(tmpMockedPluginNotAvailableAlert, Mockito.times(1)).showAndWait();
-    }
 
-    @Test
-    void handleArchiveBrowserMenuItemAction_download_denied() throws IllegalAccessException {
-
-        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
-        Alert tmpMockedPluginNotAvailableAlert = Mockito.mock(Alert.class);
-        when(tmpMockedPluginNotAvailableAlert.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
-        when(tmpMockedDialogProvider.providePluginNotAvailableAlert()).thenReturn(tmpMockedPluginNotAvailableAlert);
+        // Second round with download
+        when(tmpMockedPluginNotAvailableAlert.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
         FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
 
-        menuBarController.handleArchiveBrowserMenuItemAction();
+        Platform.runLater(() -> menuBarController.handleArchiveBrowserMenuItemAction());
+        WaitForAsyncUtils.waitForFxEvents();
 
-        verify(tmpMockedPluginNotAvailableAlert, Mockito.times(1)).showAndWait();
+        verify(tmpMockedPluginNotAvailableAlert, Mockito.times(2)).showAndWait();
+
+        // Now the ArchiveBrowser plugin should be available.
+        assertTrue(PluginUtil.isPluginAvailable("ArchiveBrowser"));
     }
 
     @Test
