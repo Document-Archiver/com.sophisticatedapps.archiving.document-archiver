@@ -305,4 +305,20 @@ class BaseControllerTest extends BaseTest {
         assertEquals("The required plugin is not installed yet. Download it now?", tmpAlert.getContentText());
     }
 
+    @Test
+    void testDialogProvider_provideExceptionAlert() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        Exception tmpException = new Exception("This is a test");
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideExceptionAlert(tmpException)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertEquals("This is a test", tmpAlert.getContentText());
+    }
+
 }

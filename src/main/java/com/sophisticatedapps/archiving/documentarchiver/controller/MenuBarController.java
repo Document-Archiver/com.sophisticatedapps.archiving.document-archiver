@@ -225,21 +225,28 @@ public class MenuBarController extends BaseController {
 
             Optional<ButtonType> tmpShallDownloadResult = dialogProvider.providePluginNotAvailableAlert().showAndWait();
 
-            /*
             // Should the plugin be downloaded?
             if (ButtonBar.ButtonData.YES == tmpShallDownloadResult.get().getButtonData()) { // NOSONAR
 
-                InputStream in = new URL(FILE_URL).openStream();
-                Files.copy(in, Paths.get(FILE_NAME), StandardCopyOption.REPLACE_EXISTING);
-            }
-            */
-        }
-        else {
+                try {
 
-            Stage tmpPluginStage = assemblePluginStage();
-            PluginUtil.fireArchiveBrowsingPlugin(tmpPluginStage);
-            tmpPluginStage.show();
+                    PluginUtil.addPluginFromURL(GlobalConstants.ARCHIVE_BROWSER_PLUGIN_URL);
+                }
+                catch (IOException e) {
+
+                    dialogProvider.provideExceptionAlert(e).showAndWait();
+                    return;
+                }
+            }
+            else {
+
+                return;
+            }
         }
+
+        Stage tmpPluginStage = assemblePluginStage();
+        PluginUtil.fireArchiveBrowsingPlugin(tmpPluginStage);
+        tmpPluginStage.show();
     }
 
     @FXML

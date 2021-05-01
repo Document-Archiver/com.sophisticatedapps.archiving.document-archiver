@@ -310,6 +310,11 @@ public abstract class BaseController {
                     (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_NO_TEXT), ButtonBar.ButtonData.NO)),
                     (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT), ButtonBar.ButtonData.YES))));
         }
+
+        public Alert provideExceptionAlert(Exception anException) {
+
+            return (new Alert(Alert.AlertType.ERROR, anException.getMessage(), ButtonType.CLOSE));
+        }
     }
 
     protected static class DesktopProvider {

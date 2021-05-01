@@ -20,12 +20,15 @@ import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingServi
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.module.Configuration;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +44,20 @@ public class PluginUtil {
     private static ModuleLayer pluginModuleLayer;
 
     static {
+
+        registerPlugins();
+    }
+
+    /**
+     * Private constructor.
+     */
+    private PluginUtil() {
+    }
+
+    /**
+     * Scan plugin directories for JARS and register plugins.
+     */
+    private static void registerPlugins() {
 
         if (pluginDirectory.exists()) {
 
@@ -87,10 +104,19 @@ public class PluginUtil {
         }
     }
 
-    /**
-     * Private constructor.
-     */
-    private PluginUtil() {
+    public static void addPluginFromURL(String aPluginURL) throws IOException {
+
+        URL tmpURL = new URL(aPluginURL);
+        String tmpFilename = (new File(tmpURL.getFile())).getName();
+
+        // In case the plugin directory does not exist yet.
+        Files.createDirectories(pluginDirectory.toPath());
+
+        Files.copy(tmpURL.openStream(), (new File(pluginDirectory, tmpFilename)).toPath(),
+                StandardCopyOption.REPLACE_EXISTING);
+
+        // Re-register plugins
+        registerPlugins();
     }
 
     public static boolean isPluginAvailable(String aPluginName) {

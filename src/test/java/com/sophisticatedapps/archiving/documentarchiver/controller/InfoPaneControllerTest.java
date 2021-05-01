@@ -477,11 +477,10 @@ class InfoPaneControllerTest extends BaseTest {
         tmpNewAllDocuments.add(tmpNewCurrentDocument);
 
         Alert tmpMockedAlert = Mockito.mock(Alert.class);
-        InfoPaneController.DialogProvider tmpMockedDialogProvider =
-                Mockito.mock(InfoPaneController.DialogProvider.class);
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
         when(tmpMockedDialogProvider.provideExceptionAlert(any(Exception.class)))
                 .thenReturn(tmpMockedAlert);
-        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedDialogProvider, true);
+        FieldUtils.writeField(infoPaneController, "dialogProvider", tmpMockedDialogProvider, true);
 
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
 
@@ -557,12 +556,13 @@ class InfoPaneControllerTest extends BaseTest {
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
         WaitForAsyncUtils.waitForFxEvents();
 
-        InfoPaneController.DialogProvider tmpMockedDialogProvider =
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        InfoPaneController.DialogProvider tmpMockedInfoPaneDialogProvider =
                 Mockito.mock(InfoPaneController.DialogProvider.class);
 
         Alert tmpMockedConfirmDeletionAlert = Mockito.mock(Alert.class);
         when(tmpMockedConfirmDeletionAlert.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
-        when(tmpMockedDialogProvider.provideConfirmDeletionAlert(tmpNewCurrentDocument))
+        when(tmpMockedInfoPaneDialogProvider.provideConfirmDeletionAlert(tmpNewCurrentDocument))
                 .thenReturn(tmpMockedConfirmDeletionAlert);
 
         Alert tmpMockedExceptionAlert = Mockito.mock(Alert.class);
@@ -570,9 +570,10 @@ class InfoPaneControllerTest extends BaseTest {
 
         Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
         when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.FINISH));
-        when(tmpMockedDialogProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
+        when(tmpMockedInfoPaneDialogProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
 
-        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedDialogProvider, true);
+        FieldUtils.writeField(infoPaneController, "dialogProvider", tmpMockedDialogProvider, true);
+        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedInfoPaneDialogProvider, true);
 
         // "Click" delete button
         Platform.runLater(() -> infoPaneController.handleDeleteButtonAction());
@@ -689,22 +690,6 @@ class InfoPaneControllerTest extends BaseTest {
         LocalDateTime tmpExpectedFileDateTime = tmpGenericFileTimeAgent.determineFileTime(TEST_JPG_FILE2);
 
         assertEquals(tmpExpectedFileDateTime, tmpFileDateTime);
-    }
-
-    @Test
-    void testDialogProvider_provideExceptionAlert() {
-
-        InfoPaneController.DialogProvider tmpDialogProvider = new InfoPaneController.DialogProvider();
-        Exception tmpException = new Exception("This is a test");
-        final List<Alert> tmpAlertList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideExceptionAlert(tmpException)));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Alert tmpAlert = tmpAlertList.get(0);
-        assertNotNull(tmpAlert);
-        assertEquals("This is a test", tmpAlert.getContentText());
     }
 
     @Test

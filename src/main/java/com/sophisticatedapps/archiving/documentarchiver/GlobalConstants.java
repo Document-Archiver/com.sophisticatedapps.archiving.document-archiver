@@ -49,6 +49,8 @@ public class GlobalConstants {
     public static final String ALL_DOCUMENTS_PROPERTY_KEY = "allDocuments";
     public static final String CURRENT_DOCUMENT_PROPERTY_KEY = "currentDocument";
 
+    public static final String ARCHIVE_BROWSER_PLUGIN_URL =
+            "https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/archive-browser/1.0-SNAPSHOT/archive-browser-1.0-20210501.095551-2.jar";
     public static final String WIKI_URL =
             "https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start";
 

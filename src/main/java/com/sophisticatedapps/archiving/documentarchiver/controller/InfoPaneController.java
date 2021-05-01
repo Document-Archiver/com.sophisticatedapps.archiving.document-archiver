@@ -378,7 +378,7 @@ public class InfoPaneController extends BaseController {
         }
         catch (IOException e) {
 
-            infoPaneDialogProvider.provideExceptionAlert(e).showAndWait();
+            dialogProvider.provideExceptionAlert(e).showAndWait();
         }
     }
 
@@ -405,7 +405,7 @@ public class InfoPaneController extends BaseController {
                 }
                 else {
 
-                    infoPaneDialogProvider.provideExceptionAlert(new IOException("Trash not available.")).showAndWait();
+                    dialogProvider.provideExceptionAlert(new IOException("Trash not available.")).showAndWait();
                 }
             }
             else if (ButtonBar.ButtonData.OTHER == tmpButtonData) {
@@ -416,7 +416,7 @@ public class InfoPaneController extends BaseController {
         }
         catch (IOException e) {
 
-            infoPaneDialogProvider.provideExceptionAlert(e).showAndWait();
+            dialogProvider.provideExceptionAlert(e).showAndWait();
         }
     }
 
@@ -523,11 +523,6 @@ public class InfoPaneController extends BaseController {
         private static final ButtonType DELETE_FILE_BUTTON_TYPE = new ButtonType(
                 LanguageUtil.i18n("info-pane-controller.dialog-provider.confirm-deletion-alert.delete-file-button.text"),
                 ButtonBar.ButtonData.OTHER);
-
-        public Alert provideExceptionAlert(Exception anException) {
-
-            return (new Alert(Alert.AlertType.ERROR, anException.getMessage(), ButtonType.CLOSE));
-        }
 
         public Alert provideAllDoneAlert() {
 
