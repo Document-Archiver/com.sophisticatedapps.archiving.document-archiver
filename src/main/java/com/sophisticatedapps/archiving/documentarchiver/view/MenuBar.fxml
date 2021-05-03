@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -8,51 +7,59 @@
 <?import javafx.scene.control.ToggleGroup?>
 
 <MenuBar fx:id="menuBar" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController">
-  <menus>
-    <Menu mnemonicParsing="false" text="%menu-bar.document-archiver-menu">
-      <items>
-        <MenuItem mnemonicParsing="false" onAction="#handleAboutMenuItemAction" text="%menu-bar.document-archiver-menu.about-menu-item" />
+    <menus>
+        <Menu mnemonicParsing="false" text="%menu-bar.document-archiver-menu">
+            <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleAboutMenuItemAction" text="%menu-bar.document-archiver-menu.about-menu-item" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemAction" text="%menu-bar.document-archiver-menu.preferences-menu-item" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" onAction="#handleQuitMenuItemAction" text="%menu-bar.document-archiver-menu.quit-menu-item" />
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="%menu-bar.file-menu">
+            <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleOpenFilesMenuItemAction" text="%menu-bar.file-menu.open-files-menu-item" />
+                <MenuItem mnemonicParsing="false" onAction="#handleOpenDirectoryMenuItemAction" text="%menu-bar.file-menu.open-directory-menu-item" />
+            </items>
+        </Menu>
+        <Menu fx:id="viewMenu" mnemonicParsing="false" text="%menu-bar.view-menu">
+            <items>
+                <fx:define>
+                    <ToggleGroup fx:id="themeToggleGroup" />
+                </fx:define>
+                <Menu fx:id="appearanceMenu" mnemonicParsing="false" text="%menu-bar.appearance-menu">
+                    <items>
+                        <RadioMenuItem fx:id="lightThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.appearance-menu.light-theme-menu-item" toggleGroup="$themeToggleGroup" />
+                        <RadioMenuItem fx:id="darkThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.appearance-menu.dark-theme-menu-item" toggleGroup="$themeToggleGroup" />
+                        <RadioMenuItem fx:id="autoThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.appearance-menu.auto-theme-menu-item" toggleGroup="$themeToggleGroup" />
+                    </items>
+                </Menu>
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="toggleFullScreenMenuItem" mnemonicParsing="false" onAction="#handleToggleFullScreenMenuItemAction" text="%menu-bar.view-menu.enter-full-screen-menu-item" />
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="%menu-bar.tools-menu">
+            <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleArchiveBrowserMenuItemAction" text="%menu-bar.tools-menu.archive-browser-menu-item" />
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="%menu-bar.help-menu">
+            <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="%menu-bar.help-menu.help-menu-item" />
+            </items>
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemAction" text="%menu-bar.document-archiver-menu.preferences-menu-item" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#handleQuitMenuItemAction" text="%menu-bar.document-archiver-menu.quit-menu-item" />
-      </items>
-    </Menu>
-    <Menu mnemonicParsing="false" text="%menu-bar.file-menu">
-      <items>
-        <MenuItem mnemonicParsing="false" onAction="#handleOpenFilesMenuItemAction" text="%menu-bar.file-menu.open-files-menu-item" />
-            <MenuItem mnemonicParsing="false" onAction="#handleOpenDirectoryMenuItemAction" text="%menu-bar.file-menu.open-directory-menu-item" />
-      </items>
-    </Menu>
-      <fx:define>
-          <ToggleGroup fx:id="themeToggleGroup"/>
-      </fx:define>
-      <Menu fx:id="viewMenu" mnemonicParsing="false" text="%menu-bar.view-menu">
-          <items>
-              <RadioMenuItem fx:id="lightThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.light-theme-menu-item" toggleGroup="$themeToggleGroup" />
-              <RadioMenuItem fx:id="darkThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.dark-theme-menu-item" toggleGroup="$themeToggleGroup" />
-              <RadioMenuItem fx:id="autoThemeMenuItem" mnemonicParsing="false" onAction="#handleChangeThemeMenuItemAction" text="%menu-bar.view-menu.auto-theme-menu-item" toggleGroup="$themeToggleGroup" />
-          </items>
-      </Menu>
-      <Menu mnemonicParsing="false" text="%menu-bar.tools-menu">
-          <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleArchiveBrowserMenuItemAction" text="%menu-bar.tools-menu.archive-browser-menu-item" />
-          </items>
-      </Menu>
-      <Menu mnemonicParsing="false" text="%menu-bar.help-menu">
-          <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleHelpMenuItemAction" text="%menu-bar.help-menu.help-menu-item" />
-          </items>
-      </Menu>
-      <fx:define>
-          <ToggleGroup fx:id="languageToggleGroup"/>
-      </fx:define>
-      <Menu fx:id="languageMenu" mnemonicParsing="false" text="%menu-bar.language-menu">
-        <items>
-            <RadioMenuItem fx:id="englishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.english-menu-item" toggleGroup="$languageToggleGroup" />
-          <RadioMenuItem fx:id="germanLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.german-menu-item" toggleGroup="$languageToggleGroup" />
-          <RadioMenuItem fx:id="spanishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.spanish-menu-item" toggleGroup="$languageToggleGroup" />
-        </items>
-      </Menu>
-  </menus>
+            <MenuItem fx:id="systemInfoMenuItem" mnemonicParsing="false" onAction="#handleSystemInformationMenuItemAction" text="%menu-bar.help-menu.system-info-menu-item" />
+        </Menu>
+        <fx:define>
+            <ToggleGroup fx:id="languageToggleGroup" />
+        </fx:define>
+        <Menu fx:id="languageMenu" mnemonicParsing="false" text="%menu-bar.language-menu">
+            <items>
+                <RadioMenuItem fx:id="englishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.english-menu-item" toggleGroup="$languageToggleGroup" />
+                <RadioMenuItem fx:id="germanLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.german-menu-item" toggleGroup="$languageToggleGroup" />
+                <RadioMenuItem fx:id="spanishLanguageMenuItem" mnemonicParsing="false" onAction="#handleChangeLanguageMenuItemAction" text="%menu-bar.language-menu.spanish-menu-item" toggleGroup="$languageToggleGroup" />
+            </items>
+        </Menu>
+    </menus>
 </MenuBar>

@@ -334,6 +334,29 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
+    void handleToggleFullScreenMenuItemAction() {
+
+        final List<Boolean> tmpFullScreenInformationList = new ArrayList<>();
+        tmpFullScreenInformationList.add(Boolean.FALSE);
+
+        Stage tmpMockedStage = Mockito.mock(Stage.class);
+        doAnswer(anInvocationOnMock -> {
+            tmpFullScreenInformationList.set(0, anInvocationOnMock.getArgument(0));
+            return null;
+        }).when(tmpMockedStage).setFullScreen(anyBoolean());
+        doAnswer(anInvocationOnMock -> tmpFullScreenInformationList.get(0)).when(tmpMockedStage).isFullScreen();
+        menuBarController.stage = tmpMockedStage;
+
+        Platform.runLater(() -> menuBarController.handleToggleFullScreenMenuItemAction());
+        WaitForAsyncUtils.waitForFxEvents();
+        assertTrue(tmpFullScreenInformationList.get(0));
+
+        Platform.runLater(() -> menuBarController.handleToggleFullScreenMenuItemAction());
+        WaitForAsyncUtils.waitForFxEvents();
+        assertFalse(tmpFullScreenInformationList.get(0));
+    }
+
+    @Test
     void handleArchiveBrowserMenuItemAction() throws IllegalAccessException {
 
         // First round with download denied
@@ -370,6 +393,20 @@ class MenuBarControllerTest extends BaseTest {
         menuBarController.handleHelpMenuItemAction();
 
         verify(tmpMockedHostServices, Mockito.times(1)).showDocument(any(String.class));
+    }
+
+    @Test
+    void handleSystemInformationMenuItemAction() throws IllegalAccessException {
+
+        @SuppressWarnings("unchecked")
+        Dialog<ButtonType> tmpMockedSystemInformationDialog = Mockito.mock(Dialog.class);
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideSystemInformationDialog(anyDouble(), anyDouble()))
+                .thenReturn(tmpMockedSystemInformationDialog);
+        FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
+
+        menuBarController.handleSystemInformationMenuItemAction();
+        verify(tmpMockedSystemInformationDialog, Mockito.times(1)).showAndWait();
     }
 
     @Test

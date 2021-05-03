@@ -23,6 +23,7 @@ import javafx.collections.MapChangeListener;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -176,7 +177,7 @@ class BaseControllerTest extends BaseTest {
     }
 
     @Test
-    void testAssemblePluginStage() {
+    void testAssembleSubStage() {
 
         baseController.stage.setX(50);
         baseController.stage.setY(30);
@@ -184,15 +185,15 @@ class BaseControllerTest extends BaseTest {
         baseController.stage.setHeight(100);
 
         final List<Stage> tmpStageList = new ArrayList<>();
-        Platform.runLater(() -> tmpStageList.add(baseController.assemblePluginStage()));
+        Platform.runLater(() -> tmpStageList.add(baseController.assembleSubStage(0.8)));
         WaitForAsyncUtils.waitForFxEvents();
 
         Stage tmpStage = tmpStageList.get(0);
         assertNotNull(tmpStage);
-        assertEquals(62, tmpStage.getX());
-        assertEquals(35, tmpStage.getY());
-        assertEquals(216, tmpStage.getWidth());
-        assertEquals(90, tmpStage.getHeight());
+        assertEquals(74, tmpStage.getX());
+        assertEquals(40, tmpStage.getY());
+        assertEquals(192, tmpStage.getWidth());
+        assertEquals(80, tmpStage.getHeight());
     }
 
     @Test
@@ -303,6 +304,20 @@ class BaseControllerTest extends BaseTest {
         Alert tmpAlert = tmpAlertList.get(0);
         assertNotNull(tmpAlert);
         assertEquals("The required plugin is not installed yet. Download it now?", tmpAlert.getContentText());
+    }
+
+    @Test
+    void testDialogProvider_provideSystemInformationDialog() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideSystemInformationDialog(250, 100)));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
+        assertNotNull(tmpDialog);
+        assertEquals(TextArea.class, tmpDialog.getDialogPane().getContent().getClass());
     }
 
     @Test

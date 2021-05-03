@@ -24,6 +24,7 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -209,18 +210,18 @@ public abstract class BaseController {
         }
     }
 
-    protected Stage assemblePluginStage() {
+    protected Stage assembleSubStage(double aScaleFactor) {
 
-        double tmpPluginStageX = (stage.getX() + (stage.getWidth() / 20));
-        double tmpPluginStageY = (stage.getY() + (stage.getHeight() / 20));
-        double tmpPluginStageWidth = (stage.getWidth() * 0.9);
-        double tmpPluginStageHeight = (stage.getHeight() * 0.9);
+        double tmpPluginStageWidth = (stage.getWidth() * aScaleFactor);
+        double tmpPluginStageHeight = (stage.getHeight() * aScaleFactor);
+        double tmpPluginStageX = (stage.getX() + ((stage.getWidth() - tmpPluginStageWidth) / 2));
+        double tmpPluginStageY = (stage.getY() + ((stage.getHeight() - tmpPluginStageHeight) / 2));
 
         Stage tmpPluginStage = new Stage();
-        tmpPluginStage.setX(tmpPluginStageX);
-        tmpPluginStage.setY(tmpPluginStageY);
         tmpPluginStage.setWidth(tmpPluginStageWidth);
         tmpPluginStage.setHeight(tmpPluginStageHeight);
+        tmpPluginStage.setX(tmpPluginStageX);
+        tmpPluginStage.setY(tmpPluginStageY);
 
         return tmpPluginStage;
     }
@@ -255,14 +256,8 @@ public abstract class BaseController {
 
         public Dialog<ButtonType> provideAboutDialog() {
 
-            StringBuilder tmpPropertiesSb = new StringBuilder();
-            System.getProperties().entrySet().stream()
-                    .sorted((e1, e2) -> e1.getKey().toString().compareToIgnoreCase(e2.getKey().toString()))
-                    .forEach(anEntry -> tmpPropertiesSb.append(anEntry).append("\n"));
-
             return (new Alert(Alert.AlertType.NONE,
-                    (LanguageUtil.i18n("menu-bar-controller.dialog-provider.about-dialog") +
-                            "\n\n" + tmpPropertiesSb),
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.about-dialog"),
                     ButtonType.CLOSE));
         }
 
@@ -309,6 +304,25 @@ public abstract class BaseController {
                     LanguageUtil.i18n("menu-bar-controller.dialog-provider.plugin-not-available-alert"),
                     (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_NO_TEXT), ButtonBar.ButtonData.NO)),
                     (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT), ButtonBar.ButtonData.YES))));
+        }
+
+        public Dialog<ButtonType> provideSystemInformationDialog(double aPrefWidth, double aPrefHeight) {
+
+            StringBuilder tmpPropertiesSb = new StringBuilder();
+            System.getProperties().entrySet().stream()
+                    .sorted((e1, e2) -> e1.getKey().toString().compareToIgnoreCase(e2.getKey().toString()))
+                    .forEach(anEntry -> tmpPropertiesSb.append(anEntry).append("\n"));
+
+            Dialog<ButtonType> tmpDialog = new Dialog<>();
+            tmpDialog.setTitle(LanguageUtil.i18n("menu-bar.help-menu.system-info-menu-item"));
+
+            DialogPane tmpDialogPane = tmpDialog.getDialogPane();
+            tmpDialogPane.setPrefSize(aPrefWidth, aPrefHeight);
+            tmpDialogPane.setContent(new TextArea(tmpPropertiesSb.toString()));
+            tmpDialogPane.getButtonTypes().addAll(ButtonType.OK);
+            tmpDialogPane.getStylesheets().add(ThemeUtil.getCurrentTheme().getPathToCss());
+
+            return tmpDialog;
         }
 
         public Alert provideExceptionAlert(Exception anException) {

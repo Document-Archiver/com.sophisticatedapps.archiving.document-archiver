@@ -51,10 +51,13 @@ public class MenuBarController extends BaseController {
     private DirectoryChooser directoryChooser;
 
     @FXML
-    Menu viewMenu;
+    Menu appearanceMenu;
 
     @FXML
     Menu languageMenu;
+
+    @FXML
+    MenuItem toggleFullScreenMenuItem;
 
     /**
      * Default constructor.
@@ -99,9 +102,9 @@ public class MenuBarController extends BaseController {
         selectCurrentLanguageRadioMenuItem(LOCALES_BY_MENU_ITEM_MAP.getKey(LanguageUtil.getCurrentLanguageLocale()));
     }
 
-    private void selectCurrentThemeRadioMenuItem(String aLanguageRadioMenuItemId) {
+    private void selectCurrentThemeRadioMenuItem(String aThemeRadioMenuItemId) {
 
-        selectCurrentRadioMenuItem(viewMenu, aLanguageRadioMenuItemId);
+        selectCurrentRadioMenuItem(appearanceMenu, aThemeRadioMenuItemId);
     }
 
     private void selectCurrentLanguageRadioMenuItem(String aLanguageRadioMenuItemId) {
@@ -218,6 +221,16 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
+    protected void handleToggleFullScreenMenuItemAction() {
+
+        boolean tmpToggleTo = (!stage.isFullScreen());
+        toggleFullScreenMenuItem.setText(tmpToggleTo ?
+                LanguageUtil.i18n("menu-bar.view-menu.exit-full-screen-menu-item") :
+                LanguageUtil.i18n("menu-bar.view-menu.enter-full-screen-menu-item"));
+        stage.setFullScreen(tmpToggleTo);
+    }
+
+    @FXML
     @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleArchiveBrowserMenuItemAction() {
 
@@ -244,7 +257,7 @@ public class MenuBarController extends BaseController {
             }
         }
 
-        Stage tmpPluginStage = assemblePluginStage();
+        Stage tmpPluginStage = assembleSubStage(0.9);
         PluginUtil.fireArchiveBrowsingPlugin(tmpPluginStage);
         tmpPluginStage.show();
     }
@@ -255,6 +268,13 @@ public class MenuBarController extends BaseController {
         HostServices tmpHostServices =
                 (HostServices)stage.getProperties().get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY);
         tmpHostServices.showDocument(GlobalConstants.WIKI_URL);
+    }
+
+    @FXML
+    protected void handleSystemInformationMenuItemAction() {
+
+        dialogProvider.provideSystemInformationDialog(
+                (stage.getWidth() * 0.7), (stage.getHeight() * 0.7)).showAndWait();
     }
 
     @FXML
