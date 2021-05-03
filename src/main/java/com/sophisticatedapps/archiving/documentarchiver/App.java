@@ -119,18 +119,18 @@ public class App extends Application {
         // Set stage icon
         aStage.getIcons().add(GlobalConstants.APP_ICON);
 
-        // AWT Image
-        final URL imageResource =
-                Thread.currentThread().getContextClassLoader().getResource("binder-icon.png");
-        final java.awt.Image tmpAwtImage = Toolkit.getDefaultToolkit().getImage(imageResource);
-
         // Set taskbar icon (may not be supported on all systems (e.g. Linux))
         try {
+
+            // AWT Image
+            final URL imageResource =
+                    Thread.currentThread().getContextClassLoader().getResource("binder-icon.png");
+            final java.awt.Image tmpAwtImage = Toolkit.getDefaultToolkit().getImage(imageResource);
 
             final Taskbar taskbar = Taskbar.getTaskbar();
             taskbar.setIconImage(tmpAwtImage);
         }
-        catch (UnsupportedOperationException e) {
+        catch (UnsupportedOperationException | UnsatisfiedLinkError e) {
 
             // never mind.
         }

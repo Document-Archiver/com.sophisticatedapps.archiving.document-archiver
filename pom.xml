@@ -36,7 +36,7 @@
       </activation>
       <id>native-environment</id>
       <properties>
-        <daShadePluginClassifierName>with-dependencies</daShadePluginClassifierName>
+        <daDependencyPluginClassifierName>with-dependencies</daDependencyPluginClassifierName>
       </properties>
       <dependencies>
         <dependency>
@@ -63,7 +63,7 @@
       <id>mac-environment</id>
       <properties>
         <javafx.platform>mac</javafx.platform>
-        <daShadePluginClassifierName>mac</daShadePluginClassifierName>
+        <daDependencyPluginClassifierName>mac</daDependencyPluginClassifierName>
       </properties>
       <dependencies>
         <dependency>
@@ -169,7 +169,7 @@
       <id>linux-environment</id>
       <properties>
         <javafx.platform>linux</javafx.platform>
-        <daShadePluginClassifierName>linux</daShadePluginClassifierName>
+        <daDependencyPluginClassifierName>linux</daDependencyPluginClassifierName>
       </properties>
       <dependencies>
         <dependency>
@@ -275,7 +275,7 @@
       <id>win-environment</id>
       <properties>
         <javafx.platform>win</javafx.platform>
-        <daShadePluginClassifierName>win</daShadePluginClassifierName>
+        <daDependencyPluginClassifierName>win</daDependencyPluginClassifierName>
       </properties>
       <dependencies>
         <dependency>
@@ -502,30 +502,22 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.5.2</version>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <finalName>${project.artifactId}-${project.version}-${daDependencyPluginClassifierName}</finalName>
+          <descriptors>
+            <descriptor>${basedir}/src/daResources/maven/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
         <executions>
           <execution>
+            <id>create-archive</id>
             <phase>package</phase>
             <goals>
-              <goal>shade</goal>
+              <goal>single</goal>
             </goals>
-            <configuration>
-              <shadedArtifactAttached>true</shadedArtifactAttached>
-              <shadedClassifierName>${daShadePluginClassifierName}</shadedClassifierName>
-              <!--
-              <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-${daShadePluginClassifierName}.jar</outputFile>
-              -->
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <manifestEntries>
-                    <Main-Class>com.sophisticatedapps.archiving.documentarchiver.Launcher</Main-Class>
-                    <Build-Number>1.0</Build-Number>
-                  </manifestEntries>
-                </transformer>
-              </transformers>
-            </configuration>
           </execution>
         </executions>
       </plugin>

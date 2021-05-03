@@ -35,4 +35,4 @@ after_success:
   - DA_ARTIFACT_BASENAME="${DA_ARTIFACT_ID}-${DA_VERSION}"
   - DA_DEPLOYMENT_TARGET=$(if [[ $DA_VERSION =~ ^.*SNAPSHOT$ ]]; then echo "snapshots"; else echo "releases"; fi)
   - echo "${DA_ARTIFACT_ID}|${DA_VERSION}|${DA_ARTIFACT_BASENAME}|${DA_DEPLOYMENT_TARGET}"
-  - mvn org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy-file -Durl=https://repository.sophisticatedapps.com/${DA_DEPLOYMENT_TARGET} -DrepositoryId=repository-sophisticatedapps -Dfile=target/${DA_ARTIFACT_BASENAME}.jar -DpomFile=pom.xml -Dfiles=target/${DA_ARTIFACT_BASENAME}-linux.jar,target/${DA_ARTIFACT_BASENAME}-mac.jar,target/${DA_ARTIFACT_BASENAME}-win.jar -Dclassifiers=linux,mac,win -Dtypes=jar,jar,jar
+  - mvn org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy-file -Durl=https://repository.sophisticatedapps.com/${DA_DEPLOYMENT_TARGET} -DrepositoryId=repository-sophisticatedapps -Dfile=target/${DA_ARTIFACT_BASENAME}.jar -DpomFile=pom.xml -Dfiles=target/${DA_ARTIFACT_BASENAME}-linux.zip,target/${DA_ARTIFACT_BASENAME}-mac.zip,target/${DA_ARTIFACT_BASENAME}-win.zip -Dclassifiers=linux,mac,win -Dtypes=zip,zip,zip
