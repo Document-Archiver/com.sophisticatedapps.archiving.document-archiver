@@ -117,17 +117,20 @@ public class PluginUtil {
 
     public static boolean isPluginAvailable(Class<?> aServiceClass) {
 
-        Set<Module> tmpModuleSet = pluginModuleLayer.modules();
+        if (!Objects.isNull(pluginModuleLayer)) {
 
-        for (Module tmpCurrentModule : tmpModuleSet) {
+            Set<Module> tmpModuleSet = pluginModuleLayer.modules();
 
-            Set<ModuleDescriptor.Provides> tmpProvidesSet = tmpCurrentModule.getDescriptor().provides();
+            for (Module tmpCurrentModule : tmpModuleSet) {
 
-            for (ModuleDescriptor.Provides tmpCurrentProvides : tmpProvidesSet) {
+                Set<ModuleDescriptor.Provides> tmpProvidesSet = tmpCurrentModule.getDescriptor().provides();
 
-                if (aServiceClass.getName().equals(tmpCurrentProvides.service())) {
+                for (ModuleDescriptor.Provides tmpCurrentProvides : tmpProvidesSet) {
 
-                    return true;
+                    if (aServiceClass.getName().equals(tmpCurrentProvides.service())) {
+
+                        return true;
+                    }
                 }
             }
         }
