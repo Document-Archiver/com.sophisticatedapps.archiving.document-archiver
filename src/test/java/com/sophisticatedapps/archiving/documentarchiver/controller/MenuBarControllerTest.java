@@ -19,12 +19,15 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PluginUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -381,7 +384,18 @@ class MenuBarControllerTest extends BaseTest {
         verify(tmpMockedPluginNotAvailableAlert, Mockito.times(2)).showAndWait();
 
         // Now the ArchiveBrowser plugin should be available.
-        assertTrue(PluginUtil.isPluginAvailable("ArchiveBrowser"));
+        assertTrue(PluginUtil.isPluginAvailable(ArchiveBrowsingService.class));
+
+        // Test to fire up the plugin
+        Stage tmpMockedStage = Mockito.mock(Stage.class);
+        @SuppressWarnings("unchecked")
+        ObservableMap<Object, Object> tmpMockedStageProperties = Mockito.mock(ObservableMap.class);
+        when(tmpMockedStage.getProperties()).thenReturn(tmpMockedStageProperties);
+        ReadOnlyDoubleProperty tmpMockedReadOnlyDoubleProperty = Mockito.mock(ReadOnlyDoubleProperty.class);
+        when(tmpMockedStage.widthProperty()).thenReturn(tmpMockedReadOnlyDoubleProperty);
+        when(tmpMockedStage.heightProperty()).thenReturn(tmpMockedReadOnlyDoubleProperty);
+        PluginUtil.fireArchiveBrowsingPlugin(tmpMockedStage);
+        verify(tmpMockedStage, Mockito.times(1)).setScene(any(Scene.class));
     }
 
     @Test

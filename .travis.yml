@@ -21,7 +21,6 @@ before_script:
   - pwd
   - ls -la
   - cp src/daResources/maven/settings.xml $HOME/.m2/settings.xml
-  - mkdir -p $HOME/.local/share/DocumentArchiver/plugins && cp src/daResources/plugins/dummy-browsing-plugin-1.0-SNAPSHOT.jar $_
 
 script:
   - mvn clean jacoco:prepare-agent test jacoco:report sonar:sonar

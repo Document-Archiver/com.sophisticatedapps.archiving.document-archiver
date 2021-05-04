@@ -27,4 +27,11 @@ public interface ArchiveBrowsingService {
      */
     void assemble(Stage aStage);
 
+    /**
+     * Return the service's version.
+     *
+     * @return  Version String
+     */
+    String getVersion();
+
 }

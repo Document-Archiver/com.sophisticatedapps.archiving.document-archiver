@@ -29,10 +29,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PluginUtil {
@@ -40,7 +37,6 @@ public class PluginUtil {
     private static File pluginDirectory = new File(AppDirUtil.getUserDataDir(), "plugins");
 
     private static ClassLoader pluginClassLoader;
-    private static List<String> pluginNamesList = Collections.emptyList();
     private static ModuleLayer pluginModuleLayer;
 
     static {
@@ -77,7 +73,7 @@ public class PluginUtil {
                 ModuleFinder tmpPluginsFinder = ModuleFinder.of(pluginDirectory.toPath());
 
                 // Find all names of all found plugin modules
-                pluginNamesList = tmpPluginsFinder
+                List<String> tmpPluginNamesList = tmpPluginsFinder
                         .findAll()
                         .stream()
                         .map(ModuleReference::descriptor)
@@ -89,7 +85,7 @@ public class PluginUtil {
                 Configuration tmpPluginsConfiguration = ModuleLayer
                         .boot()
                         .configuration()
-                        .resolve(tmpPluginsFinder, ModuleFinder.of(), pluginNamesList);
+                        .resolve(tmpPluginsFinder, ModuleFinder.of(), tmpPluginNamesList);
 
                 // Create a module layer for plugins
                 pluginModuleLayer = ModuleLayer
@@ -119,9 +115,24 @@ public class PluginUtil {
         registerPlugins();
     }
 
-    public static boolean isPluginAvailable(String aPluginName) {
+    public static boolean isPluginAvailable(Class<?> aServiceClass) {
 
-        return pluginNamesList.contains(aPluginName);
+        Set<Module> tmpModuleSet = pluginModuleLayer.modules();
+
+        for (Module tmpCurrentModule : tmpModuleSet) {
+
+            Set<ModuleDescriptor.Provides> tmpProvidesSet = tmpCurrentModule.getDescriptor().provides();
+
+            for (ModuleDescriptor.Provides tmpCurrentProvides : tmpProvidesSet) {
+
+                if (aServiceClass.getName().equals(tmpCurrentProvides.service())) {
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public static void fireArchiveBrowsingPlugin(Stage aStage) {

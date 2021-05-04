@@ -18,6 +18,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.restart4j.ApplicationRestart;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
@@ -234,7 +235,7 @@ public class MenuBarController extends BaseController {
     @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleArchiveBrowserMenuItemAction() {
 
-        if (!PluginUtil.isPluginAvailable("ArchiveBrowser")) {
+        if (!PluginUtil.isPluginAvailable(ArchiveBrowsingService.class)) {
 
             Optional<ButtonType> tmpShallDownloadResult = dialogProvider.providePluginNotAvailableAlert().showAndWait();
 

@@ -64,11 +64,27 @@ The latest SNAPSHOT releases can be downloaded here:
 
 **[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/1.7.0-SNAPSHOT)**
 
-Select the JAR file suitable for your system ("linux", "mac" or "win")
+Select the ZIP file suitable for your system ("linux", "mac" or "win")
 
 **Startup (example - version and timestamp will vary)**
+
+Linux
 ```
-java -jar document-archiver-X.Y.Z-20210324.121919-1-mac.jar
+unzip document-archiver-X.Y.Z-yyyyMMdd.HHmmss-n-linux.zip
+cd document-archiver-X.Y.Z-SNAPSHOT-linux/
+./DocumentArchiver.sh
+```
+macOS
+```
+unzip document-archiver-X.Y.Z-yyyyMMdd.HHmmss-n-mac.zip
+cd document-archiver-X.Y.Z-SNAPSHOT-mac/
+./DocumentArchiver.sh
+```
+Windows
+```
+:: Extract ZIP file (for example with Windows Explorer) ::
+cd document-archiver-X.Y.Z-SNAPSHOT-win/
+DocumentArchiver.bat
 ```
 
 ### Option D - Build it yourself (the nerdy way 🤓)
@@ -83,8 +99,18 @@ mvn clean package -DskipTests
 cd target/
 ```
 **Startup (example - version will vary)**
+
+Linux & macOS
 ```
-java -jar document-archiver-X.Y.Z-SNAPSHOT-with-dependencies.jar
+unzip document-archiver-X.Y.Z-SNAPSHOT-with-dependencies.zip
+cd document-archiver-X.Y.Z-SNAPSHOT-with-dependencies/
+./DocumentArchiver.sh
+```
+Windows
+```
+:: Extract ZIP file (for example with Windows Explorer) ::
+cd document-archiver-X.Y.Z-SNAPSHOT-with-dependencies/
+DocumentArchiver.bat
 ```
 
 ## Quick Start
@@ -99,6 +125,8 @@ Document Archiver makes grateful use of these libraries:
 - **PDFViewerFX** ([Dansoftowner/PDFViewerFX](https://github.com/Dansoftowner/PDFViewerFX "Dansoftowner/PDFViewerFX"))
 - **jSystemThemeDetector** ([Dansoftowner/jSystemThemeDetector](https://github.com/Dansoftowner/jSystemThemeDetector "Dansoftowner/jSystemThemeDetector"))
 - **Restart4j** ([Dansoftowner/Restart4j](https://github.com/Dansoftowner/Restart4j "Dansoftowner/Restart4j"))
+- **Apache POI** ([poi.apache.org](https://poi.apache.org "poi.apache.org"))
 - **Mammoth** ([mwilliamson/java-mammoth](https://github.com/mwilliamson/java-mammoth "mwilliamson/java-mammoth"))
+- **AppDirs** ([harawata/appdirs](https://github.com/harawata/appdirs "harawata/appdirs"))
 
 Application icons made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")
