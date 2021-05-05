@@ -235,7 +235,8 @@ public class MenuBarController extends BaseController {
     @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleArchiveBrowserMenuItemAction() {
 
-        if (!PluginUtil.isPluginAvailable(ArchiveBrowsingService.class)) {
+        if ((!PluginUtil.isPluginAvailable(ArchiveBrowsingService.class)) ||
+                (!PluginUtil.isArchiveBrowsingPluginUpToDate())) {
 
             Optional<ButtonType> tmpShallDownloadResult = dialogProvider.providePluginNotAvailableAlert().showAndWait();
 
@@ -244,7 +245,7 @@ public class MenuBarController extends BaseController {
 
                 try {
 
-                    PluginUtil.addPluginFromURL(GlobalConstants.ARCHIVE_BROWSER_PLUGIN_URL);
+                    PluginUtil.addPluginFromURL(GlobalConstants.ARCHIVE_BROWSER_PLUGIN_URL, "DocumentArchiver.jar");
                 }
                 catch (IOException e) {
 

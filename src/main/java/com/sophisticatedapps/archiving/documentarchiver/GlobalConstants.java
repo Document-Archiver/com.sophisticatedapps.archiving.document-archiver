@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver;
 
 import com.sophisticatedapps.archiving.documentarchiver.util.ResourceLoadContext;
+import io.github.g00fy2.versioncompare.Version;
 import javafx.scene.image.Image;
 
 import java.time.format.DateTimeFormatter;
@@ -49,8 +50,9 @@ public class GlobalConstants {
     public static final String ALL_DOCUMENTS_PROPERTY_KEY = "allDocuments";
     public static final String CURRENT_DOCUMENT_PROPERTY_KEY = "currentDocument";
 
+    public static final Version ARCHIVE_BROWSER_PLUGIN_CURRENT_VERSION = new Version("1.0.0");
     public static final String ARCHIVE_BROWSER_PLUGIN_URL =
-            "https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/archive-browser/1.0-SNAPSHOT/archive-browser-1.0-20210501.095551-2.jar";
+            "https://github.com/Document-Archiver/com.sophisticatedapps.archiving.archive-browser/releases/download/v1.0.0/archive-browser-1.0.0.jar";
     public static final String WIKI_URL =
             "https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start";
 

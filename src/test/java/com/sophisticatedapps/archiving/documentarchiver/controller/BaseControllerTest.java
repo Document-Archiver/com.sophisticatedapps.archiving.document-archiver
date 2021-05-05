@@ -303,7 +303,8 @@ class BaseControllerTest extends BaseTest {
 
         Alert tmpAlert = tmpAlertList.get(0);
         assertNotNull(tmpAlert);
-        assertEquals("The required plugin is not installed yet. Download it now?", tmpAlert.getContentText());
+        assertEquals("The required plugin is not installed yet or outdated. Download and install the current version?",
+                tmpAlert.getContentText());
     }
 
     @Test

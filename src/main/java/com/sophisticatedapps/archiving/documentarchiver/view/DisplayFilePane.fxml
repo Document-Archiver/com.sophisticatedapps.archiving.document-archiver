@@ -6,6 +6,6 @@
 
 <StackPane fx:id="displayFilePane" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sophisticatedapps.archiving.documentarchiver.controller.DisplayFilePaneController">
    <children>
-      <Button fx:id="openExternalViewerButton" mnemonicParsing="false" onAction="#handleOpenExternalViewerButtonAction" text="Button" />
+      <Button fx:id="openExternalViewerButton" mnemonicParsing="false" onAction="#handleOpenExternalViewerButtonAction" text="Button" visible="false" />
    </children>
 </StackPane>

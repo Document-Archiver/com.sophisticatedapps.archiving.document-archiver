@@ -16,7 +16,9 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
+import io.github.g00fy2.versioncompare.Version;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -29,7 +31,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PluginUtil {
@@ -67,7 +72,7 @@ public class PluginUtil {
                     tmpJarFileURLs[i] = tmpJarFiles[i].toURI().toURL();
                 }
 
-                pluginClassLoader = new URLClassLoader(tmpJarFileURLs, Thread.currentThread().getContextClassLoader());
+                pluginClassLoader = new URLClassLoader(tmpJarFileURLs, ClassLoader.getSystemClassLoader());
 
                 // Search for plugins in the plugins directory
                 ModuleFinder tmpPluginsFinder = ModuleFinder.of(pluginDirectory.toPath());
@@ -100,15 +105,12 @@ public class PluginUtil {
         }
     }
 
-    public static void addPluginFromURL(String aPluginURL) throws IOException {
-
-        URL tmpURL = new URL(aPluginURL);
-        String tmpFilename = (new File(tmpURL.getFile())).getName();
+    public static void addPluginFromURL(String aPluginURL, String aSaveAsFilename) throws IOException {
 
         // In case the plugin directory does not exist yet.
         Files.createDirectories(pluginDirectory.toPath());
 
-        Files.copy(tmpURL.openStream(), (new File(pluginDirectory, tmpFilename)).toPath(),
+        Files.copy((new URL(aPluginURL)).openStream(), (new File(pluginDirectory, aSaveAsFilename)).toPath(),
                 StandardCopyOption.REPLACE_EXISTING);
 
         // Re-register plugins
@@ -136,6 +138,16 @@ public class PluginUtil {
         }
 
         return false;
+    }
+
+    public static boolean isArchiveBrowsingPluginUpToDate() {
+
+        Thread.currentThread().setContextClassLoader(pluginClassLoader);
+        ServiceLoader<ArchiveBrowsingService> loader =
+                ServiceLoader.load(pluginModuleLayer, ArchiveBrowsingService.class);
+        ArchiveBrowsingService service = loader.iterator().next();
+
+        return (new Version(service.getVersion())).isAtLeast(GlobalConstants.ARCHIVE_BROWSER_PLUGIN_CURRENT_VERSION);
     }
 
     public static void fireArchiveBrowsingPlugin(Stage aStage) {

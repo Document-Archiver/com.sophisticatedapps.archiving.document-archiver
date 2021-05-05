@@ -16,6 +16,7 @@ module DocumentArchiver {
     requires Restart4j;
     requires org.apache.commons.collections4;
     requires net.harawata.appdirs;
+    requires versioncompare;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.api;

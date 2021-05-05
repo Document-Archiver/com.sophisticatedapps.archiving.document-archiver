@@ -6,7 +6,7 @@
 
   <groupId>com.sophisticatedapps.archiving</groupId>
   <artifactId>document-archiver</artifactId>
-  <version>1.7.0-SNAPSHOT</version>
+  <version>2.0.0</version>
 
   <name>DocumentArchiver</name>
   <url>https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver</url>
@@ -424,6 +424,11 @@
       <groupId>net.harawata</groupId>
       <artifactId>appdirs</artifactId>
       <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.g00fy2</groupId>
+      <artifactId>versioncompare</artifactId>
+      <version>1.4.1</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-imaging -->
