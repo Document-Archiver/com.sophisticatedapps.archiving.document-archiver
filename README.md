@@ -26,11 +26,11 @@ Java or executing commands on the command line.
 
 Depending on your system, download one of the following files:
 
-**[\[ INSTALLER - LINUX \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.6.0/DocumentArchiver_unix_1_6_0.sh)
+**[\[ INSTALLER - LINUX \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v2.0.0/DocumentArchiver_unix_2_0_0.sh)
 -or-
-[\[ INSTALLER - MACOS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.6.0/DocumentArchiver_macos_1_6_0.dmg)
+[\[ INSTALLER - MACOS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v2.0.0/DocumentArchiver_macos_2_0_0.dmg)
 -or-
-[\[ INSTALLER - WINDOWS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v1.6.0/DocumentArchiver_windows-x64_1_6_0.exe)**
+[\[ INSTALLER - WINDOWS \]](https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/releases/download/v2.0.0/DocumentArchiver_windows-x64_2_0_0.exe)**
 
 Note:  
 The Windows installer package is not code-signed (Why? Just because the required code signing certificates are expensive
@@ -40,29 +40,45 @@ appearing dialog choose "Show more -> Keep anyway") and unblock it afterwards li
 [here](https://winaero.com/how-to-unblock-files-downloaded-from-internet-in-windows-10/).  
 The macOS installer package is code-signed and notarized by Apple; Linux doesn't check for code-signing.
 
-### Option B - Download the last release version JAR file (quick and easy 😌)
+### Option B - Download the last release version ZIP file (quick and easy 😌)
 
 If you already have Java on your system, don't feel like installing and don't fear the command line, you can download
-one of the following JAR files (and furthermore save some MBs on your storage).
+one of the following ZIP files (and furthermore save some MBs on your storage).
 
 Depending on your system, download one of the following files:
 
-**[\[ JAR-FILE - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.6.0/document-archiver-1.6.0-linux.jar)
+**[\[ ZIP-FILE - LINUX \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/2.0.0/document-archiver-2.0.0-linux.zip)
 -or-
-[\[ JAR_FILE - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.6.0/document-archiver-1.6.0-mac.jar)
+[\[ ZIP-FILE - MACOS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/2.0.0/document-archiver-2.0.0-mac.zip)
 -or-
-[\[ JAR-FILE - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/1.6.0/document-archiver-1.6.0-win.jar)**
+[\[ ZIP-FILE - WINDOWS \]](https://repository.sophisticatedapps.com/releases/com/sophisticatedapps/archiving/document-archiver/2.0.0/document-archiver-2.0.0-win.zip)**
 
-**Startup (example for macOS - possible variants "linux", "mac", "win")**
+**Startup**
+
+Linux
 ```
-java -jar document-archiver-1.6.0-mac.jar
+unzip document-archiver-2.0.0-linux.zip
+cd document-archiver-2.0.0-linux/
+./DocumentArchiver.sh
+```
+macOS
+```
+unzip document-archiver-2.0.0-mac.zip
+cd document-archiver-2.0.0-mac/
+./DocumentArchiver.sh
+```
+Windows
+```
+:: Extract ZIP file (for example with Windows Explorer) ::
+cd document-archiver-2.0.0-win/
+DocumentArchiver.bat
 ```
 
 ### Option C - Download the latest SNAPSHOT release (get the latest and greatest ✨)
 
 The latest SNAPSHOT releases can be downloaded here:
 
-**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/1.7.0-SNAPSHOT)**
+**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/2.1.0-SNAPSHOT)**
 
 Select the ZIP file suitable for your system ("linux", "mac" or "win")
 
@@ -128,5 +144,6 @@ Document Archiver makes grateful use of these libraries:
 - **Apache POI** ([poi.apache.org](https://poi.apache.org "poi.apache.org"))
 - **Mammoth** ([mwilliamson/java-mammoth](https://github.com/mwilliamson/java-mammoth "mwilliamson/java-mammoth"))
 - **AppDirs** ([harawata/appdirs](https://github.com/harawata/appdirs "harawata/appdirs"))
+- **Version Compare** ([G00fY2/version-compare](https://github.com/G00fY2/version-compare "G00fY2/version-compare"))
 
 Application icons made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")

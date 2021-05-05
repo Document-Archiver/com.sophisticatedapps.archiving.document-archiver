@@ -245,7 +245,7 @@ public class MenuBarController extends BaseController {
 
                 try {
 
-                    PluginUtil.addPluginFromURL(GlobalConstants.ARCHIVE_BROWSER_PLUGIN_URL, "DocumentArchiver.jar");
+                    PluginUtil.addPluginFromURL(GlobalConstants.ARCHIVE_BROWSER_PLUGIN_URL, "ArchiveBrowser.jar");
                 }
                 catch (IOException e) {
 
