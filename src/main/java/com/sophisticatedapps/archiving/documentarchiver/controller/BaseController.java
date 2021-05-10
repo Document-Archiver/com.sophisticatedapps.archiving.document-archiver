@@ -23,8 +23,8 @@ import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
 public abstract class BaseController {
 
@@ -200,14 +201,17 @@ public abstract class BaseController {
 
     protected void openExternalViewer(File aFile) {
 
-        try {
+        Executors.newSingleThreadScheduledExecutor().submit(() -> {
 
-            desktopProvider.provideDesktop().open(aFile);
-        }
-        catch (IOException e) {
+            try {
 
-            throw (new RuntimeException("Desktop app could not be opened: ".concat(e.getMessage())));
-        }
+                desktopProvider.provideDesktop().open(aFile);
+            }
+            catch (IOException e) {
+
+                throw (new RuntimeException("Desktop app could not be opened: ".concat(e.getMessage())));
+            }
+        });
     }
 
     protected Stage assembleSubStage(double aScaleFactor) {

@@ -385,6 +385,7 @@ class MenuBarControllerTest extends BaseTest {
 
         // Now the ArchiveBrowser plugin should be available.
         assertTrue(PluginUtil.isPluginAvailable(ArchiveBrowsingService.class));
+        assertTrue(PluginUtil.isArchiveBrowsingPluginUpToDate());
 
         // Test to fire up the plugin
         Stage tmpMockedStage = Mockito.mock(Stage.class);

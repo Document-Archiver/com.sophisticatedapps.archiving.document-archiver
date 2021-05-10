@@ -98,6 +98,7 @@ class FileSystemViewPaneControllerTest extends BaseTest {
                     tmpZipEntry);
 
         }
+        WaitForAsyncUtils.waitForFxEvents();
 
         verify(tmpMockedDesktop, Mockito.times(1)).open(any(File.class));
     }

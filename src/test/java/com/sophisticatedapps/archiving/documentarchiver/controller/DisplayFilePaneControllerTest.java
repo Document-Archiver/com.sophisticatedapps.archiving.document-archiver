@@ -128,26 +128,9 @@ class DisplayFilePaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         displayFilePaneController.handleOpenExternalViewerButtonAction();
-
-        verify(tmpMockedDesktop, Mockito.times(1)).open(any(File.class));
-    }
-
-    @Test
-    void testHandleOpenExternalViewerButtonAction_with_exception() throws IllegalAccessException, IOException {
-
-        // Set a mocked DesktopProvider to the DisplayFilePaneController
-        Desktop tmpMockedDesktop = Mockito.mock(Desktop.class);
-        doThrow(new IOException("nope")).when(tmpMockedDesktop).open(any(File.class));
-        BaseController.DesktopProvider tmpMockedDesktopProvider = Mockito.mock(BaseController.DesktopProvider.class);
-        doReturn(tmpMockedDesktop).when(tmpMockedDesktopProvider).provideDesktop();
-        FieldUtils.writeField(displayFilePaneController, "desktopProvider", tmpMockedDesktopProvider, true);
-
-        displayFilePaneController.setNewCurrentDocument(TEST_TEXT_FILE);
         WaitForAsyncUtils.waitForFxEvents();
 
-        RuntimeException tmpRuntimeException = assertThrows(RuntimeException.class,
-                (() -> displayFilePaneController.handleOpenExternalViewerButtonAction()));
-        assertEquals("Desktop app could not be opened: nope", tmpRuntimeException.getMessage());
+        verify(tmpMockedDesktop, Mockito.times(1)).open(any(File.class));
     }
 
     @Test
