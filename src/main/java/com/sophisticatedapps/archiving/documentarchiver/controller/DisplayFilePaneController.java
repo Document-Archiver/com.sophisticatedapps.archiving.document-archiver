@@ -46,6 +46,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import net.kurobako.gesturefx.GesturePane;
 import org.apache.poi.hwpf.HWPFDocumentCore;
 import org.apache.poi.hwpf.converter.AbstractWordUtils;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
@@ -306,7 +307,7 @@ public class DisplayFilePaneController extends BaseController {
                 tmpImageView.setFitWidth(aPrefWidth);
                 tmpImageView.setPreserveRatio(true);
 
-                final Pane tmpPane = new Pane(tmpImageView);
+                GesturePane tmpPane = new GesturePane(tmpImageView);
                 tmpPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
                         tmpImageView.setFitWidth(aNewValue.doubleValue()));
 

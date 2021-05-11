@@ -35,6 +35,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import net.kurobako.gesturefx.GesturePane;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -183,8 +184,8 @@ class DisplayFilePaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Now there should be a Pane on our display file Pane.
-        Pane tmpWrapperPane = (Pane)displayFilePane.getChildren().get(0);
-        assertSame(ImageView.class, tmpWrapperPane.getChildren().get(0).getClass());
+        GesturePane tmpWrapperPane = (GesturePane)displayFilePane.getChildren().get(0);
+        assertSame(ImageView.class, tmpWrapperPane.getContent().getClass());
     }
 
     @Test

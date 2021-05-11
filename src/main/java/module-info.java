@@ -17,6 +17,7 @@ module DocumentArchiver {
     requires org.apache.commons.collections4;
     requires net.harawata.appdirs;
     requires versioncompare;
+    requires net.kurobako.gesturefx;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.api;
