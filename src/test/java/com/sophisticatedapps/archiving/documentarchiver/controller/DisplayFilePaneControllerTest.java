@@ -185,7 +185,18 @@ class DisplayFilePaneControllerTest extends BaseTest {
 
         // Now there should be a Pane on our display file Pane.
         GesturePane tmpWrapperPane = (GesturePane)displayFilePane.getChildren().get(0);
-        assertSame(ImageView.class, tmpWrapperPane.getContent().getClass());
+        assertSame(ImageView.class, ((Pane)tmpWrapperPane.getContent()).getChildren().get(0).getClass());
+    }
+
+    @Test
+    void testHandleCurrentDocumentChangedToJpgFile() {
+
+        displayFilePaneController.setNewCurrentDocument(TEST_JPG_FILE);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Now there should be a Pane on our display file Pane.
+        GesturePane tmpWrapperPane = (GesturePane)displayFilePane.getChildren().get(0);
+        assertSame(ImageView.class, ((Pane)tmpWrapperPane.getContent()).getChildren().get(0).getClass());
     }
 
     @Test

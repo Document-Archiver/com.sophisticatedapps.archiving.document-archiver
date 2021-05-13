@@ -675,9 +675,9 @@ class InfoPaneControllerTest extends BaseTest {
         InfoPaneController.JPGFileTimeAgent tmpJPGFileTimeAgent = new InfoPaneController.JPGFileTimeAgent();
         LocalDateTime tmpFileDateTime = tmpJPGFileTimeAgent.determineFileTime(TEST_JPG_FILE);
 
-        assertEquals(23, tmpFileDateTime.getDayOfMonth());
-        assertEquals(Month.JANUARY, tmpFileDateTime.getMonth());
-        assertEquals(2021, tmpFileDateTime.getYear());
+        assertEquals(17, tmpFileDateTime.getDayOfMonth());
+        assertEquals(Month.AUGUST, tmpFileDateTime.getMonth());
+        assertEquals(2020, tmpFileDateTime.getYear());
     }
 
     @Test

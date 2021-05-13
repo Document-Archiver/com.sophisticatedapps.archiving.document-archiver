@@ -12,7 +12,7 @@
 How can Document Archiver help you to get a handle on your multitude of documents with ease? Find out on
 [this project's website](https://document-archiver.github.io/):
 
-[![Screenshot website](https://user-images.githubusercontent.com/9678681/114724957-5daab800-9d3c-11eb-97f7-e962a571c2a0.png)](https://document-archiver.github.io/)
+[![Screenshot website](https://user-images.githubusercontent.com/9678681/117995725-d7d15b00-b341-11eb-813a-46d8579d778a.png)](https://document-archiver.github.io/)
 
 ## How to get it
 
@@ -145,5 +145,6 @@ Document Archiver makes grateful use of these libraries:
 - **Mammoth** ([mwilliamson/java-mammoth](https://github.com/mwilliamson/java-mammoth "mwilliamson/java-mammoth"))
 - **AppDirs** ([harawata/appdirs](https://github.com/harawata/appdirs "harawata/appdirs"))
 - **Version Compare** ([G00fY2/version-compare](https://github.com/G00fY2/version-compare "G00fY2/version-compare"))
+- **GestureFX** ([tom91136/GestureFX](https://github.com/tom91136/GestureFX "tom91136/GestureFX"))
 
 Application icons made by [Freepik](https://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")

@@ -19,10 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
-import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.ProcessesUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import com.sun.jna.Platform; // NOSONAR
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -30,6 +27,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -290,32 +288,53 @@ public class DisplayFilePaneController extends BaseController {
         public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
                                double aPrefWidth, double aPrefHeight) {
 
+            ImageUtil.OrientationInformation tmpOrientationInformation = ImageUtil.getOrientationInformation(aFile);
+            double tmpImageRotationCw = tmpOrientationInformation.getRotationCw();
+            boolean tmpImageTilted = ((tmpImageRotationCw != 0) && (tmpImageRotationCw != 180));
+
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 
-                // Creating the image object
+                // Creating the Image and ImageView objects.
                 Image tmpImage = new Image(tmpInputStream);
+                ImageView tmpImageView = new ImageView(tmpImage);
 
-                // Creating the image view
-                ImageView tmpImageView = new ImageView();
+                // Do we need to rotate?
+                if (tmpImageRotationCw > 0) {
 
-                // Setting image to the image view
-                tmpImageView.setImage(tmpImage);
+                    double tmpViewPortWidth = (tmpImageTilted ? tmpImage.getHeight() : tmpImage.getWidth());
+                    double tmpViewPortHeight = (tmpImageTilted ? tmpImage.getWidth() : tmpImage.getHeight());
+                    tmpImageView.setViewport(new Rectangle2D(0, 0, tmpViewPortWidth, tmpViewPortHeight));
+
+                    tmpImageView.setRotate(tmpImageRotationCw);
+                }
 
                 //Setting the image view parameters
                 tmpImageView.setX(0);
                 tmpImageView.setY(10);
-                tmpImageView.setFitWidth(aPrefWidth);
                 tmpImageView.setPreserveRatio(true);
+                adjustHorizontalSize(tmpImageView, tmpImageTilted, aPrefWidth);
 
-                GesturePane tmpPane = new GesturePane(tmpImageView);
+                GesturePane tmpPane = new GesturePane(new Pane(tmpImageView));
                 tmpPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
-                        tmpImageView.setFitWidth(aNewValue.doubleValue()));
+                        adjustHorizontalSize(tmpImageView, tmpImageTilted, aNewValue.doubleValue()));
 
                 return (tmpPane);
             }
             catch (Exception e) {
 
                 throw (new RuntimeException("Image could not be loaded."));
+            }
+        }
+
+        private void adjustHorizontalSize(ImageView anImageView, boolean anIsTilted, double aSize) {
+
+            if (!anIsTilted) {
+
+                anImageView.setFitWidth(aSize);
+            }
+            else {
+
+                anImageView.setFitHeight(aSize);
             }
         }
     }
