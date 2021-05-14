@@ -29,7 +29,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
-public class DocumentsPaneController extends BaseController {
+public class DocumentsPaneController extends DragAndDropPaneController {
 
     @FXML
     private VBox documentsPane;
