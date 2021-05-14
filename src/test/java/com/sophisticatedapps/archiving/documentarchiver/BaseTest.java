@@ -57,6 +57,7 @@ public abstract class BaseTest {
 
     protected static final File TEST_RESOURCES_DIRECTORY = TEST_TEXT_FILE.getParentFile().getParentFile();
     protected static final File TEST_SOURCE_FOLDER = TEST_TEXT_FILE.getParentFile();
+    protected static final File TEST_SOURCE_FOLDER2 = TEST_TEXT_FILE2.getParentFile();
     protected static final File TEST_EMPTY_SOURCE_FOLDER = new File(Objects.requireNonNull(App.class
             .getClassLoader().getResource("test-source-folder_empty")).getFile());
     protected static final File TEST_ARCHIVING_FOLDER = new File(Objects.requireNonNull(App.class

@@ -26,6 +26,7 @@ import java.util.Objects;
 
 public class DirectoryUtil {
 
+    public static final FileFilter NO_HIDDEN_FILES_FILE_FILTER = (aFile -> (!aFile.isHidden()));
     private static File archivingRootFolder = PropertiesUtil.ARCHIVING_ROOT_FOLDER;
 
     /**

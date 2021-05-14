@@ -45,6 +45,7 @@ public class RootPaneController extends BaseController {
     private Pane documentsPane;
     private Pane displayFilePane;
     private Pane infoPane;
+    private Pane dragAndDropPane;
 
     private boolean showWelcomeDialog = true;
 
@@ -65,18 +66,22 @@ public class RootPaneController extends BaseController {
                 FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", stage);
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpInfoPaneControllerRegionPair =
                 FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", stage);
+        FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpDragAndDropPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/DragAndDropPane.fxml", stage);
 
         menuBarController = tmpMenuBarControllerRegionPair.getController();
 
         documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         displayFilePane = tmpDisplayFilePaneControllerRegionPair.getRegion();
         infoPane = tmpInfoPaneControllerRegionPair.getRegion();
+        dragAndDropPane = tmpDragAndDropPaneControllerRegionPair.getRegion();
 
         // Remember the controller for later
         paneControllerList.add(menuBarController);
         paneControllerList.add(tmpDocumentsPaneControllerRegionPair.getController());
         paneControllerList.add(tmpDisplayFilePaneControllerRegionPair.getController());
         paneControllerList.add(tmpInfoPaneControllerRegionPair.getController());
+        paneControllerList.add(tmpDragAndDropPaneControllerRegionPair.getController());
 
         // Set MenuBar
         rootPane.setTop(tmpMenuBarControllerRegionPair.getRegion());
@@ -181,7 +186,7 @@ public class RootPaneController extends BaseController {
 
             stage.setTitle(LanguageUtil.i18n("root-pane-controller.stage.title.choose-files"));
             rootPane.setLeft(null);
-            rootPane.setCenter(null);
+            rootPane.setCenter(dragAndDropPane);
             rootPane.setRight(null);
         }
 

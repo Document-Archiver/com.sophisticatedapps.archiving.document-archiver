@@ -157,7 +157,7 @@ class RootPaneControllerTest extends BaseTest {
         verify(tmpMockedMenuBarController, Mockito.times(1)).handleOpenFilesMenuItemAction();
         assertEquals("Choose file(s)", rootPaneController.stage.getTitle());
         assertNull(rootPane.getLeft());
-        assertNull(rootPane.getCenter());
+        assertEquals(StackPane.class, rootPane.getCenter().getClass());
         assertNull(rootPane.getRight());
     }
 
@@ -192,7 +192,7 @@ class RootPaneControllerTest extends BaseTest {
         verify(tmpMockedMenuBarController, Mockito.times(1)).handleOpenFilesMenuItemAction();
         assertEquals("Choose file(s)", rootPaneController.stage.getTitle());
         assertNull(rootPane.getLeft());
-        assertNull(rootPane.getCenter());
+        assertEquals(StackPane.class, rootPane.getCenter().getClass());
         assertNull(rootPane.getRight());
     }
 
@@ -227,7 +227,7 @@ class RootPaneControllerTest extends BaseTest {
         verify(tmpMockedMenuBarController, Mockito.times(1)).handleOpenDirectoryMenuItemAction();
         assertEquals("Choose file(s)", rootPaneController.stage.getTitle());
         assertNull(rootPane.getLeft());
-        assertNull(rootPane.getCenter());
+        assertEquals(StackPane.class, rootPane.getCenter().getClass());
         assertNull(rootPane.getRight());
     }
 

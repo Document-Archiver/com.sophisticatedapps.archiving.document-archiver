@@ -17,6 +17,8 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
 import javafx.application.Platform;
@@ -32,9 +34,8 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 public abstract class BaseController {
@@ -197,6 +198,36 @@ public abstract class BaseController {
             ObservableMap<Object, Object> tmpStageProperties = stage.getProperties();
             tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
         });
+    }
+
+    protected void importFreshDirectory(File aDirectory) {
+
+        if (!Objects.isNull(aDirectory)) {
+
+            List<File> tmpWrapperList = new ArrayList<>();
+            DirectoryUtil.readDirectoryRecursive(aDirectory, tmpWrapperList, DirectoryUtil.NO_HIDDEN_FILES_FILE_FILTER);
+
+            if (!tmpWrapperList.isEmpty()) {
+
+                tmpWrapperList.sort(Comparator.naturalOrder());
+                setNewAllDocumentsAndCurrentDocument(tmpWrapperList, tmpWrapperList.get(0));
+            }
+            else {
+
+                dialogProvider.provideDirectoryDoesNotContainFilesAlert().showAndWait();
+            }
+        }
+    }
+
+    protected void importFreshFilesList(List<File> aFilesList) {
+
+        if (!CollectionUtil.isNullOrEmpty(aFilesList)) {
+
+            // We have to wrap the result in a new List, since the given List may not be modifiable.
+            List<File> tmpWrapperList = new ArrayList<>(aFilesList);
+            tmpWrapperList.sort(Comparator.naturalOrder());
+            setNewAllDocumentsAndCurrentDocument(tmpWrapperList, tmpWrapperList.get(0));
+        }
     }
 
     protected void openExternalViewer(File aFile) {

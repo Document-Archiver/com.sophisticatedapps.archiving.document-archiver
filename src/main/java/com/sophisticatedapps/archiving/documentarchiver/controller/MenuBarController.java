@@ -32,9 +32,10 @@ import javafx.util.Pair;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 public class MenuBarController extends BaseController {
 
@@ -181,37 +182,13 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleOpenFilesMenuItemAction() {
 
-        List<File> tmpFilesList = fileChooser.showOpenMultipleDialog(stage);
-
-        if (!CollectionUtil.isNullOrEmpty(tmpFilesList)) {
-
-            // We have to wrap the result in a new List, since the result is not modifiable.
-            List<File> tmpWrapperList = new ArrayList<>(tmpFilesList);
-            tmpWrapperList.sort(Comparator.naturalOrder());
-            setNewAllDocumentsAndCurrentDocument(tmpWrapperList, tmpWrapperList.get(0));
-        }
+        importFreshFilesList(fileChooser.showOpenMultipleDialog(stage));
     }
 
     @FXML
     protected void handleOpenDirectoryMenuItemAction() {
 
-        File tmpDirectory = directoryChooser.showDialog(stage);
-
-        if (!Objects.isNull(tmpDirectory)) {
-
-            List<File> tmpWrapperList = new ArrayList<>();
-            DirectoryUtil.readDirectoryRecursive(tmpDirectory, tmpWrapperList, (aFile -> (!aFile.isHidden())));
-
-            if (!tmpWrapperList.isEmpty()) {
-
-                tmpWrapperList.sort(Comparator.naturalOrder());
-                setNewAllDocumentsAndCurrentDocument(tmpWrapperList, tmpWrapperList.get(0));
-            }
-            else {
-
-                dialogProvider.provideDirectoryDoesNotContainFilesAlert().showAndWait();
-            }
-        }
+        importFreshDirectory(directoryChooser.showDialog(stage));
     }
 
     @FXML
