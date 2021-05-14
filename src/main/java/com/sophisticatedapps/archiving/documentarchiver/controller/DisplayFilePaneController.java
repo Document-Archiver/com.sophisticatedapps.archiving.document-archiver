@@ -91,6 +91,7 @@ public class DisplayFilePaneController extends BaseController {
         tmpAssemblerMap.put(FileTypeEnum.GIF, DisplayImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.BMP, DisplayImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.HEIC, DisplayHeicImageNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.SVG, DisplaySvgNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.XML, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.XHTML, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.MD, DisplayTextNodeAssembler.class);
@@ -457,7 +458,7 @@ public class DisplayFilePaneController extends BaseController {
         }
     }
 
-    protected static class DisplayTextNodeAssembler implements DisplayFileNodeAssembler {
+    protected abstract static class AbstractAsciiBasedNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
         public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
@@ -475,21 +476,61 @@ public class DisplayFilePaneController extends BaseController {
                     tmpByteArrayOutputStream.write(tmpByteSize, 0, tmpLength);
                 }
 
-                // Creating a TextArea for the text
-                TextArea tmpTextAreaView = new TextArea();
-                tmpTextAreaView.setPrefWidth(aPrefWidth);
-                tmpTextAreaView.setPrefHeight(aPrefHeight);
-                tmpTextAreaView.setEditable(false);
-
-                // Setting text to the text view
-                tmpTextAreaView.setText(tmpByteArrayOutputStream.toString(Charset.defaultCharset().toString()));
-
-                return tmpTextAreaView;
+                // Assemble the view
+                return assemble(aDisplayFilePaneController, tmpByteArrayOutputStream.toString(
+                        Charset.defaultCharset().toString()), aStage, aPrefWidth, aPrefHeight);
             }
             catch (Exception e) {
 
                 throw (new RuntimeException("Text could not be loaded."));
             }
+        }
+
+        protected abstract Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent,
+                                           Stage aStage, double aPrefWidth, double aPrefHeight);
+    }
+
+    protected static class DisplayTextNodeAssembler extends AbstractAsciiBasedNodeAssembler {
+
+        @Override
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
+
+            // Creating a TextArea for the text
+            TextArea tmpTextAreaView = new TextArea();
+            tmpTextAreaView.setPrefWidth(aPrefWidth);
+            tmpTextAreaView.setPrefHeight(aPrefHeight);
+            tmpTextAreaView.setEditable(false);
+
+            // Setting text to the text view
+            tmpTextAreaView.setText(aFileContent);
+
+            return tmpTextAreaView;
+        }
+    }
+
+    protected static class DisplaySvgNodeAssembler extends AbstractAsciiBasedNodeAssembler {
+
+        @Override
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent, Stage aStage,
+                               double aPrefWidth, double aPrefHeight) {
+
+            // Creating a WebView for the SVG
+            WebView tmpWebView = new WebView();
+            tmpWebView.setPrefWidth(aPrefWidth);
+            tmpWebView.setPrefHeight(aPrefHeight);
+            tmpWebView.setContextMenuEnabled(false);
+
+            // Setting SVG String to the WebView
+            tmpWebView.getEngine().loadContent(aFileContent);
+
+            Pane tmpPane = new Pane(tmpWebView);
+            tmpPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                    tmpWebView.setPrefWidth(aNewValue.doubleValue()));
+            tmpPane.heightProperty().addListener((anObservable, anOldValue, aNewValue) ->
+                    tmpWebView.setPrefHeight(aNewValue.doubleValue()));
+
+            return (tmpPane);
         }
     }
 
@@ -505,6 +546,7 @@ public class DisplayFilePaneController extends BaseController {
                 WebView tmpWebView = new WebView();
                 tmpWebView.setPrefWidth(aPrefWidth);
                 tmpWebView.setPrefHeight(aPrefHeight);
+                tmpWebView.setContextMenuEnabled(false);
 
                 // Setting HTML to the WebView
                 String tmpNote =

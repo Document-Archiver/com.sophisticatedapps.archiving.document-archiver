@@ -178,6 +178,17 @@ class DisplayFilePaneControllerTest extends BaseTest {
     }
 
     @Test
+    void testHandleCurrentDocumentChangedToSvgFile() {
+
+        displayFilePaneController.setNewCurrentDocument(TEST_SVG_FILE);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Now there should be a Pane on our display file Pane containing a WebView.
+        Pane tmpWrapperPane = (Pane)displayFilePane.getChildren().get(0);
+        assertSame(WebView.class, tmpWrapperPane.getChildren().get(0).getClass());
+    }
+
+    @Test
     void testHandleCurrentDocumentChangedToPngFile() {
 
         displayFilePaneController.setNewCurrentDocument(TEST_PNG_FILE);

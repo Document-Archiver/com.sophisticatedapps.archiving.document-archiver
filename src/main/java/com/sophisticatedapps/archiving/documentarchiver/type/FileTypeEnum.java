@@ -27,6 +27,7 @@ public enum FileTypeEnum {
     GIF(FileTypeGroupEnum.IMAGES, true, "gif"),
     BMP(FileTypeGroupEnum.IMAGES, true, "bmp"),
     HEIC(FileTypeGroupEnum.IMAGES, true, "heic"),
+    SVG(FileTypeGroupEnum.IMAGES, true, "svg"),
     XML(FileTypeGroupEnum.MARKUP, false, "xml"),
     XHTML(FileTypeGroupEnum.MARKUP, false, "html", "htm", "xhtml", "xht"),
     MD(FileTypeGroupEnum.MARKUP, false, "md", "markdown"),
