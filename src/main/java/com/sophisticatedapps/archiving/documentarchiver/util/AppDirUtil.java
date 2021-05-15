@@ -30,7 +30,7 @@ public class AppDirUtil {
     static {
 
         AppDirs tmpAppDirs = AppDirsFactory.getInstance();
-        userDataDir = new File(tmpAppDirs.getUserDataDir("DocumentArchiver", null, "StephanSann"));
+        userDataDir = new File(tmpAppDirs.getUserDataDir("DocumentArchiver", null, "SophisticatedApps"));
 
         if(!userDataDir.exists()) {
 
