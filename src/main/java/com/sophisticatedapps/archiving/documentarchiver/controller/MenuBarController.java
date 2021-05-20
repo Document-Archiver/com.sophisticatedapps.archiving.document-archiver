@@ -33,6 +33,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -51,6 +52,12 @@ public class MenuBarController extends BaseController {
 
     private FileChooser fileChooser;
     private DirectoryChooser directoryChooser;
+
+    @FXML
+    ToggleGroup tenantToggleGroup;
+
+    @FXML
+    Menu tenantMenu;
 
     @FXML
     Menu appearanceMenu;
@@ -100,8 +107,26 @@ public class MenuBarController extends BaseController {
 
         super.rampUp(aStage);
 
+        // Add tenants to tenants menu
+        List<String> tmpTenantsList = TenantUtil.getAvailableTenants();
+
+        for (String tmpCurrentTenant : tmpTenantsList) {
+
+            RadioMenuItem tmpRadioMenuItem = new RadioMenuItem(tmpCurrentTenant);
+            tmpRadioMenuItem.setId(tmpCurrentTenant.concat("TenantMenuItem"));
+            tmpRadioMenuItem.setToggleGroup(tenantToggleGroup);
+            tmpRadioMenuItem.setOnAction(this::handleChangeTenantMenuItemAction);
+            tenantMenu.getItems().add(tmpRadioMenuItem);
+        }
+
+        selectCurrentTenantRadioMenuItem(PropertiesUtil.ACTIVE_TENANT);
         selectCurrentThemeRadioMenuItem(THEMES_BY_MENU_ITEM_MAP.getKey(PropertiesUtil.APPEARANCE_THEME));
         selectCurrentLanguageRadioMenuItem(LOCALES_BY_MENU_ITEM_MAP.getKey(LanguageUtil.getCurrentLanguageLocale()));
+    }
+
+    private void selectCurrentTenantRadioMenuItem(String anActiveTenant) {
+
+        selectCurrentRadioMenuItem(tenantMenu, anActiveTenant.concat("TenantMenuItem"));
     }
 
     private void selectCurrentThemeRadioMenuItem(String aThemeRadioMenuItemId) {
@@ -156,13 +181,7 @@ public class MenuBarController extends BaseController {
                 PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
                         tmpQuickDescriptionWordsPropertiesPair);
 
-                Optional<ButtonType> tmpRestartResult = dialogProvider.providePreferencesChangedAlert().showAndWait();
-
-                // Should App be restarted?
-                if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
-
-                    ApplicationRestart.builder().build().restartApp();
-                }
+                askForRestartAfterPropertiesChanged();
             }
             catch (IOException e) {
 
@@ -171,6 +190,28 @@ public class MenuBarController extends BaseController {
         }
 
         tmpPreferencesPaneController.rampDown();
+    }
+
+    @FXML
+    protected void handleChangeTenantMenuItemAction(ActionEvent anEvent) {
+
+        String tmpMenuItemId = ((MenuItem)anEvent.getSource()).getId();
+        // Tenant name is "FooBarTenantMenuItem" minus the last 14 chars ("TenantMenuItem") -> "FooBar"
+        String tmpTenant = tmpMenuItemId.substring(0, (tmpMenuItemId.length() - 14));
+
+        if (!PropertiesUtil.ACTIVE_TENANT.equals(tmpTenant)) {
+
+            try {
+
+                PropertiesUtil.updateActiveTenant(tmpTenant);
+
+                askForRestartAfterPropertiesChanged();
+            }
+            catch (IOException e) {
+
+                throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
+            }
+        }
     }
 
     @FXML
@@ -257,7 +298,6 @@ public class MenuBarController extends BaseController {
     }
 
     @FXML
-    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleChangeLanguageMenuItemAction(ActionEvent anEvent) {
 
         Locale tmpNewLocale = LOCALES_BY_MENU_ITEM_MAP.get(((MenuItem)anEvent.getSource()).getId());
@@ -266,14 +306,24 @@ public class MenuBarController extends BaseController {
 
             LanguageUtil.setNewLanguage(tmpNewLocale);
 
-            Optional<ButtonType> tmpRestartResult =
-                    dialogProvider.providePreferencesChangedAlert(tmpNewLocale).showAndWait();
+            askForRestartAfterPropertiesChanged(tmpNewLocale);
+        }
+    }
 
-            // Should App be restarted?
-            if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
+    private void askForRestartAfterPropertiesChanged() {
 
-                ApplicationRestart.builder().build().restartApp();
-            }
+        askForRestartAfterPropertiesChanged(LanguageUtil.getCurrentLanguageLocale());
+    }
+
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
+    private void askForRestartAfterPropertiesChanged(Locale aLocale) {
+
+        Optional<ButtonType> tmpRestartResult = dialogProvider.providePreferencesChangedAlert(aLocale).showAndWait();
+
+        // Should App be restarted?
+        if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
+
+            ApplicationRestart.builder().build().restartApp();
         }
     }
 

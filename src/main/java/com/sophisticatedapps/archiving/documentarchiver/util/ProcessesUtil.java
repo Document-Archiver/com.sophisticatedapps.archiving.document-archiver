@@ -23,7 +23,7 @@ public class ProcessesUtil {
     public static File createTempJpg(File aSourceFile) throws IOException {
 
         // Create JPG from HEIC
-        File tmpTempFile = File.createTempFile(UUID.randomUUID().toString(), ".jpg", PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        File tmpTempFile = File.createTempFile(UUID.randomUUID().toString(), ".jpg", PropertiesUtil.CORE_ARCHIVING_FOLDER);
 
         try {
 

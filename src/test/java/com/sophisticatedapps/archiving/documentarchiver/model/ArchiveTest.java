@@ -73,7 +73,7 @@ class ArchiveTest extends BaseTest {
 
         // Cleanup
         assertTrue(tmpArchivedFile.delete());
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
     /**
@@ -98,7 +98,7 @@ class ArchiveTest extends BaseTest {
         assertEquals("Target folder could not be created.", tmpException.getMessage());
 
         // Cleanup
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
     /**
@@ -130,7 +130,7 @@ class ArchiveTest extends BaseTest {
         assertEquals("File with name '" + tmpExistingFile.getPath() + "' exists!", tmpException.getMessage());
 
         // Cleanup
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
 }

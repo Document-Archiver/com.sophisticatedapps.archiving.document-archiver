@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import javafx.util.Pair;
 
 import java.io.*;
@@ -27,11 +28,13 @@ import java.util.regex.Pattern;
 
 public class PropertiesUtil {
 
-    public static final File ARCHIVING_ROOT_FOLDER;
+    public static final String ACTIVE_TENANT;
+    public static final File CORE_ARCHIVING_FOLDER;
     public static final String QUICK_DESCRIPTION_WORDS;
     public static final Locale LANGUAGE_LOCALE;
     public static final ThemeUtil.ThemeEnum APPEARANCE_THEME;
 
+    public static final String KEY_ACTIVE_TENANT = "active.tenant";
     public static final String KEY_ARCHIVING_PATH = "archiving.path";
     public static final String KEY_QUICK_DESCRIPTION_WORDS = "quick.description.words";
     public static final String KEY_LANGUAGE_LOCALE = "language.locale";
@@ -50,13 +53,14 @@ public class PropertiesUtil {
 
             APPLICATION_PROPERTIES = PropertiesUtil.readProperties(PROPERTIES_FILE);
 
-            String tmpArchivingFolderPath = APPLICATION_PROPERTIES.getProperty(KEY_ARCHIVING_PATH);
-            Matcher tmpMatcher = HOME_DIR_PATTERN.matcher(tmpArchivingFolderPath);
+            String tmpCoreArchivingFolderPath = APPLICATION_PROPERTIES.getProperty(KEY_ARCHIVING_PATH);
+            Matcher tmpMatcher = HOME_DIR_PATTERN.matcher(tmpCoreArchivingFolderPath);
             if (tmpMatcher.find()) {
-                tmpArchivingFolderPath = System.getProperty("user.home").concat(tmpMatcher.group(1));
+                tmpCoreArchivingFolderPath = System.getProperty("user.home").concat(tmpMatcher.group(1));
             }
 
-            ARCHIVING_ROOT_FOLDER = new File(tmpArchivingFolderPath);
+            ACTIVE_TENANT = APPLICATION_PROPERTIES.getProperty(KEY_ACTIVE_TENANT, GlobalConstants.DEFAULT_TENANT_NAME);
+            CORE_ARCHIVING_FOLDER = new File(tmpCoreArchivingFolderPath);
             QUICK_DESCRIPTION_WORDS = APPLICATION_PROPERTIES.getProperty(KEY_QUICK_DESCRIPTION_WORDS);
             LANGUAGE_LOCALE = Locale.forLanguageTag(APPLICATION_PROPERTIES.getProperty(KEY_LANGUAGE_LOCALE));
             APPEARANCE_THEME = ThemeUtil.ThemeEnum.valueOf(APPLICATION_PROPERTIES.getProperty(KEY_APPEARANCE_THEME));
@@ -109,6 +113,13 @@ public class PropertiesUtil {
             tmpProperties.load(tmpInputStream);
             return tmpProperties;
         }
+    }
+
+    public static void updateActiveTenant(String aNewActiveTenant) throws IOException {
+
+        APPLICATION_PROPERTIES.setProperty(KEY_ACTIVE_TENANT, aNewActiveTenant);
+
+        writeProperties(PROPERTIES_FILE, APPLICATION_PROPERTIES);
     }
 
     public static void updateApplicationLanguageLocale(Locale aNewLanguageLocale) throws IOException {

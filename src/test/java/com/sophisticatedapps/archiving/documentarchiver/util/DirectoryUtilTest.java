@@ -30,7 +30,7 @@ class DirectoryUtilTest extends BaseTest {
     @Test
     void getArchivingRootFolder() {
 
-        assertSame(PropertiesUtil.ARCHIVING_ROOT_FOLDER, DirectoryUtil.getArchivingRootFolder());
+        assertEquals(PropertiesUtil.CORE_ARCHIVING_FOLDER, DirectoryUtil.getArchivingRootFolder());
     }
 
     @Test
@@ -38,7 +38,7 @@ class DirectoryUtilTest extends BaseTest {
 
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
         assertSame(TEST_ARCHIVING_FOLDER, DirectoryUtil.getArchivingRootFolder());
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
     @Test
@@ -46,7 +46,7 @@ class DirectoryUtilTest extends BaseTest {
 
         File tmpPDFsGroupingFolder = DirectoryUtil.getGroupingFolder(FileTypeGroupEnum.PDFS);
 
-        assertEquals((new File(PropertiesUtil.ARCHIVING_ROOT_FOLDER.getPath() + "/pdfs")),
+        assertEquals((new File(PropertiesUtil.CORE_ARCHIVING_FOLDER.getPath() + "/pdfs")),
                 tmpPDFsGroupingFolder);
     }
 
@@ -55,7 +55,7 @@ class DirectoryUtilTest extends BaseTest {
 
         File tmpArchivingFolder = DirectoryUtil.getArchivingFolder(FileTypeGroupEnum.PDFS, 1975);
 
-        assertEquals((new File(PropertiesUtil.ARCHIVING_ROOT_FOLDER.getPath() + "/pdfs/1975")),
+        assertEquals((new File(PropertiesUtil.CORE_ARCHIVING_FOLDER.getPath() + "/pdfs/1975")),
                 tmpArchivingFolder);
     }
 

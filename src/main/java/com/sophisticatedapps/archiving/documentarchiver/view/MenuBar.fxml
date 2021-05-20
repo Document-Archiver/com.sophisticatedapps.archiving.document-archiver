@@ -14,6 +14,15 @@
                 <SeparatorMenuItem mnemonicParsing="false" />
                 <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemAction" text="%menu-bar.document-archiver-menu.preferences-menu-item" />
                 <SeparatorMenuItem mnemonicParsing="false" />
+                <fx:define>
+                    <ToggleGroup fx:id="tenantToggleGroup" />
+                </fx:define>
+                <Menu fx:id="tenantMenu" mnemonicParsing="false" text="%menu-bar.document-archiver-menu.tenant-menu">
+                    <items>
+                        <RadioMenuItem fx:id="_TenantMenuItem" mnemonicParsing="false" onAction="#handleChangeTenantMenuItemAction" text="%menu-bar.document-archiver-menu.tenant-menu.default-tenant-menu-item" toggleGroup="$tenantToggleGroup" />
+                    </items>
+                </Menu>
+                <SeparatorMenuItem mnemonicParsing="false" />
                 <MenuItem mnemonicParsing="false" onAction="#handleQuitMenuItemAction" text="%menu-bar.document-archiver-menu.quit-menu-item" />
             </items>
         </Menu>

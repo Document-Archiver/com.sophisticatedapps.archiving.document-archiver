@@ -407,7 +407,7 @@ class InfoPaneControllerTest extends BaseTest {
 
         // Cleanup
         assertTrue(tmpTargetFile.delete());
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
     @Test
@@ -465,7 +465,7 @@ class InfoPaneControllerTest extends BaseTest {
 
         // Cleanup
         assertTrue(tmpTargetFile.delete());
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
     @Test
@@ -504,7 +504,7 @@ class InfoPaneControllerTest extends BaseTest {
         verify(tmpMockedAlert, Mockito.times(1)).showAndWait();
 
         // Cleanup
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
     @Test

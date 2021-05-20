@@ -43,7 +43,7 @@ class TagsTest extends BaseTest {
 
         assertEquals("[bar, foo, fu, java, sna, swift]", tmpResult.toString());
 
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
     /**
@@ -58,7 +58,7 @@ class TagsTest extends BaseTest {
 
         assertEquals("[bar, foo, fu, sna]", tmpResult.toString());
 
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
     /**
@@ -73,7 +73,7 @@ class TagsTest extends BaseTest {
 
         assertEquals("[]", tmpResult.toString());
 
-        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.ARCHIVING_ROOT_FOLDER);
+        DirectoryUtil.setArchivingRootFolder(PropertiesUtil.CORE_ARCHIVING_FOLDER);
     }
 
 }

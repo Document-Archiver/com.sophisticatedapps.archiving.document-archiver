@@ -20,10 +20,7 @@ import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
-import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.PluginUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
-import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -129,7 +126,8 @@ class MenuBarControllerTest extends BaseTest {
 
         Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
         when(tmpMockedPreferencesChangedAlert.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
-        when(tmpMockedDialogProvider.providePreferencesChangedAlert()).thenReturn(tmpMockedPreferencesChangedAlert);
+        when(tmpMockedDialogProvider.providePreferencesChangedAlert(any(Locale.class)))
+                .thenReturn(tmpMockedPreferencesChangedAlert);
 
         @SuppressWarnings("unchecked")
         Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
@@ -182,7 +180,8 @@ class MenuBarControllerTest extends BaseTest {
         BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
 
         Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
-        when(tmpMockedDialogProvider.providePreferencesChangedAlert()).thenReturn(tmpMockedPreferencesChangedAlert);
+        when(tmpMockedDialogProvider.providePreferencesChangedAlert(any(Locale.class)))
+                .thenReturn(tmpMockedPreferencesChangedAlert);
 
         @SuppressWarnings("unchecked")
         Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
@@ -201,6 +200,58 @@ class MenuBarControllerTest extends BaseTest {
         Throwable tmpException =
                 assertThrows(RuntimeException.class, () -> menuBarController.handlePreferencesMenuItemAction());
         assertEquals("Could not write properties: Invalid file path", tmpException.getMessage());
+
+        // Change local properties directory back
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpOriginalLocalPropertiesDirectory, true);
+    }
+
+    @Test
+    void testHandleChangeTenantMenuItemAction() throws IllegalAccessException, IOException {
+
+        // Exchange the local properties directory
+        File tmpOriginalLocalPropertiesDirectory = (File) FieldUtils.readStaticField(
+                PropertiesUtil.class, "localPropertiesDirectory", true);
+        File tmpTempLocalPropertiesDirectory = new File(tempDir, ".documentarchiver");
+        FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
+                tmpTempLocalPropertiesDirectory, true);
+
+        Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
+        when(tmpMockedPreferencesChangedAlert.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        when(tmpMockedDialogProvider.providePreferencesChangedAlert(any(Locale.class)))
+                .thenReturn(tmpMockedPreferencesChangedAlert);
+        FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
+
+        MenuItem tmpMockedMenuItem = Mockito.mock(MenuItem.class);
+        ActionEvent tmpMockedActionEvent = Mockito.mock(ActionEvent.class);
+        when(tmpMockedActionEvent.getSource()).thenReturn(tmpMockedMenuItem);
+
+        // Select with current tenant
+        when(tmpMockedMenuItem.getId()).thenReturn(PropertiesUtil.ACTIVE_TENANT.concat("TenantMenuItem"));
+        menuBarController.handleChangeTenantMenuItemAction(tmpMockedActionEvent);
+        verify(tmpMockedPreferencesChangedAlert, Mockito.times(0)).showAndWait();
+
+        // Select with not current tenant
+        when(tmpMockedMenuItem.getId()).thenReturn("SnaFuTenantMenuItem");
+        menuBarController.handleChangeTenantMenuItemAction(tmpMockedActionEvent);
+        verify(tmpMockedPreferencesChangedAlert, Mockito.times(1)).showAndWait();
+
+        // Read properties in
+        Properties tmpReadProperties = PropertiesUtil.readProperties("document-archiver.properties");
+
+        // Check
+        assertEquals("SnaFu", tmpReadProperties.getProperty(PropertiesUtil.KEY_ACTIVE_TENANT));
+
+        // Run again - this time with closing the App
+        SecurityManager tmpMockedSecurityManager = Mockito.mock(SecurityManager.class);
+        doThrow(new SecurityException("Nope.")).when(tmpMockedSecurityManager).checkExit(anyInt());
+        System.setSecurityManager(tmpMockedSecurityManager);
+        when(tmpMockedPreferencesChangedAlert.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
+        Platform.runLater(() -> assertThrows(SecurityException.class, () ->
+                menuBarController.handleChangeTenantMenuItemAction(tmpMockedActionEvent)));
+        WaitForAsyncUtils.waitForFxEvents();
+        System.setSecurityManager(null);
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
@@ -314,6 +365,7 @@ class MenuBarControllerTest extends BaseTest {
 
         Platform.runLater(() -> {
 
+            // We have to set a Scene to the stage, otherwise the style cannot be set.
             menuBarController.stage.setScene(new Scene(new Pane()));
 
             MenuItem tmpMockedMenuItem = Mockito.mock(MenuItem.class);
@@ -442,16 +494,20 @@ class MenuBarControllerTest extends BaseTest {
         FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
 
         MenuItem tmpMockedMenuItem = Mockito.mock(MenuItem.class);
-        when(tmpMockedMenuItem.getId()).thenReturn("germanLanguageMenuItem");
         ActionEvent tmpMockedActionEvent = Mockito.mock(ActionEvent.class);
         when(tmpMockedActionEvent.getSource()).thenReturn(tmpMockedMenuItem);
 
+        // Select with current language
+        when(tmpMockedMenuItem.getId()).thenReturn("englishLanguageMenuItem");
         menuBarController.handleChangeLanguageMenuItemAction(tmpMockedActionEvent);
+        verify(tmpMockedPreferencesChangedAlert, Mockito.times(0)).showAndWait();
 
-        // Alert triggered?
+        // Select with not current language
+        when(tmpMockedMenuItem.getId()).thenReturn("germanLanguageMenuItem");
+        menuBarController.handleChangeLanguageMenuItemAction(tmpMockedActionEvent);
         verify(tmpMockedPreferencesChangedAlert, Mockito.times(1)).showAndWait();
 
-        // Read them in again
+        // Read properties in
         Properties tmpReadProperties = PropertiesUtil.readProperties("document-archiver.properties");
 
         // Check

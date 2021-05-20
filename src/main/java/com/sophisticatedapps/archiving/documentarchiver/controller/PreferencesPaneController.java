@@ -37,7 +37,7 @@ public class PreferencesPaneController extends BaseController {
 
         super.rampUp(aStage);
 
-        archivingFolderTextField.setText(DirectoryUtil.getArchivingRootFolder().getPath());
+        archivingFolderTextField.setText(DirectoryUtil.getCoreArchivingFolder().getPath());
         quickDescriptionWordsTextArea.setText(PropertiesUtil.QUICK_DESCRIPTION_WORDS);
     }
 

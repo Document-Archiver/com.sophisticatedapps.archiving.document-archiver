@@ -252,21 +252,6 @@ class BaseControllerTest extends BaseTest {
         BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
         final List<Alert> tmpAlertList = new ArrayList<>();
 
-        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePreferencesChangedAlert()));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Alert tmpAlert = tmpAlertList.get(0);
-        assertNotNull(tmpAlert);
-        assertTrue(tmpAlert.getContentText().startsWith("Preferences have been saved"));
-    }
-
-    @Test
-    void testDialogProvider_providePreferencesChangedAlert_with_Locale() {
-
-        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
-        final List<Alert> tmpAlertList = new ArrayList<>();
-
         Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.providePreferencesChangedAlert(Locale.GERMAN)));
 
         WaitForAsyncUtils.waitForFxEvents();

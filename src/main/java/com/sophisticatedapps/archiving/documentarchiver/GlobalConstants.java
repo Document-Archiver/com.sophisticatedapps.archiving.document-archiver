@@ -56,4 +56,7 @@ public class GlobalConstants {
     public static final String WIKI_URL =
             "https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/wiki/Quick-Start";
 
+    public static final String DEFAULT_TENANT_NAME = "_";
+    public static final String TENANT_FOLDER_PREFIX = "@";
+
 }

@@ -56,7 +56,7 @@ public class App extends Application {
 
                 // We have to wrap the result in a new List, since the result is not modifiable.
                 filesFromArgs = new ArrayList<>();
-                DirectoryUtil.readDirectoryRecursive(tmpFile, filesFromArgs, (aFile -> (!aFile.isHidden())));
+                DirectoryUtil.readDirectoryRecursive(tmpFile, filesFromArgs, DirectoryUtil.NO_HIDDEN_FILES_FILE_FILTER);
                 filesFromArgs.sort(Comparator.naturalOrder());
             }
             else {

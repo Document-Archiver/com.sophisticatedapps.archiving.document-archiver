@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 
 import java.io.File;
@@ -26,13 +27,26 @@ import java.util.Objects;
 
 public class DirectoryUtil {
 
-    public static final FileFilter NO_HIDDEN_FILES_FILE_FILTER = (aFile -> (!aFile.isHidden()));
-    private static File archivingRootFolder = PropertiesUtil.ARCHIVING_ROOT_FOLDER;
+    public static final FileFilter NO_HIDDEN_FILES_FILE_FILTER =
+            (aFile -> ((!aFile.isHidden()) && (!aFile.getName().startsWith(GlobalConstants.TENANT_FOLDER_PREFIX))));
+    private static File coreArchivingFolder = PropertiesUtil.CORE_ARCHIVING_FOLDER;
+    private static File archivingRootFolder = new File(coreArchivingFolder,
+            TenantUtil.getTenantFolderName(PropertiesUtil.ACTIVE_TENANT));
 
     /**
      * Private constructor.
      */
     private DirectoryUtil() {
+    }
+
+    /**
+     * Get the core archiving folder.
+     *
+     * @return  Core archiving folder as File object.
+     */
+    public static File getCoreArchivingFolder() {
+
+        return coreArchivingFolder;
     }
 
     /**

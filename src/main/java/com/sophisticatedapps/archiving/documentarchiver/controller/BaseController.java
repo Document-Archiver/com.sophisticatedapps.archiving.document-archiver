@@ -310,14 +310,6 @@ public abstract class BaseController {
             return tmpDialog;
         }
 
-        public Alert providePreferencesChangedAlert() {
-
-            return (new Alert(Alert.AlertType.INFORMATION,
-                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.preferences-changed-alert"),
-                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_NO_TEXT), ButtonBar.ButtonData.NO)),
-                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT), ButtonBar.ButtonData.YES))));
-        }
-
         public Alert providePreferencesChangedAlert(Locale aLanguageLocale) {
 
             return (new Alert(Alert.AlertType.INFORMATION,

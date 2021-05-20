@@ -20,6 +20,7 @@ import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.*;
 
 public class Tags {
@@ -47,21 +48,21 @@ public class Tags {
         // Check if folder is created yet (may not be the case before first archiving)
         if (aFolder.exists()) {
 
-            getTagsFromDirectory(aFolder, tmpReturn);
+            getTagsFromDirectory(aFolder, tmpReturn, DirectoryUtil.NO_HIDDEN_FILES_FILE_FILTER);
         }
 
         return tmpReturn;
     }
 
-    private static void getTagsFromDirectory(File aDirectoryPath, SortedSet<String> aTagSet) {
+    private static void getTagsFromDirectory(File aDirectoryPath, SortedSet<String> aTagSet, FileFilter aFileFilter) {
 
-        File[] tmpFilesList = Objects.requireNonNull(aDirectoryPath.listFiles());
+        File[] tmpFilesList = Objects.requireNonNull(aDirectoryPath.listFiles(aFileFilter));
 
         for (File tmpCurrentFile : tmpFilesList) {
 
             if (tmpCurrentFile.isDirectory()) {
 
-                getTagsFromDirectory(tmpCurrentFile, aTagSet);
+                getTagsFromDirectory(tmpCurrentFile, aTagSet, aFileFilter);
             }
             else if (tmpCurrentFile.isFile()) {
 
