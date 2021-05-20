@@ -70,7 +70,7 @@ class MenuBarControllerTest extends BaseTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) throws IOException, IllegalAccessException {
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
@@ -79,6 +79,9 @@ class MenuBarControllerTest extends BaseTest {
         when(tmpMockedFileChooser.showOpenMultipleDialog(any(Window.class))).thenReturn(ALL_DOCUMENTS_LIST);
         DirectoryChooser tmpMockedDirectoryChooser = Mockito.mock(DirectoryChooser.class);
         when(tmpMockedDirectoryChooser.showDialog(any(Window.class))).thenReturn(TEST_SOURCE_FOLDER);
+
+        // Set the test archiving folder as core archiving folder, so the reading of tenants delivers something.
+        FieldUtils.writeStaticField(DirectoryUtil.class, "coreArchivingFolder", TEST_ARCHIVING_FOLDER, true);
 
         FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MenuBar.fxml"));
         tmpLoader.setResources(LanguageUtil.getResourceBundleForCurrentLanguage());
@@ -91,12 +94,16 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @AfterEach
-    public void cleanUpEach() {
+    public void cleanUpEach() throws IllegalAccessException {
 
         menuBarController.rampDown();
 
         //menuBar = null;
         menuBarController = null;
+
+        // Set back core archiving folder
+        FieldUtils.writeStaticField(
+                DirectoryUtil.class, "coreArchivingFolder", PropertiesUtil.CORE_ARCHIVING_FOLDER, true);
     }
 
     @Test

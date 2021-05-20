@@ -22,12 +22,17 @@ public class TenantUtil {
     public static List<String> getAvailableTenants() {
 
         List<String> tmpResultList = new ArrayList<>();
-        File[] tmpTenantDirectories = Objects.requireNonNull(
-                DirectoryUtil.getCoreArchivingFolder().listFiles(TENANT_DIRECTORIES_FILE_FILTER));
+        File tmpCoreArchivingFolder = DirectoryUtil.getCoreArchivingFolder();
 
-        for (File tmpCurrentDirectory : tmpTenantDirectories) {
+        if (tmpCoreArchivingFolder.exists()) {
 
-            tmpResultList.add(tmpCurrentDirectory.getName().substring(1));
+            File[] tmpTenantDirectories =
+                    Objects.requireNonNull(tmpCoreArchivingFolder.listFiles(TENANT_DIRECTORIES_FILE_FILTER));
+
+            for (File tmpCurrentDirectory : tmpTenantDirectories) {
+
+                tmpResultList.add(tmpCurrentDirectory.getName().substring(1));
+            }
         }
 
         return tmpResultList;
