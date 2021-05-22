@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.type.Tenant;
 import javafx.util.Pair;
 
 import java.io.*;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class PropertiesUtil {
 
-    public static final String ACTIVE_TENANT;
+    public static final Tenant ACTIVE_TENANT;
     public static final File CORE_ARCHIVING_FOLDER;
     public static final String QUICK_DESCRIPTION_WORDS;
     public static final Locale LANGUAGE_LOCALE;
@@ -59,7 +60,8 @@ public class PropertiesUtil {
                 tmpCoreArchivingFolderPath = System.getProperty("user.home").concat(tmpMatcher.group(1));
             }
 
-            ACTIVE_TENANT = APPLICATION_PROPERTIES.getProperty(KEY_ACTIVE_TENANT, GlobalConstants.DEFAULT_TENANT_NAME);
+            ACTIVE_TENANT = new Tenant(
+                    APPLICATION_PROPERTIES.getProperty(KEY_ACTIVE_TENANT, GlobalConstants.DEFAULT_TENANT_NAME));
             CORE_ARCHIVING_FOLDER = new File(tmpCoreArchivingFolderPath);
             QUICK_DESCRIPTION_WORDS = APPLICATION_PROPERTIES.getProperty(KEY_QUICK_DESCRIPTION_WORDS);
             LANGUAGE_LOCALE = Locale.forLanguageTag(APPLICATION_PROPERTIES.getProperty(KEY_LANGUAGE_LOCALE));

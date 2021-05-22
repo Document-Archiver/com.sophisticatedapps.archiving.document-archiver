@@ -262,6 +262,36 @@ class BaseControllerTest extends BaseTest {
     }
 
     @Test
+    void testDialogProvider_provideManageTenantsDialog() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
+
+        Pane tmpMockedPane = new Pane();
+
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideManageTenantsDialog(tmpMockedPane)));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
+        assertNotNull(tmpDialog);
+        assertSame(tmpMockedPane, tmpDialog.getDialogPane().getContent());
+    }
+
+    @Test
+    void testDialogProvider_provideConfirmTenantDeletionAlert() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Alert> tmpAlertList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideConfirmTenantDeletionAlert("Boo")));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Alert tmpAlert = tmpAlertList.get(0);
+        assertNotNull(tmpAlert);
+        assertEquals("Are you sure you want to delete tenant \"Boo\"? All documents archived within this tenant will be deleted irrevocable!", tmpAlert.getContentText());
+    }
+
+    @Test
     void testDialogProvider_provideDirectoryDoesNotContainFilesAlert() {
 
         BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();

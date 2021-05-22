@@ -318,6 +318,27 @@ public abstract class BaseController {
                     (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT, aLanguageLocale), ButtonBar.ButtonData.YES))));
         }
 
+        public Dialog<ButtonType> provideManageTenantsDialog(Pane aPreferencesPane) {
+
+            Dialog<ButtonType> tmpDialog = new Dialog<>();
+            tmpDialog.setTitle(LanguageUtil.i18n("menu-bar-controller.manage-tenants-dialog.title"));
+
+            DialogPane tmpDialogPane = tmpDialog.getDialogPane();
+            tmpDialogPane.setContent(aPreferencesPane);
+            tmpDialogPane.getButtonTypes().addAll(ButtonType.CLOSE);
+            tmpDialogPane.getStylesheets().add(ThemeUtil.getCurrentTheme().getPathToCss());
+
+            return tmpDialog;
+        }
+
+        public Alert provideConfirmTenantDeletionAlert(String aTenantName) {
+
+            return (new Alert(Alert.AlertType.WARNING,
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.confirm-tenant-deletion-alert.content-text", aTenantName),
+                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_NO_TEXT), ButtonBar.ButtonData.NO)),
+                    (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT), ButtonBar.ButtonData.YES))));
+        }
+
         public Alert provideDirectoryDoesNotContainFilesAlert() {
 
             return (new Alert(Alert.AlertType.WARNING,

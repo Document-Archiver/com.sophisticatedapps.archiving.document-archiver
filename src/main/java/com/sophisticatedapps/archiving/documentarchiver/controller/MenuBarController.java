@@ -33,10 +33,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class MenuBarController extends BaseController {
 
@@ -108,18 +105,21 @@ public class MenuBarController extends BaseController {
         super.rampUp(aStage);
 
         // Add tenants to tenants menu
-        List<String> tmpTenantsList = TenantUtil.getAvailableTenants();
+        List<String> tmpTenantNamesList = TenantUtil.getAvailableTenantNames();
+        List<RadioMenuItem> tmpRadioMenuItems = new ArrayList<>();
 
-        for (String tmpCurrentTenant : tmpTenantsList) {
+        for (String tmpCurrentTenantName : tmpTenantNamesList) {
 
-            RadioMenuItem tmpRadioMenuItem = new RadioMenuItem(tmpCurrentTenant);
-            tmpRadioMenuItem.setId(tmpCurrentTenant.concat("TenantMenuItem"));
+            RadioMenuItem tmpRadioMenuItem = new RadioMenuItem(tmpCurrentTenantName);
+            tmpRadioMenuItem.setId(tmpCurrentTenantName.concat("TenantMenuItem"));
             tmpRadioMenuItem.setToggleGroup(tenantToggleGroup);
             tmpRadioMenuItem.setOnAction(this::handleChangeTenantMenuItemAction);
-            tenantMenu.getItems().add(tmpRadioMenuItem);
+            tmpRadioMenuItems.add(tmpRadioMenuItem);
         }
 
-        selectCurrentTenantRadioMenuItem(PropertiesUtil.ACTIVE_TENANT);
+        tenantMenu.getItems().addAll(1, tmpRadioMenuItems);
+
+        selectCurrentTenantRadioMenuItem(PropertiesUtil.ACTIVE_TENANT.getName());
         selectCurrentThemeRadioMenuItem(THEMES_BY_MENU_ITEM_MAP.getKey(PropertiesUtil.APPEARANCE_THEME));
         selectCurrentLanguageRadioMenuItem(LOCALES_BY_MENU_ITEM_MAP.getKey(LanguageUtil.getCurrentLanguageLocale()));
     }
@@ -143,7 +143,11 @@ public class MenuBarController extends BaseController {
 
         for (MenuItem tmpCurrentMenuItem : aMenu.getItems()) {
 
-            ((RadioMenuItem)tmpCurrentMenuItem).setSelected(tmpCurrentMenuItem.getId().equals(aRadioMenuItemId));
+            if (aRadioMenuItemId.equals(tmpCurrentMenuItem.getId())) {
+
+                ((RadioMenuItem)tmpCurrentMenuItem).setSelected(true);
+                return;
+            }
         }
     }
 
@@ -197,13 +201,13 @@ public class MenuBarController extends BaseController {
 
         String tmpMenuItemId = ((MenuItem)anEvent.getSource()).getId();
         // Tenant name is "FooBarTenantMenuItem" minus the last 14 chars ("TenantMenuItem") -> "FooBar"
-        String tmpTenant = tmpMenuItemId.substring(0, (tmpMenuItemId.length() - 14));
+        String tmpTenantName = tmpMenuItemId.substring(0, (tmpMenuItemId.length() - 14));
 
-        if (!PropertiesUtil.ACTIVE_TENANT.equals(tmpTenant)) {
+        if (!PropertiesUtil.ACTIVE_TENANT.getName().equals(tmpTenantName)) {
 
             try {
 
-                PropertiesUtil.updateActiveTenant(tmpTenant);
+                PropertiesUtil.updateActiveTenant(tmpTenantName);
 
                 askForRestartAfterPropertiesChanged();
             }
@@ -212,6 +216,27 @@ public class MenuBarController extends BaseController {
                 throw (new RuntimeException("Could not write properties: ".concat(String.valueOf(e.getMessage()))));
             }
         }
+    }
+
+    @FXML
+    protected void handleManageTenantsMenuItemAction() {
+
+        // Load manage tenants Pane
+        FXMLUtil.ControllerRegionPair<ManageTenantsPaneController, Pane> tmpManageTenantsPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", stage);
+        Pane tmpManageTenantsPane = tmpManageTenantsPaneControllerRegionPair.getRegion();
+        ManageTenantsPaneController tmpManageTenantsPaneController =
+                tmpManageTenantsPaneControllerRegionPair.getController();
+
+        // Create and show Dialog
+        dialogProvider.provideManageTenantsDialog(tmpManageTenantsPane).showAndWait();
+
+        if (tmpManageTenantsPaneController.isTenantsChanged()) {
+
+            askForRestartAfterPropertiesChanged();
+        }
+
+        tmpManageTenantsPaneController.rampDown();
     }
 
     @FXML

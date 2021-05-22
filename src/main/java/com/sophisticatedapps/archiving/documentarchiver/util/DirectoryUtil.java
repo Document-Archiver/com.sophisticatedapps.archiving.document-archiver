@@ -21,6 +21,8 @@ import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -30,8 +32,8 @@ public class DirectoryUtil {
     public static final FileFilter NO_HIDDEN_FILES_FILE_FILTER =
             (aFile -> ((!aFile.isHidden()) && (!aFile.getName().startsWith(GlobalConstants.TENANT_FOLDER_PREFIX))));
     private static File coreArchivingFolder = PropertiesUtil.CORE_ARCHIVING_FOLDER;
-    private static File archivingRootFolder = new File(coreArchivingFolder,
-            TenantUtil.getTenantFolderName(PropertiesUtil.ACTIVE_TENANT));
+    private static File archivingRootFolder =
+            new File(coreArchivingFolder, PropertiesUtil.ACTIVE_TENANT.getFolderName());
 
     /**
      * Private constructor.
@@ -102,6 +104,26 @@ public class DirectoryUtil {
                 aFileList.add(tmpCurrentFile);
             }
         }
+    }
+
+    /**
+     * Deletes a file recursively.
+     *
+     * @param   aFileToBeDeleted   File to delete.
+     */
+    public static void deleteRecursively(File aFileToBeDeleted) throws IOException {
+
+        File[] tmpAllContents = aFileToBeDeleted.listFiles();
+
+        if (tmpAllContents != null) {
+
+            for (File aCurrentFile : tmpAllContents) {
+
+                deleteRecursively(aCurrentFile);
+            }
+        }
+
+        Files.delete(aFileToBeDeleted.toPath());
     }
 
 }

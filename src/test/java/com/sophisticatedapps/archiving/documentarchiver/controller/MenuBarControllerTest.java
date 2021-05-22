@@ -235,7 +235,7 @@ class MenuBarControllerTest extends BaseTest {
         when(tmpMockedActionEvent.getSource()).thenReturn(tmpMockedMenuItem);
 
         // Select with current tenant
-        when(tmpMockedMenuItem.getId()).thenReturn(PropertiesUtil.ACTIVE_TENANT.concat("TenantMenuItem"));
+        when(tmpMockedMenuItem.getId()).thenReturn(PropertiesUtil.ACTIVE_TENANT.getName().concat("TenantMenuItem"));
         menuBarController.handleChangeTenantMenuItemAction(tmpMockedActionEvent);
         verify(tmpMockedPreferencesChangedAlert, Mockito.times(0)).showAndWait();
 
@@ -263,6 +263,20 @@ class MenuBarControllerTest extends BaseTest {
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
                 tmpOriginalLocalPropertiesDirectory, true);
+    }
+
+    @Test
+    void handleManageTenantsMenuItemAction() throws IllegalAccessException {
+
+        @SuppressWarnings("unchecked")
+        Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideManageTenantsDialog(any(Pane.class))).thenReturn(tmpMockedDialog);
+        FieldUtils.writeField(menuBarController,"dialogProvider", tmpMockedDialogProvider, true);
+
+        menuBarController.handleManageTenantsMenuItemAction();
+
+        verify(tmpMockedDialog, Mockito.times(1)).showAndWait();
     }
 
     @Test
