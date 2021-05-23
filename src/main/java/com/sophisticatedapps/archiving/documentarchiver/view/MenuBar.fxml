@@ -19,7 +19,7 @@
                 </fx:define>
                 <Menu fx:id="tenantMenu" mnemonicParsing="false" text="%menu-bar.document-archiver-menu.tenant-menu">
                     <items>
-                        <RadioMenuItem fx:id="_TenantMenuItem" mnemonicParsing="false" onAction="#handleChangeTenantMenuItemAction" text="%menu-bar.document-archiver-menu.tenant-menu.default-tenant-menu-item" toggleGroup="$tenantToggleGroup" />
+                        <RadioMenuItem fx:id="_TenantMenuItem" mnemonicParsing="false" onAction="#handleChangeTenantMenuItemAction" text="%global.label.default-tenant" toggleGroup="$tenantToggleGroup" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#handleManageTenantsMenuItemAction" text="%menu-bar.document-archiver-menu.tenant-menu.manage-tenants-menu-item" />
                     </items>

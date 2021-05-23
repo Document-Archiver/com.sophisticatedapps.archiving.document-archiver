@@ -18,6 +18,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -157,7 +158,7 @@ public class RootPaneController extends BaseController {
         if (!Objects.isNull(aNewCurrentDocument)) {
 
             stage.setTitle(LanguageUtil.i18n("root-pane-controller.stage.title.archiving-now",
-                    aNewCurrentDocument.getPath()));
+                    aNewCurrentDocument.getPath(), PropertiesUtil.ACTIVE_TENANT.getDisplayName()));
 
             rootPane.setLeft(documentsPane);
             rootPane.setCenter(displayFilePane);

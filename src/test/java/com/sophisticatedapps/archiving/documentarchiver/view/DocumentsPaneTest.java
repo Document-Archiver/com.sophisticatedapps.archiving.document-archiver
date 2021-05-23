@@ -75,7 +75,12 @@ class DocumentsPaneTest extends BaseTest {
 
         documentsPane = null;
         documentsPaneController = null;
-        stage = null;
+
+        Platform.runLater(() -> {
+
+            stage.hide();
+            stage = null;
+        });
     }
 
     /**

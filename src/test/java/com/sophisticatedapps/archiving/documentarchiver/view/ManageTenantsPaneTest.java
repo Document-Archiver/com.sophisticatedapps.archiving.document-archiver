@@ -18,13 +18,17 @@ package com.sophisticatedapps.archiving.documentarchiver.view;
 
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
-import com.sophisticatedapps.archiving.documentarchiver.controller.FileSystemViewPaneController;
+import com.sophisticatedapps.archiving.documentarchiver.controller.ManageTenantsPaneController;
+import com.sophisticatedapps.archiving.documentarchiver.type.Tenant;
+import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
+import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,17 +36,15 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import java.io.IOException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(ApplicationExtension.class)
-class FileSystemViewPaneTest extends BaseTest {
+class ManageTenantsPaneTest extends BaseTest {
 
     private Stage stage;
-    private Pane fileSystemViewPane;
-    private FileSystemViewPaneController fileSystemViewPaneController;
+    private Pane manageTenantsPane;
+    private ManageTenantsPaneController manageTenantsPaneController;
 
     /**
      * Will be called with {@code @Before} semantics, i. e. before each test method.
@@ -50,49 +52,52 @@ class FileSystemViewPaneTest extends BaseTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) {
+    public void start(Stage aStage) throws IllegalAccessException {
 
         this.stage = aStage;
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        FXMLUtil.ControllerRegionPair<FileSystemViewPaneController, Pane> tmpDocumentsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", aStage);
-        fileSystemViewPane = tmpDocumentsPaneControllerRegionPair.getRegion();
-        fileSystemViewPaneController = tmpDocumentsPaneControllerRegionPair.getController();
+        // Set the test archiving folder as core archiving folder, so the reading of tenants delivers something.
+        FieldUtils.writeStaticField(DirectoryUtil.class, "coreArchivingFolder", TEST_ARCHIVING_FOLDER, true);
 
-        aStage.setScene(new Scene(fileSystemViewPane));
+        FXMLUtil.ControllerRegionPair<ManageTenantsPaneController,Pane> tmpPreferencesPaneControllerRegionPair =
+                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", aStage);
+        manageTenantsPane = tmpPreferencesPaneControllerRegionPair.getRegion();
+        manageTenantsPaneController = tmpPreferencesPaneControllerRegionPair.getController();
+
+        aStage.setScene(new Scene(manageTenantsPane));
         aStage.show();
         aStage.toFront();
     }
 
     @AfterEach
-    public void cleanUpEach() {
+    public void cleanUpEach() throws IllegalAccessException {
 
-        fileSystemViewPaneController.rampDown();
+        manageTenantsPaneController.rampDown();
 
-        fileSystemViewPane = null;
-        fileSystemViewPaneController = null;
+        manageTenantsPane = null;
+        manageTenantsPaneController = null;
 
         Platform.runLater(() -> {
 
             stage.hide();
             stage = null;
         });
+
+        // Set back core archiving folder
+        FieldUtils.writeStaticField(
+                DirectoryUtil.class, "coreArchivingFolder", PropertiesUtil.CORE_ARCHIVING_FOLDER, true);
     }
 
     @Test
-    void testFileSystemTableView() throws IOException {
-
-        try (ZipFile tmpZipFile = new ZipFile(TEST_ZIP_FILE)) {
-
-            fileSystemViewPaneController.setZipFile(tmpZipFile);
-        }
+    void testExistingTenantsTableView() throws IOException {
 
         @SuppressWarnings("unchecked")
-        TableView<ZipEntry> tmpTableView = (TableView<ZipEntry>)fileSystemViewPane.lookup("#fileSystemTableView");
-        assertEquals(3, tmpTableView.getItems().size());
+        TableView<Tenant> tmpTableView = (TableView<Tenant>)manageTenantsPane.lookup("#tenantsTableView");
+        assertEquals(1, tmpTableView.getItems().size());
+        assertEquals("MyTenant", tmpTableView.getItems().get(0).getName());
     }
 
 }

@@ -52,6 +52,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(ApplicationExtension.class)
 class MenuBarTest extends BaseTest {
 
+    private Stage stage;
     private MenuBar menuBar;
     private TestMenuBarController menuBarController;
 
@@ -62,6 +63,8 @@ class MenuBarTest extends BaseTest {
      */
     @Start
     public void start(Stage aStage) throws IOException {
+
+        this.stage = aStage;
 
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
@@ -86,6 +89,12 @@ class MenuBarTest extends BaseTest {
 
         menuBar = null;
         menuBarController = null;
+
+        Platform.runLater(() -> {
+
+            stage.hide();
+            stage = null;
+        });
     }
 
     /**

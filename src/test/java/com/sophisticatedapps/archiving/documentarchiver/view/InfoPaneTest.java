@@ -94,6 +94,7 @@ class InfoPaneTest extends BaseTest {
 
         infoPane = null;
         infoPaneController = null;
+
         stage = null;
     }
 

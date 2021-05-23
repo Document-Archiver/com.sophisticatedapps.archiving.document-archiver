@@ -1,6 +1,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.type;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 
 import java.util.Objects;
@@ -23,6 +24,12 @@ public class Tenant implements Comparable<Tenant> {
 
         return (GlobalConstants.DEFAULT_TENANT_NAME.equals(name) ?
                 StringUtil.EMPTY_STRING : GlobalConstants.TENANT_FOLDER_PREFIX.concat(name));
+    }
+
+    public String getDisplayName() {
+
+        return (GlobalConstants.DEFAULT_TENANT_NAME.equals(name) ?
+                LanguageUtil.i18n("global.label.default-tenant") : name);
     }
 
     @Override

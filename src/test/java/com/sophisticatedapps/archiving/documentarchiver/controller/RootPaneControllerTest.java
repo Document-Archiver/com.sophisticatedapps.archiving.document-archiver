@@ -127,7 +127,7 @@ class RootPaneControllerTest extends BaseTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        assertEquals("Archiving: ".concat(TEST_TEXT_FILE2.getPath()), rootPaneController.stage.getTitle());
+        assertEquals(("Archiving: " + TEST_TEXT_FILE2.getPath() + " (Tenant: Default Tenant)"), rootPaneController.stage.getTitle());
         assertEquals(VBox.class, rootPane.getLeft().getClass());
         assertEquals(StackPane.class, rootPane.getCenter().getClass());
         assertEquals(VBox.class, rootPane.getRight().getClass());
