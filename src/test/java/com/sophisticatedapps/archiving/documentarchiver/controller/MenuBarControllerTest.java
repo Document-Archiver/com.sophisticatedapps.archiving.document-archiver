@@ -120,6 +120,31 @@ class MenuBarControllerTest extends BaseTest {
     }
 
     @Test
+    void handleCheckForUpdatesMenuItemAction() throws IllegalAccessException, IOException {
+
+        HostServices tmpMockedHostServices = Mockito.mock(HostServices.class);
+        menuBarController.stage.getProperties().put(GlobalConstants.HOST_SERVICES_PROPERTY_KEY, tmpMockedHostServices);
+
+        Alert tmpMockedUpdateCheckDialog = Mockito.mock(Alert.class);
+        BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideUpdateCheckDialog()).thenReturn(tmpMockedUpdateCheckDialog);
+        FieldUtils.writeField(menuBarController, "dialogProvider", tmpMockedDialogProvider, true);
+
+        // First run with cancel button
+        when(tmpMockedUpdateCheckDialog.showAndWait()).thenReturn(Optional.of(ButtonType.CANCEL));
+        menuBarController.handleCheckForUpdatesMenuItemAction();
+        verify(tmpMockedUpdateCheckDialog, Mockito.times(1)).showAndWait();
+        verify(tmpMockedHostServices, Mockito.times(0)).showDocument(any(String.class));
+
+        // Second run with "open download site" button
+        when(tmpMockedUpdateCheckDialog.showAndWait()).thenReturn(
+                Optional.of(new ButtonType("Foo", ButtonBar.ButtonData.LEFT)));
+        menuBarController.handleCheckForUpdatesMenuItemAction();
+        verify(tmpMockedUpdateCheckDialog, Mockito.times(2)).showAndWait();
+        verify(tmpMockedHostServices, Mockito.times(1)).showDocument(any(String.class));
+    }
+
+    @Test
     void handlePreferencesMenuItemAction() throws IllegalAccessException, IOException {
 
         // Exchange the local properties directory

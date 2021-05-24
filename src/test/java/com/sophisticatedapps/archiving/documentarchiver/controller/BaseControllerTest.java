@@ -18,6 +18,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
 import javafx.scene.control.Alert;
@@ -37,6 +38,7 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -221,12 +223,34 @@ class BaseControllerTest extends BaseTest {
         final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
 
         Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideAboutDialog()));
-
         WaitForAsyncUtils.waitForFxEvents();
 
         Dialog<ButtonType> tmpAlert = tmpDialogList.get(0);
         assertNotNull(tmpAlert);
         assertTrue(tmpAlert.getContentText().startsWith("Copyright"));
+    }
+
+    @Test
+    void testDialogProvider_provideUpdateCheckDialog() {
+
+        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
+
+        Platform.runLater(() -> {
+            try {
+                tmpDialogList.add(tmpDialogProvider.provideUpdateCheckDialog());
+            }
+            catch (IOException e) {
+                fail(e);
+            }
+        });
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
+        assertNotNull(tmpDialog);
+        String tmpCurrentVersion = LanguageUtil.i18n("global.application.version");
+        assertEquals(("You are using to most current version of Document Archiver (" + tmpCurrentVersion + ")."),
+                tmpDialog.getContentText());
     }
 
     @Test

@@ -16,11 +16,13 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.republicate.json.Json;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.ThemeUtil;
+import io.github.g00fy2.versioncompare.Version;
 import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
@@ -34,6 +36,9 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -293,6 +298,27 @@ public abstract class BaseController {
 
             return (new Alert(Alert.AlertType.NONE,
                     LanguageUtil.i18n("menu-bar-controller.dialog-provider.about-dialog"),
+                    ButtonType.CLOSE));
+        }
+
+        public Dialog<ButtonType> provideUpdateCheckDialog() throws IOException {
+
+            URL tmpURL = new URL(GlobalConstants.LATEST_RELEASE_REST_URL);
+            String tmpNewestReleaseVersion;
+
+            try (InputStream tmpInputStream = tmpURL.openStream()) {
+
+                Json tmpJsonContainer = Json.parse(new String(tmpInputStream.readAllBytes(), StandardCharsets.UTF_8));
+                Json.Object tmpJsonObject = tmpJsonContainer.asObject();
+                tmpNewestReleaseVersion = tmpJsonObject.get("tag_name").toString().substring(1);
+            }
+
+            String tmpCurrentVersion = LanguageUtil.i18n("global.application.version");
+            String tmpUpToDate = String.valueOf((new Version(tmpCurrentVersion)).isAtLeast(tmpNewestReleaseVersion));
+
+            return (new Alert(Alert.AlertType.NONE,
+                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.update-check-dialog.version-up-to-date-".concat(tmpUpToDate), tmpNewestReleaseVersion),
+                    (new ButtonType(LanguageUtil.i18n("menu-bar-controller.dialog-provider.update-check-dialog.open-download-site-button.text"), ButtonBar.ButtonData.LEFT)),
                     ButtonType.CLOSE));
         }
 

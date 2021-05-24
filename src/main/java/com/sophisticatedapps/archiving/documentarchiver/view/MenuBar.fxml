@@ -11,6 +11,7 @@
         <Menu mnemonicParsing="false" text="%menu-bar.document-archiver-menu">
             <items>
                 <MenuItem mnemonicParsing="false" onAction="#handleAboutMenuItemAction" text="%menu-bar.document-archiver-menu.about-menu-item" />
+                <MenuItem mnemonicParsing="false" onAction="#handleCheckForUpdatesMenuItemAction" text="%menu-bar.document-archiver-menu.check-for-updates-menu-item" />
                 <SeparatorMenuItem mnemonicParsing="false" />
                 <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemAction" text="%menu-bar.document-archiver-menu.preferences-menu-item" />
                 <SeparatorMenuItem mnemonicParsing="false" />

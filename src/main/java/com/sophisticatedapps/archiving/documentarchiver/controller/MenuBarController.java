@@ -20,6 +20,7 @@ import com.restart4j.ApplicationRestart;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
+import com.sun.jna.Platform; // NOSONAR
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -155,6 +156,28 @@ public class MenuBarController extends BaseController {
     protected void handleAboutMenuItemAction() {
 
         this.dialogProvider.provideAboutDialog().showAndWait();
+    }
+
+    @FXML
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
+    protected void handleCheckForUpdatesMenuItemAction() {
+
+        try {
+
+            Optional<ButtonType> tmpResult = this.dialogProvider.provideUpdateCheckDialog().showAndWait();
+
+            // Open download site?
+            if (ButtonBar.ButtonData.LEFT == tmpResult.get().getButtonData()) { // NOSONAR
+
+                HostServices tmpHostServices =
+                        (HostServices)stage.getProperties().get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY);
+                tmpHostServices.showDocument(GlobalConstants.DOWNLOAD_SITE_URL);
+            }
+        }
+        catch (IOException e) {
+
+            this.dialogProvider.provideExceptionAlert(e);
+        }
     }
 
     @FXML
@@ -348,7 +371,15 @@ public class MenuBarController extends BaseController {
         // Should App be restarted?
         if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
 
-            ApplicationRestart.builder().build().restartApp();
+            // If on Mac and started via command line, we have to modify the restart command
+            if (Platform.isMac() && Objects.isNull(System.getProperty("install4j.appDir"))) {
+
+                ApplicationRestart.builder().modifyCmd(cmd -> cmd.replaceAll("\\s+", "\00")).build().restartApp();
+            }
+            else {
+
+                ApplicationRestart.builder().build().restartApp();
+            }
         }
     }
 
