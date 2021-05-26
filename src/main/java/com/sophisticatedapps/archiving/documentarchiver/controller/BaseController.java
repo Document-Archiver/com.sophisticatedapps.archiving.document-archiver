@@ -16,7 +16,6 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.republicate.json.Json;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
@@ -308,9 +307,8 @@ public abstract class BaseController {
 
             try (InputStream tmpInputStream = tmpURL.openStream()) {
 
-                Json tmpJsonContainer = Json.parse(new String(tmpInputStream.readAllBytes(), StandardCharsets.UTF_8));
-                Json.Object tmpJsonObject = tmpJsonContainer.asObject();
-                tmpNewestReleaseVersion = tmpJsonObject.get("tag_name").toString().substring(1);
+                tmpNewestReleaseVersion =
+                        (new String(tmpInputStream.readAllBytes(), StandardCharsets.UTF_8)).substring(1);
             }
 
             String tmpCurrentVersion = LanguageUtil.i18n("global.application.version");
