@@ -51,7 +51,7 @@ public class GlobalConstants {
     public static final String CURRENT_DOCUMENT_PROPERTY_KEY = "currentDocument";
 
     public static final String LATEST_RELEASE_REST_URL =
-            "http://api.sophisticated-apps.com/latestGitHubReleaseVersionTag/Document-Archiver%2Fcom.sophisticatedapps.archiving.document-archiver";
+            "http://api.sophisticatedapps.com/githubApiWrapper/Document-Archiver/com.sophisticatedapps.archiving.document-archiver/latestReleaseTag";
     public static final String DOWNLOAD_SITE_URL = "https://document-archiver.github.io/index.html#download";
     public static final Version ARCHIVE_BROWSER_PLUGIN_CURRENT_VERSION = new Version("1.0.0");
     public static final String ARCHIVE_BROWSER_PLUGIN_URL =

@@ -20,7 +20,6 @@ import com.restart4j.ApplicationRestart;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
-import com.sun.jna.Platform; // NOSONAR
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -176,7 +175,7 @@ public class MenuBarController extends BaseController {
         }
         catch (IOException e) {
 
-            this.dialogProvider.provideExceptionAlert(e);
+            this.dialogProvider.provideExceptionAlert(e).showAndWait();
         }
     }
 
@@ -371,15 +370,7 @@ public class MenuBarController extends BaseController {
         // Should App be restarted?
         if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
 
-            // If on Mac and started via command line, we have to modify the restart command
-            if (Platform.isMac() && Objects.isNull(System.getProperty("install4j.appDir"))) {
-
-                ApplicationRestart.builder().modifyCmd(cmd -> cmd.replaceAll("\\s+", "\00")).build().restartApp();
-            }
-            else {
-
-                ApplicationRestart.builder().build().restartApp();
-            }
+            ApplicationRestart.builder().build().restartApp();
         }
     }
 

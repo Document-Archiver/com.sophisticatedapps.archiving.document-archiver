@@ -124,11 +124,14 @@ class ManageTenantsPaneControllerTest extends BaseTest {
         TextField tmpNewTenantNameTextField = (TextField)manageTenantsPane.lookup("#newTenantNameTextField");
         tmpNewTenantNameTextField.setText("So&New");
 
+        Alert tmpExceptionAlert = Mockito.mock(Alert.class);
         BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
+        when(tmpMockedDialogProvider.provideExceptionAlert(any(Exception.class))).thenReturn(tmpExceptionAlert);
         FieldUtils.writeField(manageTenantsPaneController, "dialogProvider", tmpMockedDialogProvider, true);
 
         manageTenantsPaneController.handleCreateTenantButtonAction();
         verify(tmpMockedDialogProvider, Mockito.times(1)).provideExceptionAlert(any(Exception.class));
+        verify(tmpExceptionAlert, Mockito.times(1)).showAndWait();
 
         FieldUtils.writeStaticField(
                 DirectoryUtil.class, "coreArchivingFolder", PropertiesUtil.CORE_ARCHIVING_FOLDER, true);
@@ -190,13 +193,16 @@ class ManageTenantsPaneControllerTest extends BaseTest {
 
         Alert tmpMockedConfirmationAlert = Mockito.mock(Alert.class);
         when(tmpMockedConfirmationAlert.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
+        Alert tmpExceptionAlert = Mockito.mock(Alert.class);
         BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
         when(tmpMockedDialogProvider
                 .provideConfirmTenantDeletionAlert(any(String.class))).thenReturn(tmpMockedConfirmationAlert);
+        when(tmpMockedDialogProvider.provideExceptionAlert(any(Exception.class))).thenReturn(tmpExceptionAlert);
         FieldUtils.writeField(manageTenantsPaneController, "dialogProvider", tmpMockedDialogProvider, true);
 
         MethodUtils.invokeMethod(manageTenantsPaneController, true, "deleteTenant", (new Tenant("FooBar")));
         verify(tmpMockedDialogProvider, Mockito.times(1)).provideExceptionAlert(any(Exception.class));
+        verify(tmpExceptionAlert, Mockito.times(1)).showAndWait();
 
         FieldUtils.writeStaticField(
                 DirectoryUtil.class, "coreArchivingFolder", PropertiesUtil.CORE_ARCHIVING_FOLDER, true);

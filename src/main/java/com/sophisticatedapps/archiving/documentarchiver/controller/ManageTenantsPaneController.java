@@ -97,7 +97,7 @@ public class ManageTenantsPaneController extends BaseController {
             }
             catch (IOException | RuntimeException e) {
 
-                dialogProvider.provideExceptionAlert(e);
+                dialogProvider.provideExceptionAlert(e).showAndWait();
             }
         }
     }
@@ -124,7 +124,7 @@ public class ManageTenantsPaneController extends BaseController {
             }
             catch (IOException | RuntimeException e) {
 
-                dialogProvider.provideExceptionAlert(e);
+                dialogProvider.provideExceptionAlert(e).showAndWait();
             }
         }
     }
