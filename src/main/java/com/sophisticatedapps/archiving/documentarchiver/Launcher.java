@@ -16,11 +16,35 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import javafx.stage.Stage;
+
 public class Launcher {
 
     public static void main(String[] args) {
 
-        App.main(args);
+        (new LaunchApp()).fireUp(args);
+    }
+
+    public static class LaunchApp extends App {
+
+        private Stage primaryStage;
+
+        public void fireUp(String[] args) {
+
+            launch(args);
+        }
+
+        /**
+         * Application start method.
+         *
+         * @param   aPrimaryStage   The primary stage.
+         */
+        @Override
+        public void start(Stage aPrimaryStage) {
+
+            primaryStage = aPrimaryStage;
+            super.start(aPrimaryStage);
+        }
     }
 
 }

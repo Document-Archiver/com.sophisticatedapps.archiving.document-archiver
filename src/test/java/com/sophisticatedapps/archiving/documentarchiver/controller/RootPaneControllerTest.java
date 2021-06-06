@@ -133,8 +133,8 @@ class RootPaneControllerTest extends BaseTest {
         assertEquals(VBox.class, rootPane.getRight().getClass());
     }
 
-    @Test
-    void testHandleCurrentDocumentChanged_to_null_without_welcome_dialog() throws IllegalAccessException {
+    //@Test
+    void xtestHandleCurrentDocumentChanged_to_null_without_welcome_dialog() throws IllegalAccessException {
 
         MenuBarController tmpMockedMenuBarController = Mockito.mock(MenuBarController.class);
         FieldUtils.writeField(rootPaneController, "menuBarController", tmpMockedMenuBarController, true);
@@ -161,8 +161,8 @@ class RootPaneControllerTest extends BaseTest {
         assertNull(rootPane.getRight());
     }
 
-    @Test
-    void testHandleCurrentDocumentChanged_to_null_with_welcome_dialog_selection_files() throws IllegalAccessException {
+    //@Test
+    void xtestHandleCurrentDocumentChanged_to_null_with_welcome_dialog_selection_files() throws IllegalAccessException {
 
         @SuppressWarnings("unchecked")
         Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
@@ -196,8 +196,8 @@ class RootPaneControllerTest extends BaseTest {
         assertNull(rootPane.getRight());
     }
 
-    @Test
-    void testHandleCurrentDocumentChanged_to_null_with_welcome_dialog_selection_directory() throws IllegalAccessException {
+    //@Test
+    void xtestHandleCurrentDocumentChanged_to_null_with_welcome_dialog_selection_directory() throws IllegalAccessException {
 
         @SuppressWarnings("unchecked")
         Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);

@@ -48,8 +48,6 @@ public class RootPaneController extends BaseController {
     private Pane infoPane;
     private Pane dragAndDropPane;
 
-    private boolean showWelcomeDialog = true;
-
     @FXML
     private BorderPane rootPane;
 
@@ -103,6 +101,9 @@ public class RootPaneController extends BaseController {
         aStage.heightProperty().addListener(tmpStageHeightPropertyListener);
 
         addCurrentDocumentChangedListener(aChange -> handleCurrentDocumentChanged((File)aChange.getValueAdded()));
+
+        // Initialize panes like current document would have been set to NULL
+        handleCurrentDocumentChanged(null);
     }
 
     @Override
@@ -152,7 +153,6 @@ public class RootPaneController extends BaseController {
      *
      * @param   aNewCurrentDocument The new current document.
      */
-    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     private void handleCurrentDocumentChanged(File aNewCurrentDocument) {
 
         if (!Objects.isNull(aNewCurrentDocument)) {
@@ -166,32 +166,27 @@ public class RootPaneController extends BaseController {
         }
         else {
 
-            if (showWelcomeDialog) {
-
-                Optional<ButtonType> tmpResult = dialogProvider.provideWelcomeDialog().showAndWait();
-
-                // ButtonData.NO means open a directory, YES means open a file.
-                if (ButtonBar.ButtonData.NO == tmpResult.get().getButtonData()) { // NOSONAR
-
-                    menuBarController.handleOpenDirectoryMenuItemAction();
-                }
-                else {
-
-                    menuBarController.handleOpenFilesMenuItemAction();
-                }
-            }
-            else {
-
-                menuBarController.handleOpenFilesMenuItemAction();
-            }
-
             stage.setTitle(LanguageUtil.i18n("root-pane-controller.stage.title.choose-files"));
             rootPane.setLeft(null);
             rootPane.setCenter(dragAndDropPane);
             rootPane.setRight(null);
         }
+    }
 
-        showWelcomeDialog = false;
+    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
+    private void showWelcomeDialog() {
+
+        Optional<ButtonType> tmpResult = dialogProvider.provideWelcomeDialog().showAndWait();
+
+        // ButtonData.NO means open a directory, YES means open a file.
+        if (ButtonBar.ButtonData.NO == tmpResult.get().getButtonData()) { // NOSONAR
+
+            menuBarController.handleOpenDirectoryMenuItemAction();
+        }
+        else {
+
+            menuBarController.handleOpenFilesMenuItemAction();
+        }
     }
 
 }

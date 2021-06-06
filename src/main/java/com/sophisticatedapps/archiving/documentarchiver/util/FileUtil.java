@@ -38,7 +38,7 @@ public class FileUtil {
      * @param   anArg   Command line argument to turn into a Java File object.
      * @return  Java File object.
      */
-    public static File argToFile(String anArg) {
+    public static File argToFile(String anArg) throws IOException {
 
         try {
 
@@ -58,9 +58,9 @@ public class FileUtil {
 
             return tmpFile;
         }
-        catch (IOException | URISyntaxException e) {
+        catch (IOException | IllegalArgumentException | URISyntaxException e) {
 
-            throw (new RuntimeException("Could not create File object for '" + anArg + "': " + e.getMessage()));
+            throw (new IOException("Could not create File object for '" + anArg + "': " + e.getMessage()));
         }
     }
 

@@ -20,6 +20,7 @@ import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,7 +34,7 @@ class FileUtilTest extends BaseTest {
      * Test if an command line argument is correctly turned into a file.
      */
     @Test
-    void testArgToFile() {
+    void testArgToFile() throws IOException {
 
         String tmpPathInput =
                 "/Users/stephansann/Library/Mobile Documents/com~apple~CloudDocs/lotk/Music/The Hit List Vol 5.mp3";
@@ -54,9 +55,13 @@ class FileUtilTest extends BaseTest {
         File tmpFile4 = FileUtil.argToFile(tmpDirectoryInput);
         assertEquals("/path/to/foo", tmpFile4.getPath());
 
-        Throwable tmpException =
-                assertThrows(RuntimeException.class, () -> FileUtil.argToFile(NUL_CHARACTER_STRING));
+        Throwable tmpException = assertThrows(IOException.class, () -> FileUtil.argToFile(NUL_CHARACTER_STRING));
         assertEquals("Could not create File object for '\u0000': Invalid file path", tmpException.getMessage());
+
+        tmpException = assertThrows(IOException.class, () -> FileUtil.argToFile("file://500.500.500/snafu"));
+        assertEquals("Could not create File object for 'file://500.500.500/snafu': URI has an authority component",
+                tmpException.getMessage());
+
     }
 
     /**

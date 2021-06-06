@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,11 @@ public class StringUtil {
      * Private constructor.
      */
     private StringUtil() {
+    }
+
+    public static boolean isNullOrEmpty(String aString) {
+
+        return (Objects.isNull(aString) || aString.isEmpty());
     }
 
     public static String retrieveDescriptionSafeString(String aString) {

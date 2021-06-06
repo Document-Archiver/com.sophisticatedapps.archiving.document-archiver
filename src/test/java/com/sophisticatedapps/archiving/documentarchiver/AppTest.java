@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -25,6 +26,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -39,8 +41,12 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,101 +75,114 @@ class AppTest extends BaseTest {
     }
 
     @Test
-    void testMain_no_arguments() throws IllegalAccessException {
+    void testStart_no_arguments() throws IllegalAccessException {
 
-        // Start clean
-        FieldUtils.writeStaticField(App.class, "filesFromArgs", null,true);
+        HashMap<Object,Object> tmpPropertiesMap = doStart(null, false);
 
-        try {
+        assertNull(tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
+        assertNull(tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
+    }
 
-            App.main(new String[]{});
-        }
-        catch (IllegalStateException e) {
+    @Test
+    void testStart_empty_argument() throws IllegalAccessException {
 
-            // "java.lang.IllegalStateException: Application launch must not be called more than once" is okay.
-            assertEquals("Application launch must not be called more than once", e.getMessage());
-        }
+        HashMap<Object,Object> tmpPropertiesMap = doStart("", false);
 
-        @SuppressWarnings("unchecked")
-        List<File> tmpFilesFromArgs =
-                (List<File>)FieldUtils.readStaticField(App.class,"filesFromArgs",true);
-        assertNull(tmpFilesFromArgs);
+        assertNull(tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
+        assertNull(tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
     }
 
     /**
      * Test if parameter gets checked correctly.
      */
     @Test
-    void testMain_non_existing_file_argument() {
+    void testStart_non_existing_file_argument() throws IllegalAccessException {
 
-        App.main(new String[]{ "/foo/bar" });
-        assertEquals("File does not exist: /foo/bar", outputStreamCaptor.toString().trim());
+        HashMap<Object,Object> tmpPropertiesMap = doStart("/foo/bar", true);
+
+        String tmpErrorMsg = (String)tmpPropertiesMap.get("theErrorMsg");
+        assertNotNull(tmpErrorMsg);
+        assertEquals("File does not exist: /foo/bar (No additional information)", tmpErrorMsg);
+
+        assertNull(tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
+        assertNull(tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
     }
 
     /**
      * Test if parameter gets checked correctly.
      */
     @Test
-    void testMain_invalid_file_argument() {
+    void testStart_invalid_file_argument() throws IllegalAccessException {
 
-        Throwable tmpException =
-                assertThrows(RuntimeException.class, () -> App.main(new String[]{ NUL_CHARACTER_STRING }));
-        assertEquals("Could not create File object for '\u0000': Invalid file path", tmpException.getMessage());
+        HashMap<Object,Object> tmpPropertiesMap = doStart(NUL_CHARACTER_STRING, true);
+
+        String tmpErrorMsg = (String)tmpPropertiesMap.get("theErrorMsg");
+        assertNotNull(tmpErrorMsg);
+        assertEquals("Could not create File object for '\u0000': Invalid file path (No additional information)",
+                tmpErrorMsg);
+
+        assertNull(tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
+        assertNull(tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
     }
 
     @Test
-    void testMain_file_argument() throws IllegalAccessException {
+    void testStart_file_argument() throws IllegalAccessException {
 
-        // Start clean
-        FieldUtils.writeStaticField(App.class, "filesFromArgs", null,true);
+        HashMap<Object,Object> tmpPropertiesMap = doStart(TEST_TEXT_FILE.getPath(), false);
 
-        try {
-
-            App.main(new String[]{ TEST_TEXT_FILE.getPath() });
-        }
-        catch (IllegalStateException e) {
-
-            // "java.lang.IllegalStateException: Application launch must not be called more than once" is okay.
-            assertEquals("Application launch must not be called more than once", e.getMessage());
-        }
-
-        @SuppressWarnings("unchecked")
-        List<File> tmpFilesFromArgs =
-                (List<File>)FieldUtils.readStaticField(App.class,"filesFromArgs",true);
-        assertEquals(TEST_TEXT_FILE, tmpFilesFromArgs.get(0));
+        List<File> tmpFilesFromArgs = Collections.singletonList(TEST_TEXT_FILE);
+        assertEquals(tmpFilesFromArgs, tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
+        assertEquals(TEST_TEXT_FILE, tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
     }
 
     @Test
-    void testMain_directory_argument() throws IllegalAccessException {
+    @SuppressWarnings("unchecked")
+    void testStart_directory_argument() throws IllegalAccessException {
 
-        // Start clean
-        FieldUtils.writeStaticField(App.class, "filesFromArgs", null,true);
+        HashMap<Object,Object> tmpPropertiesMap = doStart(TEST_SOURCE_FOLDER.getPath(), false);
 
-        try {
-
-            App.main(new String[]{ TEST_SOURCE_FOLDER.getPath() });
-        }
-        catch (IllegalStateException e) {
-
-            // "java.lang.IllegalStateException: Application launch must not be called more than once" is okay.
-            assertEquals("Application launch must not be called more than once", e.getMessage());
-        }
-
-        Set<File> tmpExpectedFilesSet = new HashSet<>(ALL_DOCUMENTS_LIST);
-        @SuppressWarnings("unchecked")
-        Set<File> tmpFilesFromArgsSet = new HashSet<>(
-                (List<File>)FieldUtils.readStaticField(App.class,"filesFromArgs",true));
-        assertEquals(tmpExpectedFilesSet, tmpFilesFromArgsSet);
+        assertTrue(((List<File>)tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY))
+                .containsAll(ALL_DOCUMENTS_LIST));
+        assertEquals(TEST_JPG_FILE2, tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    void testStart() throws IllegalAccessException {
+    void testStart_check_properties() throws IllegalAccessException {
+
+        HashMap<Object,Object> tmpPropertiesMap = doStart("", false);
+
+        Rectangle2D tmpBounds = Screen.getPrimary().getVisualBounds();
+        assertEquals(tmpBounds.getMinX(), tmpPropertiesMap.get("theX"));
+        assertEquals(tmpBounds.getMinY(), tmpPropertiesMap.get("theY"));
+        assertEquals(tmpBounds.getWidth(), tmpPropertiesMap.get("theWidth"));
+        assertEquals(tmpBounds.getHeight(), tmpPropertiesMap.get("theHeight"));
+
+        assertEquals(HostServices.class, tmpPropertiesMap.get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY).getClass());
+        assertEquals(1, ((ObservableList<Image>)tmpPropertiesMap.get("theIconsList")).size());
+
+        assertEquals(Scene.class, tmpPropertiesMap.get("theScene").getClass());
+        verify(((Stage)tmpPropertiesMap.get("theStage")), Mockito.times(1)).show();
+
+        //assertTrue(Taskbar.getTaskbar().getIconImage() instanceof java.awt.Image);
+    }
+
+    private HashMap<Object,Object> doStart(String aParameter, boolean aShouldShowError) throws IllegalAccessException {
+
+        HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
 
         // Mock the stage
         Stage tmpMockedStage = Mockito.mock(Stage.class);
-        ObservableMap<Object, Object> tmpPropertiesMap = FXCollections.observableMap(new HashMap<>());
+
+        @SuppressWarnings("unchecked")
+        ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
+
+        doAnswer(anInvocationOnMock -> {
+            tmpPropertiesMap.put(anInvocationOnMock.getArgument(0), anInvocationOnMock.getArgument(1)); return null;
+        }).when(tmpMockedPropertiesMap).put(any(), any());
+
         ObservableList<Image> tmpIconsList = FXCollections.observableList(new ArrayList<>());
-        doReturn(tmpPropertiesMap).when(tmpMockedStage).getProperties();
+        doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
         doReturn(tmpIconsList).when(tmpMockedStage).getIcons();
 
         doAnswer(anInvocationOnMock -> {
@@ -187,28 +206,56 @@ class AppTest extends BaseTest {
         doReturn(tmpMockedWidthProperty).when(tmpMockedStage).widthProperty();
         doReturn(tmpMockedHeightProperty).when(tmpMockedStage).heightProperty();
 
-        // Start the App
-        List<File> tmpFilesFromArgs = Collections.singletonList(TEST_TEXT_FILE);
-        FieldUtils.writeStaticField(App.class, "filesFromArgs", tmpFilesFromArgs, true);
-        Platform.runLater(() -> (new App()).start(tmpMockedStage));
+        Alert tmpMockedAlert = Mockito.mock(Alert.class);
+        App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
+        doAnswer(anInvocationOnMock -> {
+            tmpPropertiesMap.put("theErrorMsg", anInvocationOnMock.getArgument(0));
+            return tmpMockedAlert;
+        }).when(tmpMockedDialogProvider).provideExceptionAlert(anyString());
+        FieldUtils.writeStaticField(App.class, "dialogProvider", tmpMockedDialogProvider, true);
 
+        // Start the App
+        Platform.runLater(() -> {
+
+            Application.Parameters tmpMockedParameters = Mockito.mock(Application.Parameters.class);
+            when(tmpMockedParameters.getRaw()).thenReturn(Collections.singletonList(aParameter));
+            App tmpMockedApp = Mockito.mock(App.class);
+            when(tmpMockedApp.getParameters()).thenReturn(tmpMockedParameters);
+            HostServices tmpMockedHostServices = Mockito.mock(HostServices.class);
+            when(tmpMockedApp.getHostServices()).thenReturn(tmpMockedHostServices);
+
+            doCallRealMethod().when(tmpMockedApp).start(any(Stage.class));
+            tmpMockedApp.start(tmpMockedStage);
+        });
         WaitForAsyncUtils.waitForFxEvents();
 
-        Rectangle2D tmpBounds = Screen.getPrimary().getVisualBounds();
-        assertEquals(tmpBounds.getMinX(), tmpPropertiesMap.get("theX"));
-        assertEquals(tmpBounds.getMinY(), tmpPropertiesMap.get("theY"));
-        assertEquals(tmpBounds.getWidth(), tmpPropertiesMap.get("theWidth"));
-        assertEquals(tmpBounds.getHeight(), tmpPropertiesMap.get("theHeight"));
+        if (aShouldShowError) {
+            verify(tmpMockedAlert, Mockito.times(1)).showAndWait();
+        }
+        else {
+            verify(tmpMockedAlert, Mockito.times(0)).showAndWait();
+        }
 
-        assertEquals(Scene.class, tmpPropertiesMap.get("theScene").getClass());
-        verify(tmpMockedStage, Mockito.times(1)).show();
+        tmpPropertiesMap.put("theStage", tmpMockedStage);
+        tmpPropertiesMap.put("theIconsList", tmpIconsList);
 
-        assertEquals(tmpFilesFromArgs, tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
-        assertEquals(TEST_TEXT_FILE, tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
+        return tmpPropertiesMap;
+    }
 
-        assertEquals(HostServices.class, tmpPropertiesMap.get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY).getClass());
-        assertEquals(Image.class, tmpIconsList.get(0).getClass());
-        //assertTrue(Taskbar.getTaskbar().getIconImage() instanceof java.awt.Image);
+    @Test
+    void testShowError_exception_without_cause() {
+
+        IOException tmpException = new IOException("File not good.");
+        App.showError(Thread.currentThread(), tmpException);
+        assertEquals("File not good. (No additional information)", outputStreamCaptor.toString().trim());
+    }
+
+    @Test
+    void testShowError_exception_with_cause() {
+
+        IOException tmpException = new IOException("File not good.", (new IOException("Path invalid.")));
+        App.showError(Thread.currentThread(), tmpException);
+        assertEquals("File not good. (Path invalid.)", outputStreamCaptor.toString().trim());
     }
 
 }

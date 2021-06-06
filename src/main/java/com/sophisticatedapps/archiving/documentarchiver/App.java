@@ -18,22 +18,28 @@ package com.sophisticatedapps.archiving.documentarchiver;
 
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
 
 public class App extends Application {
 
-    private static List<File> filesFromArgs;
+    private static DialogProvider dialogProvider = new DialogProvider();
 
     /**
      * Main method.
@@ -41,30 +47,6 @@ public class App extends Application {
      * @param   args    Command line arguments.
      */
     public static void main(String[] args) {
-
-        if (args.length > 0) {
-
-            File tmpFile = FileUtil.argToFile(args[0]);
-
-            if(!tmpFile.exists()) {
-
-                System.err.println("File does not exist: ".concat(args[0])); // NOSONAR
-                return;
-            }
-
-            if (tmpFile.isDirectory()) {
-
-                // We have to wrap the result in a new List, since the result is not modifiable.
-                filesFromArgs = new ArrayList<>();
-                DirectoryUtil.readDirectoryRecursive(tmpFile, filesFromArgs, DirectoryUtil.NO_HIDDEN_FILES_FILE_FILTER);
-                filesFromArgs.sort(Comparator.naturalOrder());
-            }
-            else {
-
-                filesFromArgs = new ArrayList<>();
-                filesFromArgs.add(tmpFile);
-            }
-        }
 
         launch(args);
     }
@@ -76,6 +58,8 @@ public class App extends Application {
      */
     @Override
     public void start(Stage aPrimaryStage) {
+
+        Thread.setDefaultUncaughtExceptionHandler(App::showError);
 
         // Set dimensions
         Rectangle2D tmpBounds = Screen.getPrimary().getVisualBounds();
@@ -92,16 +76,20 @@ public class App extends Application {
         BorderPane tmpRootPane =
                 (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", aPrimaryStage).getRegion();
 
-        // Set files from args to stage properties
-        if (!CollectionUtil.isNullOrEmpty(filesFromArgs)) {
+        // Check if we received a file to use via command line parameter
+        String tmpFirstParameter = getFirstParameter();
 
-            tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, filesFromArgs);
-            tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, filesFromArgs.get(0));
-        }
-        else {
+        if (!Objects.isNull(tmpFirstParameter)) {
 
-            // Have to set null to trigger listeners
-            tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
+            // Set files from args to stage properties (will trigger the panes)
+            try {
+
+                setFilesListToStageProperties(externalPathStringToFilesList(tmpFirstParameter), tmpStageProperties);
+            }
+            catch (IOException e) {
+
+                showError(Thread.currentThread(), e);
+            }
         }
 
         // Place icons
@@ -133,6 +121,82 @@ public class App extends Application {
         catch (UnsupportedOperationException | UnsatisfiedLinkError e) {
 
             // never mind.
+        }
+    }
+
+    private String getFirstParameter() {
+
+        List<String> tmpRawParameterList = getParameters().getRaw();
+
+        if (!tmpRawParameterList.isEmpty()) {
+
+            String tmpFirstParameter = tmpRawParameterList.get(0);
+
+            if (!StringUtil.isNullOrEmpty(tmpFirstParameter)) {
+
+                return tmpFirstParameter;
+            }
+        }
+
+        return null;
+    }
+
+    private static List<File> externalPathStringToFilesList(String anExternalPathString) throws IOException {
+
+        File tmpFile = FileUtil.argToFile(anExternalPathString);
+
+        if(tmpFile.exists()) {
+
+            List<File> tmpReturn = new ArrayList<>();
+
+            if (tmpFile.isDirectory()) {
+
+                DirectoryUtil.readDirectoryRecursive(tmpFile, tmpReturn, DirectoryUtil.NO_HIDDEN_FILES_FILE_FILTER);
+                tmpReturn.sort(Comparator.naturalOrder());
+            }
+            else {
+
+                tmpReturn.add(tmpFile);
+            }
+
+            return tmpReturn;
+        }
+        else {
+
+            throw (new IOException("File does not exist: ".concat(anExternalPathString)));
+        }
+    }
+
+    private void setFilesListToStageProperties(List<File> aFilesList, ObservableMap<Object, Object> aStageProperties) {
+
+        if (!CollectionUtil.isNullOrEmpty(aFilesList)) {
+
+            aStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aFilesList);
+            aStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aFilesList.get(0));
+        }
+    }
+
+    protected static void showError(Thread aThread, Throwable aThrowable) {
+
+        Throwable tmpCause = aThrowable.getCause();
+        String tmpMsg = (aThrowable.getMessage() + " (" +
+                ((tmpCause != null) ? tmpCause.getMessage() : "No additional information") + ")");
+
+        if (Platform.isFxApplicationThread()) {
+
+            dialogProvider.provideExceptionAlert(tmpMsg).showAndWait();
+        }
+        else {
+
+            System.err.println(tmpMsg); // NOSONAR
+        }
+    }
+
+    protected static class DialogProvider {
+
+        public Alert provideExceptionAlert(String aMsg) {
+
+            return (new Alert(Alert.AlertType.ERROR, aMsg, ButtonType.CLOSE));
         }
     }
 
