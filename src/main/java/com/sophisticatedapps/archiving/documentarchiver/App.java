@@ -141,7 +141,7 @@ public class App extends Application {
         return null;
     }
 
-    private static List<File> externalPathStringToFilesList(String anExternalPathString) throws IOException {
+    protected static List<File> externalPathStringToFilesList(String anExternalPathString) throws IOException {
 
         File tmpFile = FileUtil.argToFile(anExternalPathString);
 
@@ -167,7 +167,7 @@ public class App extends Application {
         }
     }
 
-    private void setFilesListToStageProperties(List<File> aFilesList, ObservableMap<Object, Object> aStageProperties) {
+    protected void setFilesListToStageProperties(List<File> aFilesList, ObservableMap<Object, Object> aStageProperties) {
 
         if (!CollectionUtil.isNullOrEmpty(aFilesList)) {
 

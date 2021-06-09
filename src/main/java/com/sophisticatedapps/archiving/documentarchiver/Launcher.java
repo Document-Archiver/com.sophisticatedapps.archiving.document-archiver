@@ -16,7 +16,17 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import com.install4j.api.launcher.StartupNotification;
 import javafx.stage.Stage;
+import net.harawata.appdirs.AppDirsFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
 
 public class Launcher {
 
@@ -27,7 +37,7 @@ public class Launcher {
 
     public static class LaunchApp extends App {
 
-        private Stage primaryStage;
+        private DaLogger logger = new DaLogger();
 
         public void fireUp(String[] args) {
 
@@ -42,8 +52,55 @@ public class Launcher {
         @Override
         public void start(Stage aPrimaryStage) {
 
-            primaryStage = aPrimaryStage;
+            StartupNotification.registerStartupListener(aPath -> {
+
+                logger.log("StartupListenerCalled: " + LocalDateTime.now());
+
+                try {
+
+                    setFilesListToStageProperties(externalPathStringToFilesList(aPath), aPrimaryStage.getProperties());
+                }
+                catch (IOException e) {
+
+                    showError(Thread.currentThread(), e);
+                }
+            });
+
+            logger.log("Application start: " + LocalDateTime.now());
+
             super.start(aPrimaryStage);
+        }
+    }
+
+    private static class DaLogger {
+
+        private static final File LOGFILE_DIR = new File(AppDirsFactory.getInstance()
+                .getUserLogDir("DocumentArchiver", null, "SophisticatedApps"));
+        private static final Path LOGFILE_PATH = new File(LOGFILE_DIR, "event.log").toPath();
+
+        static {
+
+            try {
+
+                Files.createDirectories(LOGFILE_DIR.toPath());
+            }
+            catch (IOException e) {
+
+                throw (new RuntimeException(("Could not create log directory: " + e.getMessage()), e));
+            }
+        }
+
+        private void log(String aLogEntry) {
+
+            try {
+
+                Files.write(LOGFILE_PATH, aLogEntry.concat("\n").getBytes(StandardCharsets.UTF_8),
+                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            }
+            catch (IOException e) {
+
+                throw (new RuntimeException(("Could not write log entry: " + e.getMessage()), e));
+            }
         }
     }
 

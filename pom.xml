@@ -27,6 +27,10 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
+    <repository>
+      <id>ej-technologies</id>
+      <url>https://maven.ej-technologies.com/repository</url>
+    </repository>
   </repositories>
 
   <profiles>
@@ -379,6 +383,16 @@
   </profiles>
 
   <dependencies>
+    <dependency>
+      <groupId>com.install4j</groupId>
+      <artifactId>install4j-runtime</artifactId>
+      <version>9.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-nop</artifactId>
+      <version>1.7.30</version>
+    </dependency>
     <dependency>
       <groupId>com.github.Dansoftowner</groupId>
       <artifactId>PDFViewerFX</artifactId>

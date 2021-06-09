@@ -78,7 +78,7 @@ DocumentArchiver.bat
 
 The latest SNAPSHOT releases can be downloaded here:
 
-**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/2.2.0-SNAPSHOT)**
+**[\[ SNAPSHOTs repository \]](https://repository.sophisticatedapps.com/snapshots/com/sophisticatedapps/archiving/document-archiver/2.3.0-SNAPSHOT)**
 
 Select the ZIP file suitable for your system ("linux", "mac" or "win")
 

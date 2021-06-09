@@ -167,6 +167,7 @@ class AppTest extends BaseTest {
         //assertTrue(Taskbar.getTaskbar().getIconImage() instanceof java.awt.Image);
     }
 
+    @SuppressWarnings("unchecked")
     private HashMap<Object,Object> doStart(String aParameter, boolean aShouldShowError) throws IllegalAccessException {
 
         HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
@@ -174,7 +175,6 @@ class AppTest extends BaseTest {
         // Mock the stage
         Stage tmpMockedStage = Mockito.mock(Stage.class);
 
-        @SuppressWarnings("unchecked")
         ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
 
         doAnswer(anInvocationOnMock -> {
@@ -225,6 +225,7 @@ class AppTest extends BaseTest {
             when(tmpMockedApp.getHostServices()).thenReturn(tmpMockedHostServices);
 
             doCallRealMethod().when(tmpMockedApp).start(any(Stage.class));
+            doCallRealMethod().when(tmpMockedApp).setFilesListToStageProperties(anyList(), any(ObservableMap.class));
             tmpMockedApp.start(tmpMockedStage);
         });
         WaitForAsyncUtils.waitForFxEvents();

@@ -5,6 +5,7 @@ module DocumentArchiver {
     requires javafx.web;
     requires javafx.fxml;
     requires javafx.media;
+    requires com.install4j.runtime;
     requires com.sun.jna;
     requires com.sun.jna.platform;
     requires PDFViewerFX;
