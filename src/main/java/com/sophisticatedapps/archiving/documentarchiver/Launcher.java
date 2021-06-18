@@ -18,89 +18,55 @@ package com.sophisticatedapps.archiving.documentarchiver;
 
 import com.install4j.api.launcher.StartupNotification;
 import javafx.stage.Stage;
-import net.harawata.appdirs.AppDirsFactory;
+import org.awaitility.Awaitility;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class Launcher {
 
+    private static Stage primaryStage;
+
     public static void main(String[] args) {
+
+        StartupNotification.registerStartupListener(aPath -> {
+
+            try {
+
+                // Wait in case stage is not ready yet.
+                Awaitility.await().atMost(5, TimeUnit.SECONDS).until(Launcher::isStageReady);
+
+                App.setFilesListToStageProperties(
+                        App.externalPathStringToFilesList(aPath), primaryStage.getProperties());
+            }
+            catch (IOException e) {
+
+                throw (new RuntimeException(("Could not open file: " + aPath), e));
+            }
+        });
 
         (new LaunchApp()).fireUp(args);
     }
 
-    public static class LaunchApp extends App {
+    private static boolean isStageReady() {
 
-        private DaLogger logger = new DaLogger();
+        return ((!Objects.isNull(primaryStage)) && primaryStage.isShowing());
+    }
+
+    public static class LaunchApp extends App {
 
         public void fireUp(String[] args) {
 
             launch(args);
         }
 
-        /**
-         * Application start method.
-         *
-         * @param   aPrimaryStage   The primary stage.
-         */
         @Override
         public void start(Stage aPrimaryStage) {
 
-            StartupNotification.registerStartupListener(aPath -> {
-
-                logger.log("StartupListenerCalled: " + LocalDateTime.now());
-
-                try {
-
-                    setFilesListToStageProperties(externalPathStringToFilesList(aPath), aPrimaryStage.getProperties());
-                }
-                catch (IOException e) {
-
-                    showError(Thread.currentThread(), e);
-                }
-            });
-
-            logger.log("Application start: " + LocalDateTime.now());
+            Launcher.primaryStage = aPrimaryStage; // NOSONAR
 
             super.start(aPrimaryStage);
-        }
-    }
-
-    private static class DaLogger {
-
-        private static final File LOGFILE_DIR = new File(AppDirsFactory.getInstance()
-                .getUserLogDir("DocumentArchiver", null, "SophisticatedApps"));
-        private static final Path LOGFILE_PATH = new File(LOGFILE_DIR, "event.log").toPath();
-
-        static {
-
-            try {
-
-                Files.createDirectories(LOGFILE_DIR.toPath());
-            }
-            catch (IOException e) {
-
-                throw (new RuntimeException(("Could not create log directory: " + e.getMessage()), e));
-            }
-        }
-
-        private void log(String aLogEntry) {
-
-            try {
-
-                Files.write(LOGFILE_PATH, aLogEntry.concat("\n").getBytes(StandardCharsets.UTF_8),
-                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-            }
-            catch (IOException e) {
-
-                throw (new RuntimeException(("Could not write log entry: " + e.getMessage()), e));
-            }
         }
     }
 

@@ -43,7 +43,6 @@ public class TenantUtil {
         return tmpResultList;
     }
 
-    @SuppressWarnings("unchecked")
     public static List<Tenant> getAvailableTenants() {
 
         List<Tenant> tmpResultList = new ArrayList<>();

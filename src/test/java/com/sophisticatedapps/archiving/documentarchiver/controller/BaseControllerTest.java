@@ -25,7 +25,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -196,24 +195,6 @@ class BaseControllerTest extends BaseTest {
         assertEquals(40, tmpStage.getY());
         assertEquals(192, tmpStage.getWidth());
         assertEquals(80, tmpStage.getHeight());
-    }
-
-    @Test
-    void testDialogProvider_provideWelcomeDialog() {
-
-        BaseController.DialogProvider tmpDialogProvider = new BaseController.DialogProvider();
-        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideWelcomeDialog()));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
-        assertNotNull(tmpDialog);
-        assertSame(GlobalConstants.APP_ICON, ((ImageView)tmpDialog.getGraphic()).getImage());
-        assertEquals("Welcome to Document Archiver", tmpDialog.getTitle());
-        assertEquals("Thanks for using Document Archiver!", tmpDialog.getHeaderText());
-        assertTrue(tmpDialog.getContentText().startsWith("Next you will have to choose what you want to archive."));
     }
 
     @Test

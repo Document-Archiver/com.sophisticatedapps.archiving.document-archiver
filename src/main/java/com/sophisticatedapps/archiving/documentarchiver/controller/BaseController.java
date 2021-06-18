@@ -28,7 +28,6 @@ import javafx.collections.ObservableMap;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -270,29 +269,6 @@ public abstract class BaseController {
         private static final String GLOBAL_BUTTON_TYPE_NO_TEXT = "global.button-type.no.text";
         private static final String GLOBAL_BUTTON_TYPE_YES_TEXT = "global.button-type.yes.text";
 
-        public Dialog<ButtonType> provideWelcomeDialog() {
-
-            ImageView tmpImageView = new ImageView(GlobalConstants.APP_ICON);
-            tmpImageView.setFitWidth(80);
-            tmpImageView.setFitHeight(80);
-
-            ButtonType tmpOpenFilesButtonType = new ButtonType(
-                    LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.open-files-button.text"),
-                    ButtonBar.ButtonData.YES);
-            ButtonType tmpOpenDirectoryButtonType = new ButtonType(
-                    LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.open-directory-button.text"),
-                    ButtonBar.ButtonData.NO);
-
-            Dialog<ButtonType> tmpDialog = new Dialog<>();
-            tmpDialog.setGraphic(tmpImageView);
-            tmpDialog.setTitle(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.title"));
-            tmpDialog.setHeaderText(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.header-text"));
-            tmpDialog.setContentText(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.content-text"));
-            tmpDialog.getDialogPane().getButtonTypes().addAll(tmpOpenFilesButtonType, tmpOpenDirectoryButtonType);
-
-            return tmpDialog;
-        }
-
         public Dialog<ButtonType> provideAboutDialog() {
 
             return (new Alert(Alert.AlertType.NONE,
@@ -363,6 +339,7 @@ public abstract class BaseController {
                     (new ButtonType(LanguageUtil.i18n(GLOBAL_BUTTON_TYPE_YES_TEXT), ButtonBar.ButtonData.YES))));
         }
 
+        // TODO - Uses the new one in App.DialogProvider
         public Alert provideDirectoryDoesNotContainFilesAlert() {
 
             return (new Alert(Alert.AlertType.WARNING,
@@ -397,6 +374,7 @@ public abstract class BaseController {
             return tmpDialog;
         }
 
+        // TODO - Uses the new one in App.DialogProvider
         public Alert provideExceptionAlert(Exception anException) {
 
             return (new Alert(Alert.AlertType.ERROR, anException.getMessage(), ButtonType.CLOSE));

@@ -443,6 +443,8 @@ public class InfoPaneController extends BaseController {
 
             setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
                     (tmpAllDocuments.isEmpty() ? null : tmpAllDocuments.get(0)));
+
+            // TODO - open File Dialog again.
         }
         else {
 

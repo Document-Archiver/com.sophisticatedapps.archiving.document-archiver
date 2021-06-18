@@ -19,6 +19,7 @@ module DocumentArchiver {
     requires net.harawata.appdirs;
     requires versioncompare;
     requires net.kurobako.gesturefx;
+    requires awaitility;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.api;

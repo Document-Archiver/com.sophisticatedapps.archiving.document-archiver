@@ -35,8 +35,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(ApplicationExtension.class)
@@ -92,7 +90,7 @@ class ManageTenantsPaneTest extends BaseTest {
     }
 
     @Test
-    void testExistingTenantsTableView() throws IOException {
+    void testExistingTenantsTableView() {
 
         @SuppressWarnings("unchecked")
         TableView<Tenant> tmpTableView = (TableView<Tenant>)manageTenantsPane.lookup("#tenantsTableView");

@@ -22,8 +22,6 @@ import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -33,15 +31,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class RootPaneController extends BaseController {
 
     private final List<BaseController> paneControllerList = new ArrayList<>();
     private final List<ChangeListener<Number>> stageWidthPropertyListenersList = new ArrayList<>();
     private final List<ChangeListener<Number>> stageHeightPropertyListenersList = new ArrayList<>();
-
-    private MenuBarController menuBarController;
 
     private Pane documentsPane;
     private Pane displayFilePane;
@@ -68,15 +63,13 @@ public class RootPaneController extends BaseController {
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpDragAndDropPaneControllerRegionPair =
                 FXMLUtil.loadAndRampUpRegion("view/DragAndDropPane.fxml", stage);
 
-        menuBarController = tmpMenuBarControllerRegionPair.getController();
-
         documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         displayFilePane = tmpDisplayFilePaneControllerRegionPair.getRegion();
         infoPane = tmpInfoPaneControllerRegionPair.getRegion();
         dragAndDropPane = tmpDragAndDropPaneControllerRegionPair.getRegion();
 
         // Remember the controller for later
-        paneControllerList.add(menuBarController);
+        paneControllerList.add(tmpMenuBarControllerRegionPair.getController());
         paneControllerList.add(tmpDocumentsPaneControllerRegionPair.getController());
         paneControllerList.add(tmpDisplayFilePaneControllerRegionPair.getController());
         paneControllerList.add(tmpInfoPaneControllerRegionPair.getController());
@@ -170,22 +163,6 @@ public class RootPaneController extends BaseController {
             rootPane.setLeft(null);
             rootPane.setCenter(dragAndDropPane);
             rootPane.setRight(null);
-        }
-    }
-
-    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
-    private void showWelcomeDialog() {
-
-        Optional<ButtonType> tmpResult = dialogProvider.provideWelcomeDialog().showAndWait();
-
-        // ButtonData.NO means open a directory, YES means open a file.
-        if (ButtonBar.ButtonData.NO == tmpResult.get().getButtonData()) { // NOSONAR
-
-            menuBarController.handleOpenDirectoryMenuItemAction();
-        }
-        else {
-
-            menuBarController.handleOpenFilesMenuItemAction();
         }
     }
 
