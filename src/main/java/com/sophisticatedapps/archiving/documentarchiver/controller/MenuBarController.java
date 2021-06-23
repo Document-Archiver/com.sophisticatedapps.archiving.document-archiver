@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.restart4j.ApplicationRestart;
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
@@ -25,8 +25,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.apache.commons.collections4.BidiMap;
@@ -46,9 +44,6 @@ public class MenuBarController extends BaseController {
             "englishLanguageMenuItem", Locale.ENGLISH,
             "germanLanguageMenuItem", Locale.GERMAN,
             "spanishLanguageMenuItem", Locale.forLanguageTag("es")));
-
-    private FileChooser fileChooser;
-    private DirectoryChooser directoryChooser;
 
     @FXML
     ToggleGroup tenantToggleGroup;
@@ -81,28 +76,13 @@ public class MenuBarController extends BaseController {
      */
     public MenuBarController(DialogProvider aDialogProvider) {
 
-        this(new FileChooser(), new DirectoryChooser(), aDialogProvider);
-    }
-
-    /**
-     * Alternative constructor which allows to pass custom File- and DirectoryChooser and DialogProvider.
-     *
-     * @param   aFileChooser        FileChooser to use.
-     * @param   aDirectoryChooser   DirectoryChooser to use.
-     * @param   aDialogProvider     DialogProvider to use.
-     */
-    public MenuBarController(FileChooser aFileChooser, DirectoryChooser aDirectoryChooser,
-                             DialogProvider aDialogProvider) {
-
-        this.fileChooser = aFileChooser;
-        this.directoryChooser = aDirectoryChooser;
         this.dialogProvider = aDialogProvider;
     }
 
     @Override
-    public void rampUp(Stage aStage) {
+    public void rampUp(App anApp) {
 
-        super.rampUp(aStage);
+        super.rampUp(anApp);
 
         // Add tenants to tenants menu
         List<String> tmpTenantNamesList = TenantUtil.getAvailableTenantNames();
@@ -185,7 +165,7 @@ public class MenuBarController extends BaseController {
 
         // Load preferences Pane
         FXMLUtil.ControllerRegionPair<PreferencesPaneController, Pane> tmpPreferencesPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", stage);
+                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", app);
         Pane tmpPreferencesPane = tmpPreferencesPaneControllerRegionPair.getRegion();
         PreferencesPaneController tmpPreferencesPaneController =
                 tmpPreferencesPaneControllerRegionPair.getController();
@@ -245,7 +225,7 @@ public class MenuBarController extends BaseController {
 
         // Load manage tenants Pane
         FXMLUtil.ControllerRegionPair<ManageTenantsPaneController, Pane> tmpManageTenantsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", stage);
+                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", app);
         Pane tmpManageTenantsPane = tmpManageTenantsPaneControllerRegionPair.getRegion();
         ManageTenantsPaneController tmpManageTenantsPaneController =
                 tmpManageTenantsPaneControllerRegionPair.getController();
@@ -270,13 +250,13 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleOpenFilesMenuItemAction() {
 
-        importFreshFilesList(fileChooser.showOpenMultipleDialog(stage));
+        importFreshFilesList(app.getApplicationServices().requestMultipleFilesSelection(stage));
     }
 
     @FXML
     protected void handleOpenDirectoryMenuItemAction() {
 
-        importFreshDirectory(directoryChooser.showDialog(stage));
+        importFreshDirectory(app.getApplicationServices().requestDirectorySelection(stage));
     }
 
     @FXML
@@ -300,6 +280,7 @@ public class MenuBarController extends BaseController {
     @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleArchiveBrowserMenuItemAction() {
 
+        // TODO - Upgrade Browser-Plugin for new FXMLUtil API
         if ((!PluginUtil.isPluginAvailable(ArchiveBrowsingService.class)) ||
                 (!PluginUtil.isArchiveBrowsingPluginUpToDate())) {
 
@@ -370,7 +351,7 @@ public class MenuBarController extends BaseController {
         // Should App be restarted?
         if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
 
-            ApplicationRestart.builder().build().restartApp();
+            app.getApplicationServices().restartApp();
         }
     }
 

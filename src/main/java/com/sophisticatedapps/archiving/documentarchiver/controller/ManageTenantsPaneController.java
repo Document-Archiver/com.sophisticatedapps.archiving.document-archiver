@@ -1,5 +1,6 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.type.Tenant;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
@@ -8,7 +9,6 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,9 +39,9 @@ public class ManageTenantsPaneController extends BaseController {
     private Button createTenantButton;
 
     @Override
-    public void rampUp(Stage aStage) {
+    public void rampUp(App anApp) {
 
-        super.rampUp(aStage);
+        super.rampUp(anApp);
 
         // Cell value factories & cell factories
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));

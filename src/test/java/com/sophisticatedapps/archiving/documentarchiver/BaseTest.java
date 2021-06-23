@@ -16,9 +16,12 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import javafx.event.EventType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -74,5 +77,32 @@ public abstract class BaseTest {
             "↑", "up key", KeyCode.UP,false,false, false, false);
 
     protected static final String NUL_CHARACTER_STRING = String.valueOf('\0');
+
+    protected static App getApp(Stage aStage) {
+
+        return getApp(aStage, null);
+    }
+
+    protected static App getApp(Stage aStage, ApplicationServices anApplicationServices) {
+
+        return getApp(aStage, anApplicationServices, null);
+    }
+
+    protected static App getApp(
+            Stage aStage, ApplicationServices anApplicationServices, App.DialogProvider aDialogProvider) {
+
+        App tmpApp = new App(anApplicationServices, aDialogProvider);
+
+        try {
+
+            FieldUtils.writeField(tmpApp, "primaryStage", aStage, true);
+        }
+        catch (IllegalAccessException e) {
+
+            throw (new RuntimeException(e));
+        }
+
+        return tmpApp;
+    }
 
 }

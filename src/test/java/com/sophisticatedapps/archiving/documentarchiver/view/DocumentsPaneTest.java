@@ -33,7 +33,6 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,7 +50,7 @@ class DocumentsPaneTest extends BaseTest {
      * @param aStage - Will be injected by the test runner.
      */
     @Start
-    public void start(Stage aStage) throws IOException {
+    public void start(Stage aStage) {
 
         this.stage = aStage;
 
@@ -59,7 +58,7 @@ class DocumentsPaneTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<DocumentsPaneController,Pane> tmpDocumentsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", aStage);
+                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", getApp(aStage));
         documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         documentsPaneController = tmpDocumentsPaneControllerRegionPair.getController();
 

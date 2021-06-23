@@ -61,7 +61,7 @@ class ManageTenantsPaneTest extends BaseTest {
         FieldUtils.writeStaticField(DirectoryUtil.class, "coreArchivingFolder", TEST_ARCHIVING_FOLDER, true);
 
         FXMLUtil.ControllerRegionPair<ManageTenantsPaneController,Pane> tmpPreferencesPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", aStage);
+                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", getApp(aStage));
         manageTenantsPane = tmpPreferencesPaneControllerRegionPair.getRegion();
         manageTenantsPaneController = tmpPreferencesPaneControllerRegionPair.getController();
 

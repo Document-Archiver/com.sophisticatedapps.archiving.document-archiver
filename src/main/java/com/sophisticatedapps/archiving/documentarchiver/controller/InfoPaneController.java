@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.model.Archive;
 import com.sophisticatedapps.archiving.documentarchiver.model.Tags;
@@ -37,7 +38,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffField;
@@ -121,9 +121,9 @@ public class InfoPaneController extends BaseController {
     }
 
     @Override
-    public void rampUp(Stage aStage) {
+    public void rampUp(App anApp) {
 
-        super.rampUp(aStage);
+        super.rampUp(anApp);
 
         // Set converter, filter, etc.
         datePicker.setConverter(new DatePickerStringConverter());

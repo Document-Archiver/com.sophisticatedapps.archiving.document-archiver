@@ -79,7 +79,7 @@ class InfoPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpInfoPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", aStage);
+                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", getApp(aStage));
         infoPane = tmpInfoPaneControllerRegionPair.getRegion();
         infoPaneController = tmpInfoPaneControllerRegionPair.getController();
     }

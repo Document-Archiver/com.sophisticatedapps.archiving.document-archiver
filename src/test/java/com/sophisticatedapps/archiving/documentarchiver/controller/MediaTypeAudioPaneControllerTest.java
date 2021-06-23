@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.scene.Node;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(ApplicationExtension.class)
-class MediaTypeAudioPaneControllerTest {
+class MediaTypeAudioPaneControllerTest extends BaseTest {
 
     private Pane mediaTypeAudioPane;
     private MediaTypeAudioPaneController mediaTypeAudioPaneController;
@@ -54,7 +55,7 @@ class MediaTypeAudioPaneControllerTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<MediaTypeAudioPaneController,Pane> tmpMediaTypeAudioPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioPane.fxml", aStage);
+                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioPane.fxml", getApp(aStage));
         mediaTypeAudioPane = tmpMediaTypeAudioPaneControllerRegionPair.getRegion();
         mediaTypeAudioPaneController = tmpMediaTypeAudioPaneControllerRegionPair.getController();
     }

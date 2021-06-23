@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.scene.control.TextArea;
@@ -34,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.PreferencesPaneController".
  */
 @ExtendWith(ApplicationExtension.class)
-class PreferencesPaneControllerTest {
+class PreferencesPaneControllerTest extends BaseTest {
 
     private Pane preferencesPane;
     private PreferencesPaneController preferencesPaneController;
@@ -51,7 +52,7 @@ class PreferencesPaneControllerTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<PreferencesPaneController,Pane> tmpPreferencesPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", aStage);
+                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", getApp(aStage));
         preferencesPane = tmpPreferencesPaneControllerRegionPair.getRegion();
         preferencesPaneController = tmpPreferencesPaneControllerRegionPair.getController();
     }

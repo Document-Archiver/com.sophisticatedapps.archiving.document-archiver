@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.api.FileSystemServices;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -51,8 +51,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;
 
 /**
@@ -252,8 +250,8 @@ class AppTest extends BaseTest {
         App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
 
-        FileSystemServices tmpMockedFileSystemServices = Mockito.mock(FileSystemServices.class);
-        when(tmpMockedFileSystemServices.requestMultipleFilesSelection(any(Stage.class)))
+        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
+        when(tmpMockedApplicationServices.requestMultipleFilesSelection(any(Stage.class)))
                 .thenReturn(ALL_DOCUMENTS_LIST);
 
         HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
@@ -264,9 +262,9 @@ class AppTest extends BaseTest {
 
         Stage tmpMockedStage = Mockito.mock(Stage.class);
         doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = new App(tmpMockedFileSystemServices, tmpMockedDialogProvider);
+        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
 
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog", tmpMockedStage);
+        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
@@ -288,8 +286,8 @@ class AppTest extends BaseTest {
         App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
 
-        FileSystemServices tmpMockedFileSystemServices = Mockito.mock(FileSystemServices.class);
-        when(tmpMockedFileSystemServices.requestMultipleFilesSelection(any(Stage.class))).thenReturn(null);
+        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
+        when(tmpMockedApplicationServices.requestMultipleFilesSelection(any(Stage.class))).thenReturn(null);
 
         HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
         ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
@@ -299,9 +297,9 @@ class AppTest extends BaseTest {
 
         Stage tmpMockedStage = Mockito.mock(Stage.class);
         doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = new App(tmpMockedFileSystemServices, tmpMockedDialogProvider);
+        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
 
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog", tmpMockedStage);
+        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
@@ -320,8 +318,8 @@ class AppTest extends BaseTest {
         App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
 
-        FileSystemServices tmpMockedFileSystemServices = Mockito.mock(FileSystemServices.class);
-        when(tmpMockedFileSystemServices.requestDirectorySelection(any(Stage.class))).thenReturn(TEST_SOURCE_FOLDER2);
+        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
+        when(tmpMockedApplicationServices.requestDirectorySelection(any(Stage.class))).thenReturn(TEST_SOURCE_FOLDER2);
 
         HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
         ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
@@ -331,9 +329,9 @@ class AppTest extends BaseTest {
 
         Stage tmpMockedStage = Mockito.mock(Stage.class);
         doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = new App(tmpMockedFileSystemServices, tmpMockedDialogProvider);
+        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
 
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog", tmpMockedStage);
+        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
@@ -356,8 +354,8 @@ class AppTest extends BaseTest {
         when(tmpMockedDialogProvider.provideDirectoryDoesNotContainFilesAlert())
                 .thenReturn(tmpMockedEmptyDirectoryAlert);
 
-        FileSystemServices tmpMockedFileSystemServices = Mockito.mock(FileSystemServices.class);
-        when(tmpMockedFileSystemServices
+        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
+        when(tmpMockedApplicationServices
                 .requestDirectorySelection(any(Stage.class))).thenReturn(TEST_EMPTY_SOURCE_FOLDER);
 
         HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
@@ -368,9 +366,9 @@ class AppTest extends BaseTest {
 
         Stage tmpMockedStage = Mockito.mock(Stage.class);
         doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = new App(tmpMockedFileSystemServices, tmpMockedDialogProvider);
+        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
 
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog", tmpMockedStage);
+        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
@@ -392,8 +390,8 @@ class AppTest extends BaseTest {
         App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
 
-        FileSystemServices tmpMockedFileSystemServices = Mockito.mock(FileSystemServices.class);
-        when(tmpMockedFileSystemServices.requestDirectorySelection(any(Stage.class))).thenReturn(null);
+        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
+        when(tmpMockedApplicationServices.requestDirectorySelection(any(Stage.class))).thenReturn(null);
 
         HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
         ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
@@ -403,9 +401,9 @@ class AppTest extends BaseTest {
 
         Stage tmpMockedStage = Mockito.mock(Stage.class);
         doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = new App(tmpMockedFileSystemServices, tmpMockedDialogProvider);
+        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
 
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog", tmpMockedStage);
+        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();

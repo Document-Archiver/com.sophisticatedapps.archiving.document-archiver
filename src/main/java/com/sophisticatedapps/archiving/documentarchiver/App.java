@@ -16,7 +16,8 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.api.FileSystemServices;
+import com.restart4j.ApplicationRestart;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -43,17 +44,19 @@ import java.util.*;
 
 public class App extends Application {
 
-    private final FileSystemServices fileSystemServices;
+    private final ApplicationServices applicationServices;
     private final DialogProvider dialogProvider;
+
+    private Stage primaryStage;
 
     public App() {
 
         this(null, null);
     }
 
-    public App(FileSystemServices aFileSystemServices) {
+    public App(ApplicationServices anApplicationServices) {
 
-        this(aFileSystemServices, null);
+        this(anApplicationServices, null);
     }
 
     public App(DialogProvider aDialogProvider) {
@@ -61,10 +64,10 @@ public class App extends Application {
         this(null, aDialogProvider);
     }
 
-    public App(FileSystemServices aFileSystemServices, DialogProvider aDialogProvider) {
+    public App(ApplicationServices anApplicationServices, DialogProvider aDialogProvider) {
 
-        this.fileSystemServices =
-                (Objects.isNull(aFileSystemServices) ? (new DefaultFileSystemServices()) : aFileSystemServices);
+        this.applicationServices =
+                (Objects.isNull(anApplicationServices) ? (new DefaultApplicationServices()) : anApplicationServices);
         this.dialogProvider = (Objects.isNull(aDialogProvider) ? (new DialogProvider()) : aDialogProvider);
     }
 
@@ -86,6 +89,7 @@ public class App extends Application {
     @Override
     public void start(Stage aPrimaryStage) {
 
+        primaryStage = aPrimaryStage;
         Thread.setDefaultUncaughtExceptionHandler(this::showError);
 
         // Set dimensions
@@ -101,7 +105,7 @@ public class App extends Application {
 
         // Create root pane
         BorderPane tmpRootPane =
-                (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", aPrimaryStage).getRegion();
+                (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", this).getRegion();
 
         // Check if we received a file to use via command line parameter
         String tmpFirstParameter = getFirstParameter();
@@ -120,7 +124,7 @@ public class App extends Application {
         }
 
         // Place icons
-        placeIcons(aPrimaryStage);
+        placeIcons();
 
         // Show
         Scene tmpScene = new Scene(tmpRootPane);
@@ -131,8 +135,18 @@ public class App extends Application {
         // If we didn't receive a file to use via command line parameter, we will show a welcome dialog.
         if (Objects.isNull(tmpFirstParameter)) {
 
-            scheduleWelcomeDialog(aPrimaryStage);
+            scheduleWelcomeDialog();
         }
+    }
+
+    public Stage getPrimaryStage() {
+
+        return primaryStage;
+    }
+
+    public ApplicationServices getApplicationServices() {
+
+        return applicationServices;
     }
 
     private String getFirstParameter() {
@@ -152,10 +166,10 @@ public class App extends Application {
         return null;
     }
 
-    private void placeIcons(Stage aStage) {
+    private void placeIcons() {
 
         // Set stage icon
-        aStage.getIcons().add(GlobalConstants.APP_ICON);
+        primaryStage.getIcons().add(GlobalConstants.APP_ICON);
 
         // Set taskbar icon (may not be supported on all systems (e.g. Linux))
         try {
@@ -174,7 +188,7 @@ public class App extends Application {
         }
     }
 
-    private void scheduleWelcomeDialog(Stage aPrimaryStage) {
+    private void scheduleWelcomeDialog() {
 
         // We start a new Tread, since we do not want to put the FX-Thread to sleep.
         (new Thread(() -> {
@@ -190,22 +204,22 @@ public class App extends Application {
             }
 
             // Still no current document set? (StartupListener called?) If not show dialog.
-            if (Objects.isNull(aPrimaryStage.getProperties().get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY))) {
+            if (Objects.isNull(primaryStage.getProperties().get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY))) {
 
-                Platform.runLater(() -> showWelcomeDialog(aPrimaryStage));
+                Platform.runLater(this::showWelcomeDialog);
             }
         })).start();
     }
 
     @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
-    private void showWelcomeDialog(Stage aStage) {
+    private void showWelcomeDialog() {
 
         Optional<ButtonType> tmpResult = dialogProvider.provideWelcomeDialog().showAndWait();
 
         // ButtonData.NO means open a directory, YES means open (multiple) file(s).
         if (ButtonBar.ButtonData.NO == tmpResult.get().getButtonData()) { // NOSONAR
 
-            File tmpDirectory = fileSystemServices.requestDirectorySelection(aStage);
+            File tmpDirectory = applicationServices.requestDirectorySelection(primaryStage);
 
             if (!Objects.isNull(tmpDirectory)) {
 
@@ -216,7 +230,7 @@ public class App extends Application {
                 if (!tmpWrapperList.isEmpty()) {
 
                     tmpWrapperList.sort(Comparator.naturalOrder());
-                    setFilesListToStageProperties(tmpWrapperList, aStage.getProperties());
+                    setFilesListToStageProperties(tmpWrapperList, primaryStage.getProperties());
                 }
                 else {
 
@@ -226,14 +240,14 @@ public class App extends Application {
         }
         else {
 
-            List<File> tmpFilesList = fileSystemServices.requestMultipleFilesSelection(aStage);
+            List<File> tmpFilesList = applicationServices.requestMultipleFilesSelection(primaryStage);
 
             if (!CollectionUtil.isNullOrEmpty(tmpFilesList)) {
 
                 // We have to wrap the result in a new List, since the given List may not be modifiable.
                 List<File> tmpWrapperList = new ArrayList<>(tmpFilesList);
                 tmpWrapperList.sort(Comparator.naturalOrder());
-                setFilesListToStageProperties(tmpWrapperList, aStage.getProperties());
+                setFilesListToStageProperties(tmpWrapperList, primaryStage.getProperties());
             }
         }
     }
@@ -342,7 +356,7 @@ public class App extends Application {
         }
     }
 
-    private static class DefaultFileSystemServices implements FileSystemServices {
+    private static class DefaultApplicationServices implements ApplicationServices {
 
         private static final DirectoryChooser DIRECTORY_CHOOSER = new DirectoryChooser();
         private static final FileChooser FILE_CHOOSER = new FileChooser();
@@ -357,6 +371,12 @@ public class App extends Application {
         public List<File> requestMultipleFilesSelection(Stage aStage) {
 
             return FILE_CHOOSER.showOpenMultipleDialog(aStage);
+        }
+
+        @Override
+        public void restartApp() {
+
+            ApplicationRestart.builder().build().restartApp();
         }
     }
 

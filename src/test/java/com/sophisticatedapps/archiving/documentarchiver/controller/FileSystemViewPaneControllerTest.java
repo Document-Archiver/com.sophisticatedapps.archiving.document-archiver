@@ -25,7 +25,6 @@ import java.util.zip.ZipFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
@@ -46,7 +45,7 @@ class FileSystemViewPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<FileSystemViewPaneController, Pane> tmpDocumentsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", aStage);
+                FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", getApp(aStage));
         fileSystemViewPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         fileSystemViewPaneController = tmpDocumentsPaneControllerRegionPair.getController();
     }

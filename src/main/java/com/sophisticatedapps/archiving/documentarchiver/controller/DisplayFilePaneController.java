@@ -43,7 +43,6 @@ import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.web.WebView;
-import javafx.stage.Stage;
 import net.kurobako.gesturefx.GesturePane;
 import org.apache.poi.hwpf.HWPFDocumentCore;
 import org.apache.poi.hwpf.converter.AbstractWordUtils;
@@ -112,9 +111,9 @@ public class DisplayFilePaneController extends BaseController {
     }
 
     @Override
-    public void rampUp(Stage aStage) {
+    public void rampUp(App anApp) {
 
-        super.rampUp(aStage);
+        super.rampUp(anApp);
 
         // Add listener
         final ChangeListener<Number> tmpPaneWidthPropertyListener =
@@ -191,7 +190,7 @@ public class DisplayFilePaneController extends BaseController {
                 Class<? extends DisplayFileNodeAssembler> tmpFileNodeAssemblerClass =
                         NODE_ASSEMBLER_BY_FILETYPE.get(FileUtil.getFiletype(aNewCurrentDocument));
                 Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance().assemble(
-                        this, aNewCurrentDocument, stage, displayFilePane.getPrefWidth(), tmpPrefHeight);
+                        this, aNewCurrentDocument, app, displayFilePane.getPrefWidth(), tmpPrefHeight);
 
                 boolean tmpFileTypeInternallySupported =
                         (DisplayUnsupportedFiletypeNodeAssembler.class != tmpFileNodeAssemblerClass);
@@ -226,14 +225,14 @@ public class DisplayFilePaneController extends BaseController {
 
     private interface DisplayFileNodeAssembler {
 
-        Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                         double aPrefWidth, double aPrefHeight);
     }
 
     protected static class DisplayUnsupportedFiletypeNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             aDisplayFilePaneController.openExternalViewer(aFile);
@@ -258,7 +257,7 @@ public class DisplayFilePaneController extends BaseController {
         }
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             try {
@@ -286,7 +285,7 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayImageNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             ImageUtil.OrientationInformation tmpOrientationInformation = ImageUtil.getOrientationInformation(aFile);
@@ -344,7 +343,7 @@ public class DisplayFilePaneController extends BaseController {
 
         @Override
         public Region assemble(DisplayFilePaneController aDisplayFilePaneController,
-                               File aFile, Stage aStage, double aPrefWidth, double aPrefHeight) {
+                               File aFile, App anApp, double aPrefWidth, double aPrefHeight) {
 
             // We only support HEIC on Macs
             if (Platform.isMac()) {
@@ -355,7 +354,7 @@ public class DisplayFilePaneController extends BaseController {
                     File tmpTempFile = ProcessesUtil.createTempJpg(aFile);
 
                     Region tmpReturn =
-                            super.assemble(aDisplayFilePaneController, tmpTempFile, aStage, aPrefWidth, aPrefHeight);
+                            super.assemble(aDisplayFilePaneController, tmpTempFile, anApp, aPrefWidth, aPrefHeight);
 
                     Files.delete(tmpTempFile.toPath());
 
@@ -369,7 +368,7 @@ public class DisplayFilePaneController extends BaseController {
             else {
 
                 return ((new DisplayUnsupportedFiletypeNodeAssembler())
-                        .assemble(aDisplayFilePaneController, aFile, aStage, aPrefWidth, aPrefHeight));
+                        .assemble(aDisplayFilePaneController, aFile, anApp, aPrefWidth, aPrefHeight));
             }
         }
     }
@@ -377,7 +376,7 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayAudioNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             try {
@@ -385,7 +384,7 @@ public class DisplayFilePaneController extends BaseController {
                 FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioPane.fxml"));
                 VBox tmpMediaTypeAudioPane = tmpLoader.load();
                 MediaTypeAudioPaneController tmpMediaTypeAudioPaneController = tmpLoader.getController();
-                tmpMediaTypeAudioPaneController.rampUp(aStage);
+                tmpMediaTypeAudioPaneController.rampUp(anApp);
 
                 setupMediaView(tmpMediaTypeAudioPaneController, tmpMediaTypeAudioPane, aFile, aPrefWidth, aPrefHeight);
 
@@ -429,7 +428,7 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayVideoNodeAssembler extends DisplayAudioNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             try {
@@ -437,7 +436,7 @@ public class DisplayFilePaneController extends BaseController {
                 FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioVideoPane.fxml"));
                 VBox tmpMediaTypeAudioVideoPane = tmpLoader.load();
                 MediaTypeAudioVideoPaneController tmpMediaTypeAudioVideoPaneController = tmpLoader.getController();
-                tmpMediaTypeAudioVideoPaneController.rampUp(aStage);
+                tmpMediaTypeAudioVideoPaneController.rampUp(anApp);
 
                 setupMediaView(tmpMediaTypeAudioVideoPaneController, tmpMediaTypeAudioVideoPane, aFile, aPrefWidth,
                         aPrefHeight);
@@ -461,7 +460,7 @@ public class DisplayFilePaneController extends BaseController {
     protected abstract static class AbstractAsciiBasedNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
@@ -478,7 +477,7 @@ public class DisplayFilePaneController extends BaseController {
 
                 // Assemble the view
                 return assemble(aDisplayFilePaneController, tmpByteArrayOutputStream.toString(
-                        Charset.defaultCharset().toString()), aStage, aPrefWidth, aPrefHeight);
+                        Charset.defaultCharset().toString()), anApp, aPrefWidth, aPrefHeight);
             }
             catch (Exception e) {
 
@@ -487,13 +486,13 @@ public class DisplayFilePaneController extends BaseController {
         }
 
         protected abstract Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent,
-                                           Stage aStage, double aPrefWidth, double aPrefHeight);
+                                           App anApp, double aPrefWidth, double aPrefHeight);
     }
 
     protected static class DisplayTextNodeAssembler extends AbstractAsciiBasedNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             // Creating a TextArea for the text
@@ -512,7 +511,7 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplaySvgNodeAssembler extends AbstractAsciiBasedNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             // Creating a WebView for the SVG
@@ -537,7 +536,7 @@ public class DisplayFilePaneController extends BaseController {
     protected abstract static class AbstractDisplayDocNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             try {
@@ -618,11 +617,11 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayZipNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, Stage aStage,
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
                                double aPrefWidth, double aPrefHeight) {
 
             FXMLUtil.ControllerRegionPair<FileSystemViewPaneController, Pane> tmpDisplayFilePaneControllerRegionPair =
-                    FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", aStage);
+                    FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", anApp);
             Pane tmpFileSystemViewPane = tmpDisplayFilePaneControllerRegionPair.getRegion();
             FileSystemViewPaneController tmpFileSystemViewPaneController =
                     tmpDisplayFilePaneControllerRegionPair.getController();

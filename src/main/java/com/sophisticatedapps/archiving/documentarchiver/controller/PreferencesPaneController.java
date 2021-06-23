@@ -16,13 +16,13 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 public class PreferencesPaneController extends BaseController {
 
@@ -33,9 +33,9 @@ public class PreferencesPaneController extends BaseController {
     private TextArea quickDescriptionWordsTextArea;
 
     @Override
-    public void rampUp(Stage aStage) {
+    public void rampUp(App anApp) {
 
-        super.rampUp(aStage);
+        super.rampUp(anApp);
 
         archivingFolderTextField.setText(DirectoryUtil.getCoreArchivingFolder().getPath());
         quickDescriptionWordsTextArea.setText(PropertiesUtil.QUICK_DESCRIPTION_WORDS);

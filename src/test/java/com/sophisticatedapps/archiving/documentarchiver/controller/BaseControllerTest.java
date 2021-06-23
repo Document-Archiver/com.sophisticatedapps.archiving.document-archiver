@@ -68,7 +68,7 @@ class BaseControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, TEST_TEXT_FILE);
 
         baseController = new BaseController(){};
-        baseController.rampUp(aStage);
+        baseController.rampUp(getApp(aStage));
     }
 
     @Test

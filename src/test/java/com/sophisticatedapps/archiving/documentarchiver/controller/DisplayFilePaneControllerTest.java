@@ -54,7 +54,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
@@ -76,7 +75,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<DisplayFilePaneController,Pane> tmpDisplayFilePaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", aStage);
+                FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", getApp(aStage));
         displayFilePane = tmpDisplayFilePaneControllerRegionPair.getRegion();
         displayFilePaneController = tmpDisplayFilePaneControllerRegionPair.getController();
     }
@@ -275,7 +274,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
         when(tmpMockedMediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PLAYING);
 
         Region tmpPane = tmpDisplayAudioNodeAssembler.assemble(
-                displayFilePaneController, TEST_MP3_FILE, null, 250, 250);
+                displayFilePaneController, TEST_MP3_FILE, displayFilePaneController.app, 250, 250);
         tmpPane.setUserData(tmpMockedMediaPlayer);
 
         // Set and remove Pane to and from a parent Pane
@@ -292,7 +291,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
         FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioPane.fxml"));
         VBox tmpMediaTypeAudioPane = tmpLoader.load();
         MediaTypeAudioPaneController tmpMediaTypeAudioPaneController = tmpLoader.getController();
-        tmpMediaTypeAudioPaneController.rampUp(displayFilePaneController.stage);
+        tmpMediaTypeAudioPaneController.rampUp(displayFilePaneController.app);
 
         DisplayFilePaneController.DisplayAudioNodeAssembler tmpDisplayAudioNodeAssembler =
                 new DisplayFilePaneController.DisplayAudioNodeAssembler();
@@ -320,7 +319,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
         FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioVideoPane.fxml"));
         VBox tmpMediaTypeAudioVideoPane = tmpLoader.load();
         MediaTypeAudioVideoPaneController tmpMediaTypeAudioVideoPaneController = tmpLoader.getController();
-        tmpMediaTypeAudioVideoPaneController.rampUp(displayFilePaneController.stage);
+        tmpMediaTypeAudioVideoPaneController.rampUp(displayFilePaneController.app);
 
         DisplayFilePaneController.DisplayVideoNodeAssembler tmpDisplayVideoNodeAssembler =
                 new DisplayFilePaneController.DisplayVideoNodeAssembler();
@@ -345,7 +344,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
 
         // Give an encrypted ZIP to the assembler
         RuntimeException tmpException = assertThrows(RuntimeException.class, () -> tmpDisplayZipNodeAssembler.assemble(
-                displayFilePaneController, TEST_TEXT_FILE, displayFilePaneController.stage, 250, 250));
+                displayFilePaneController, TEST_TEXT_FILE, displayFilePaneController.app, 250, 250));
         assertEquals("ZIP file could not be opened: zip END header not found", tmpException.getMessage());
     }
 

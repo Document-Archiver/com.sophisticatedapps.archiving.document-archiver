@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -35,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(ApplicationExtension.class)
-class MediaTypeAudioVideoPaneControllerTest {
+class MediaTypeAudioVideoPaneControllerTest extends BaseTest {
 
     //private Pane mediaTypeAudioVideoPane;
     private MediaTypeAudioVideoPaneController mediaTypeAudioVideoPaneController;
@@ -53,7 +54,7 @@ class MediaTypeAudioVideoPaneControllerTest {
 
         FXMLUtil.ControllerRegionPair<MediaTypeAudioVideoPaneController, Pane>
                 tmpMediaTypeAudioVideoPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioVideoPane.fxml", aStage);
+                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioVideoPane.fxml", getApp(aStage));
         //mediaTypeAudioVideoPane = tmpMediaTypeAudioVideoPaneControllerRegionPair.getRegion();
         mediaTypeAudioVideoPaneController = tmpMediaTypeAudioVideoPaneControllerRegionPair.getController();
     }

@@ -16,10 +16,10 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.controller.BaseController;
 import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -36,25 +36,25 @@ public class FXMLUtil {
      * Loads a Region object and ramps up its controller.
      *
      * @param   aFxmlResource   FXML-resource to load.
-     * @param   aStage          Stage to set to the controller.
+     * @param   anApp           Current App instance.
      * @return  A ControllerRegionPair object.
      */
     public static <C extends BaseController,R> ControllerRegionPair<C,R>
-            loadAndRampUpRegion(String aFxmlResource, Stage aStage) {
+            loadAndRampUpRegion(String aFxmlResource, App anApp) {
 
-        return loadAndRampUpRegion(aFxmlResource, aStage, GlobalConstants.DEFAULT_RESOURCE_LOAD_CONTEXT);
+        return loadAndRampUpRegion(aFxmlResource, anApp, GlobalConstants.DEFAULT_RESOURCE_LOAD_CONTEXT);
     }
 
     /**
      * Loads a Region object and ramps up its controller.
      *
      * @param   aFxmlResource           FXML-resource to load.
-     * @param   aStage                  Stage to set to the controller.
+     * @param   anApp                   Current App instance.
      * @param   aResourceLoadContext    A ResourceLoadContext to find (language-)resources.
      * @return  A ControllerRegionPair object.
      */
     public static <C extends BaseController,R> ControllerRegionPair<C,R>
-            loadAndRampUpRegion(String aFxmlResource, Stage aStage, ResourceLoadContext aResourceLoadContext) {
+            loadAndRampUpRegion(String aFxmlResource, App anApp, ResourceLoadContext aResourceLoadContext) {
 
         try {
 
@@ -68,7 +68,7 @@ public class FXMLUtil {
 
             if (!Objects.isNull(tmpBaseController)) {
 
-                tmpBaseController.rampUp(aStage);
+                tmpBaseController.rampUp(anApp);
             }
 
             return (new ControllerRegionPair<>(tmpBaseController, tmpRegion));

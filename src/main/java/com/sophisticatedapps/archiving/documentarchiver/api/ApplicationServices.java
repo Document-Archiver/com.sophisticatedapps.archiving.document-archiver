@@ -5,7 +5,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.List;
 
-public interface FileSystemServices {
+public interface ApplicationServices {
 
     /**
      * Request the user to select a directory.
@@ -20,5 +20,10 @@ public interface FileSystemServices {
      * @return  List of File objects representing the selected files.
      */
     List<File> requestMultipleFilesSelection(Stage aStage);
+
+    /**
+     * Restart the Application.
+     */
+    void restartApp();
 
 }

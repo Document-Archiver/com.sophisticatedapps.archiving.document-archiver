@@ -24,7 +24,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
-import javafx.stage.Stage;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -53,9 +52,9 @@ public class MediaTypeAudioPaneController extends BaseController {
     private Button stopButton;
 
     @Override
-    public void rampUp(Stage aStage) {
+    public void rampUp(App anApp) {
 
-        super.rampUp(aStage);
+        super.rampUp(anApp);
 
         // Listener for when the pane is "closed" (aNewParent == null) -> stop MediaPlayer
         mediaTypePane.parentProperty().addListener((anObs, anOldParent, aNewParent) -> {

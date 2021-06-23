@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
@@ -25,7 +26,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,21 +47,21 @@ public class RootPaneController extends BaseController {
     private BorderPane rootPane;
 
     @Override
-    public void rampUp(Stage aStage) {
+    public void rampUp(App anApp) {
 
-        super.rampUp(aStage);
+        super.rampUp(anApp);
 
         // Load pane's sub-panes
         FXMLUtil.ControllerRegionPair<MenuBarController,MenuBar> tmpMenuBarControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/MenuBar.fxml", stage);
+                FXMLUtil.loadAndRampUpRegion("view/MenuBar.fxml", app);
         FXMLUtil.ControllerRegionPair<DocumentsPaneController,Pane> tmpDocumentsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", stage);
+                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", app);
         FXMLUtil.ControllerRegionPair<DisplayFilePaneController,Pane> tmpDisplayFilePaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", stage);
+                FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", app);
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpInfoPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", stage);
+                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", app);
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpDragAndDropPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DragAndDropPane.fxml", stage);
+                FXMLUtil.loadAndRampUpRegion("view/DragAndDropPane.fxml", app);
 
         documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         displayFilePane = tmpDisplayFilePaneControllerRegionPair.getRegion();
@@ -86,12 +86,12 @@ public class RootPaneController extends BaseController {
         final ChangeListener<Number> tmpStageWidthPropertyListener =
                 ((anObservable, anOldValue, aNewValue) -> setWidths());
         stageWidthPropertyListenersList.add(tmpStageWidthPropertyListener);
-        aStage.widthProperty().addListener(tmpStageWidthPropertyListener);
+        stage.widthProperty().addListener(tmpStageWidthPropertyListener);
 
         final ChangeListener<Number> tmpStageHeightPropertyListener =
                 ((anObservable, anOldValue, aNewValue) -> setHeights());
         stageHeightPropertyListenersList.add(tmpStageHeightPropertyListener);
-        aStage.heightProperty().addListener(tmpStageHeightPropertyListener);
+        stage.heightProperty().addListener(tmpStageHeightPropertyListener);
 
         addCurrentDocumentChangedListener(aChange -> handleCurrentDocumentChanged((File)aChange.getValueAdded()));
 

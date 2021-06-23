@@ -50,7 +50,7 @@ class DragAndDropPaneControllerTest extends BaseTest {
         //dragAndDropPane =
         tmpRegionLoader.load();
         dragAndDropPaneController = tmpRegionLoader.getController();
-        dragAndDropPaneController.rampUp(aStage);
+        dragAndDropPaneController.rampUp(getApp(aStage));
     }
 
     @AfterEach

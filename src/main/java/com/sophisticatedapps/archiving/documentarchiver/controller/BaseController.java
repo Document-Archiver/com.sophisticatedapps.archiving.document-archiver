@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
@@ -45,6 +46,7 @@ public abstract class BaseController {
 
     private final List<MapChangeListener<Object, Object>> stagePropertiesListenersList = new ArrayList<>();
 
+    protected App app;
     protected Stage stage;
     protected DialogProvider dialogProvider;
     protected DesktopProvider desktopProvider;
@@ -92,11 +94,12 @@ public abstract class BaseController {
     /**
      * Initialize the controller.
      *
-     * @param   aStage  JavaFX stage.
+     * @param   anApp   The current App instance.
      */
-    public void rampUp(Stage aStage) {
+    public void rampUp(App anApp) {
 
-        this.stage = aStage;
+        this.app = anApp;
+        this.stage = anApp.getPrimaryStage();
     }
 
     /**
@@ -115,8 +118,9 @@ public abstract class BaseController {
         // Clear our List of Listeners
         stagePropertiesListenersList.clear();
 
-        // Release stage
+        // Release stage and app
         this.stage = null;
+        this.app = null;
     }
 
     /**
