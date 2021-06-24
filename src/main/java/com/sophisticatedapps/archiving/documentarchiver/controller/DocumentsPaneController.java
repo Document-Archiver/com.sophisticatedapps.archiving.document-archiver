@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
@@ -39,9 +39,9 @@ public class DocumentsPaneController extends DragAndDropPaneController {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         // Set cell factory for documents ListView.
         documentsListView.setCellFactory(param -> new ListCell<>() { // NOSONAR

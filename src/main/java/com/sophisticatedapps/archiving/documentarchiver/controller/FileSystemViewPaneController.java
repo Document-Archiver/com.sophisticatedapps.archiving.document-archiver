@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.util.FileUtil;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
@@ -53,9 +53,9 @@ public class FileSystemViewPaneController extends BaseController {
     private TableColumn<ZipEntry, String> sizeColumn;
 
     @Override
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         // Cell value factories
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));

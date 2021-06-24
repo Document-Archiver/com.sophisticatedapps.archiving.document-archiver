@@ -1,6 +1,6 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.type.Tenant;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
@@ -39,9 +39,9 @@ public class ManageTenantsPaneController extends BaseController {
     private Button createTenantButton;
 
     @Override
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         // Cell value factories & cell factories
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));

@@ -52,7 +52,7 @@ class PreferencesPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<PreferencesPaneController,Pane> tmpPreferencesPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", getApp(aStage));
+                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", getApplicationContext(aStage));
         preferencesPane = tmpPreferencesPaneControllerRegionPair.getRegion();
         preferencesPaneController = tmpPreferencesPaneControllerRegionPair.getController();
     }

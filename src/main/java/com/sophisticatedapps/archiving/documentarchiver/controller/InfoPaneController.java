@@ -16,8 +16,8 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.model.Archive;
 import com.sophisticatedapps.archiving.documentarchiver.model.Tags;
 import com.sophisticatedapps.archiving.documentarchiver.type.DefinedFileProperties;
@@ -121,9 +121,9 @@ public class InfoPaneController extends BaseController {
     }
 
     @Override
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         // Set converter, filter, etc.
         datePicker.setConverter(new DatePickerStringConverter());

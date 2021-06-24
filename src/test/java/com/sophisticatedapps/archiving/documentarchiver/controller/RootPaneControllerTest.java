@@ -59,7 +59,7 @@ class RootPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<RootPaneController,BorderPane> tmpRootPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", getApp(aStage));
+                FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", getApplicationContext(aStage));
         rootPane = tmpRootPaneControllerRegionPair.getRegion();
         rootPaneController = tmpRootPaneControllerRegionPair.getController();
     }

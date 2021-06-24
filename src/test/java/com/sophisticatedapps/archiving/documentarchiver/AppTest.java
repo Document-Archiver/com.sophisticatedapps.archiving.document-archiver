@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver;
 
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
+import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -158,7 +159,6 @@ class AppTest extends BaseTest {
         assertEquals(tmpBounds.getWidth(), tmpPropertiesMap.get("theWidth"));
         assertEquals(tmpBounds.getHeight(), tmpPropertiesMap.get("theHeight"));
 
-        assertEquals(HostServices.class, tmpPropertiesMap.get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY).getClass());
         assertEquals(1, ((ObservableList<Image>)tmpPropertiesMap.get("theIconsList")).size());
 
         assertEquals(Scene.class, tmpPropertiesMap.get("theScene").getClass());
@@ -207,7 +207,7 @@ class AppTest extends BaseTest {
         doReturn(tmpMockedHeightProperty).when(tmpMockedStage).heightProperty();
 
         Alert tmpMockedAlert = Mockito.mock(Alert.class);
-        App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
+        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
         doAnswer(anInvocationOnMock -> {
             tmpPropertiesMap.put("theErrorMsg", anInvocationOnMock.getArgument(0));
             return tmpMockedAlert;
@@ -247,7 +247,7 @@ class AppTest extends BaseTest {
 
         Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
         when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
-        App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
+        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
 
         ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
@@ -283,7 +283,7 @@ class AppTest extends BaseTest {
 
         Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
         when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
-        App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
+        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
 
         ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
@@ -315,7 +315,7 @@ class AppTest extends BaseTest {
 
         Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
         when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
-        App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
+        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
 
         ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
@@ -348,7 +348,7 @@ class AppTest extends BaseTest {
 
         Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
         when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
-        App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
+        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
         Alert tmpMockedEmptyDirectoryAlert = Mockito.mock(Alert.class);
         when(tmpMockedDialogProvider.provideDirectoryDoesNotContainFilesAlert())
@@ -387,7 +387,7 @@ class AppTest extends BaseTest {
 
         Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
         when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
-        App.DialogProvider tmpMockedDialogProvider = Mockito.mock(App.DialogProvider.class);
+        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
         when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
 
         ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
@@ -438,7 +438,7 @@ class AppTest extends BaseTest {
     @Test
     void testDialogProvider_provideWelcomeDialog() {
 
-        App.DialogProvider tmpDialogProvider = new App.DialogProvider();
+        DialogProvider tmpDialogProvider = new App.DefaultDialogProvider();
         final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
 
         Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideWelcomeDialog()));
@@ -457,7 +457,7 @@ class AppTest extends BaseTest {
     @Test
     void testDialogProvider_provideDirectoryDoesNotContainFilesAlert() {
 
-        App.DialogProvider tmpDialogProvider = new App.DialogProvider();
+        DialogProvider tmpDialogProvider = new App.DefaultDialogProvider();
         final List<Alert> tmpAlertList = new ArrayList<>();
 
         Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideDirectoryDoesNotContainFilesAlert()));
@@ -472,7 +472,7 @@ class AppTest extends BaseTest {
     @Test
     void testDialogProvider_provideExceptionAlert() {
 
-        App.DialogProvider tmpDialogProvider = new App.DialogProvider();
+        DialogProvider tmpDialogProvider = new App.DefaultDialogProvider();
         final List<Alert> tmpAlertList = new ArrayList<>();
 
         Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideExceptionAlert("This is a test")));

@@ -55,7 +55,7 @@ class MediaTypeAudioPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<MediaTypeAudioPaneController,Pane> tmpMediaTypeAudioPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioPane.fxml", getApp(aStage));
+                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioPane.fxml", getApplicationContext(aStage));
         mediaTypeAudioPane = tmpMediaTypeAudioPaneControllerRegionPair.getRegion();
         mediaTypeAudioPaneController = tmpMediaTypeAudioPaneControllerRegionPair.getController();
     }

@@ -16,8 +16,8 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.util.CollectionUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
@@ -46,7 +46,7 @@ public abstract class BaseController {
 
     private final List<MapChangeListener<Object, Object>> stagePropertiesListenersList = new ArrayList<>();
 
-    protected App app;
+    protected ApplicationContext applicationContext;
     protected Stage stage;
     protected DialogProvider dialogProvider;
     protected DesktopProvider desktopProvider;
@@ -94,12 +94,12 @@ public abstract class BaseController {
     /**
      * Initialize the controller.
      *
-     * @param   anApp   The current App instance.
+     * @param   anApplicationContext    An ApplicationContext instance.
      */
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        this.app = anApp;
-        this.stage = anApp.getPrimaryStage();
+        this.applicationContext = anApplicationContext;
+        this.stage = anApplicationContext.getPrimaryStage();
     }
 
     /**
@@ -120,7 +120,7 @@ public abstract class BaseController {
 
         // Release stage and app
         this.stage = null;
-        this.app = null;
+        this.applicationContext = null;
     }
 
     /**

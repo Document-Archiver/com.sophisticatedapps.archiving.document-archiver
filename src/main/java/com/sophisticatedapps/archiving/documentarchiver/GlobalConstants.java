@@ -46,7 +46,6 @@ public class GlobalConstants {
     public static final DateTimeFormatter FILENAME_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
 
-    public static final String HOST_SERVICES_PROPERTY_KEY = "hostServices";
     public static final String ALL_DOCUMENTS_PROPERTY_KEY = "allDocuments";
     public static final String CURRENT_DOCUMENT_PROPERTY_KEY = "currentDocument";
 

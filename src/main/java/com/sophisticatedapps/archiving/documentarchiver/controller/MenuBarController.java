@@ -16,11 +16,10 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
-import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -80,9 +79,9 @@ public class MenuBarController extends BaseController {
     }
 
     @Override
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         // Add tenants to tenants menu
         List<String> tmpTenantNamesList = TenantUtil.getAvailableTenantNames();
@@ -148,9 +147,7 @@ public class MenuBarController extends BaseController {
             // Open download site?
             if (ButtonBar.ButtonData.LEFT == tmpResult.get().getButtonData()) { // NOSONAR
 
-                HostServices tmpHostServices =
-                        (HostServices)stage.getProperties().get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY);
-                tmpHostServices.showDocument(GlobalConstants.DOWNLOAD_SITE_URL);
+                applicationContext.getHostServices().showDocument(GlobalConstants.DOWNLOAD_SITE_URL);
             }
         }
         catch (IOException e) {
@@ -165,7 +162,7 @@ public class MenuBarController extends BaseController {
 
         // Load preferences Pane
         FXMLUtil.ControllerRegionPair<PreferencesPaneController, Pane> tmpPreferencesPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", app);
+                FXMLUtil.loadAndRampUpRegion("view/PreferencesPane.fxml", applicationContext);
         Pane tmpPreferencesPane = tmpPreferencesPaneControllerRegionPair.getRegion();
         PreferencesPaneController tmpPreferencesPaneController =
                 tmpPreferencesPaneControllerRegionPair.getController();
@@ -184,6 +181,7 @@ public class MenuBarController extends BaseController {
 
             try {
 
+                //noinspection unchecked
                 PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
                         tmpQuickDescriptionWordsPropertiesPair);
 
@@ -225,7 +223,7 @@ public class MenuBarController extends BaseController {
 
         // Load manage tenants Pane
         FXMLUtil.ControllerRegionPair<ManageTenantsPaneController, Pane> tmpManageTenantsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", app);
+                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", applicationContext);
         Pane tmpManageTenantsPane = tmpManageTenantsPaneControllerRegionPair.getRegion();
         ManageTenantsPaneController tmpManageTenantsPaneController =
                 tmpManageTenantsPaneControllerRegionPair.getController();
@@ -250,13 +248,13 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleOpenFilesMenuItemAction() {
 
-        importFreshFilesList(app.getApplicationServices().requestMultipleFilesSelection(stage));
+        importFreshFilesList(applicationContext.getApplicationServices().requestMultipleFilesSelection(stage));
     }
 
     @FXML
     protected void handleOpenDirectoryMenuItemAction() {
 
-        importFreshDirectory(app.getApplicationServices().requestDirectorySelection(stage));
+        importFreshDirectory(applicationContext.getApplicationServices().requestDirectorySelection(stage));
     }
 
     @FXML
@@ -313,9 +311,7 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleHelpMenuItemAction() {
 
-        HostServices tmpHostServices =
-                (HostServices)stage.getProperties().get(GlobalConstants.HOST_SERVICES_PROPERTY_KEY);
-        tmpHostServices.showDocument(GlobalConstants.WIKI_URL);
+        applicationContext.getHostServices().showDocument(GlobalConstants.WIKI_URL);
     }
 
     @FXML
@@ -351,7 +347,7 @@ public class MenuBarController extends BaseController {
         // Should App be restarted?
         if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
 
-            app.getApplicationServices().restartApp();
+            applicationContext.getApplicationServices().restartApp();
         }
     }
 

@@ -83,6 +83,7 @@ class PropertiesUtilTest {
         Pair<String, String> tmpQuickDescriptionWordsPropertiesPair =
                 new Pair<>(PropertiesUtil.KEY_QUICK_DESCRIPTION_WORDS, "ha,hi,ho");
 
+        //noinspection unchecked
         PropertiesUtil.updateApplicationProperties(tmpArchivingPathPropertiesPair,
                 tmpQuickDescriptionWordsPropertiesPair);
 

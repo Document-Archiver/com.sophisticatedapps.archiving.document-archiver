@@ -73,7 +73,7 @@ class ManageTenantsPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<ManageTenantsPaneController,Pane> tmpPreferencesPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", getApp(aStage));
+                FXMLUtil.loadAndRampUpRegion("view/ManageTenantsPane.fxml", getApplicationContext(aStage));
         manageTenantsPane = tmpPreferencesPaneControllerRegionPair.getRegion();
         manageTenantsPaneController = tmpPreferencesPaneControllerRegionPair.getController();
     }

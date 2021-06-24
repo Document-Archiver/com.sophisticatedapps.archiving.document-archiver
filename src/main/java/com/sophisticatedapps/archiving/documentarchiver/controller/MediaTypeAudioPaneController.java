@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -52,9 +53,9 @@ public class MediaTypeAudioPaneController extends BaseController {
     private Button stopButton;
 
     @Override
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         // Listener for when the pane is "closed" (aNewParent == null) -> stop MediaPlayer
         mediaTypePane.parentProperty().addListener((anObs, anOldParent, aNewParent) -> {

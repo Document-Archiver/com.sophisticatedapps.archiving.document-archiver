@@ -16,8 +16,8 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.controller.BaseController;
 import javafx.fxml.FXMLLoader;
 
@@ -35,26 +35,26 @@ public class FXMLUtil {
     /**
      * Loads a Region object and ramps up its controller.
      *
-     * @param   aFxmlResource   FXML-resource to load.
-     * @param   anApp           Current App instance.
+     * @param   aFxmlResource           FXML-resource to load.
+     * @param   anApplicationContext    An ApplicationContext instance.
      * @return  A ControllerRegionPair object.
      */
     public static <C extends BaseController,R> ControllerRegionPair<C,R>
-            loadAndRampUpRegion(String aFxmlResource, App anApp) {
+            loadAndRampUpRegion(String aFxmlResource, ApplicationContext anApplicationContext) {
 
-        return loadAndRampUpRegion(aFxmlResource, anApp, GlobalConstants.DEFAULT_RESOURCE_LOAD_CONTEXT);
+        return loadAndRampUpRegion(aFxmlResource, anApplicationContext, GlobalConstants.DEFAULT_RESOURCE_LOAD_CONTEXT);
     }
 
     /**
      * Loads a Region object and ramps up its controller.
      *
      * @param   aFxmlResource           FXML-resource to load.
-     * @param   anApp                   Current App instance.
+     * @param   anApplicationContext    An ApplicationContext instance.
      * @param   aResourceLoadContext    A ResourceLoadContext to find (language-)resources.
      * @return  A ControllerRegionPair object.
      */
-    public static <C extends BaseController,R> ControllerRegionPair<C,R>
-            loadAndRampUpRegion(String aFxmlResource, App anApp, ResourceLoadContext aResourceLoadContext) {
+    public static <C extends BaseController,R> ControllerRegionPair<C,R> loadAndRampUpRegion(
+            String aFxmlResource, ApplicationContext anApplicationContext, ResourceLoadContext aResourceLoadContext) {
 
         try {
 
@@ -68,7 +68,7 @@ public class FXMLUtil {
 
             if (!Objects.isNull(tmpBaseController)) {
 
-                tmpBaseController.rampUp(anApp);
+                tmpBaseController.rampUp(anApplicationContext);
             }
 
             return (new ControllerRegionPair<>(tmpBaseController, tmpRegion));

@@ -72,7 +72,7 @@ class InfoPaneTest extends BaseTest {
         tmpRegionLoader.setControllerFactory(aParam -> Mockito.spy(new TestInfoPaneController()));
         infoPane = tmpRegionLoader.load();
         infoPaneController = tmpRegionLoader.getController();
-        infoPaneController.rampUp(getApp(aStage));
+        infoPaneController.rampUp(getApplicationContext(aStage));
 
         aStage.setScene(new Scene(infoPane));
         aStage.show();

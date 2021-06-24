@@ -18,6 +18,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import com.sun.jna.Platform; // NOSONAR
@@ -111,9 +112,9 @@ public class DisplayFilePaneController extends BaseController {
     }
 
     @Override
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         // Add listener
         final ChangeListener<Number> tmpPaneWidthPropertyListener =
@@ -190,7 +191,7 @@ public class DisplayFilePaneController extends BaseController {
                 Class<? extends DisplayFileNodeAssembler> tmpFileNodeAssemblerClass =
                         NODE_ASSEMBLER_BY_FILETYPE.get(FileUtil.getFiletype(aNewCurrentDocument));
                 Node tmpFileDisplayNode = tmpFileNodeAssemblerClass.getDeclaredConstructor().newInstance().assemble(
-                        this, aNewCurrentDocument, app, displayFilePane.getPrefWidth(), tmpPrefHeight);
+                        this, aNewCurrentDocument, applicationContext, displayFilePane.getPrefWidth(), tmpPrefHeight);
 
                 boolean tmpFileTypeInternallySupported =
                         (DisplayUnsupportedFiletypeNodeAssembler.class != tmpFileNodeAssemblerClass);
@@ -225,15 +226,15 @@ public class DisplayFilePaneController extends BaseController {
 
     private interface DisplayFileNodeAssembler {
 
-        Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                        double aPrefWidth, double aPrefHeight);
+        Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                        ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight);
     }
 
     protected static class DisplayUnsupportedFiletypeNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             aDisplayFilePaneController.openExternalViewer(aFile);
 
@@ -257,8 +258,8 @@ public class DisplayFilePaneController extends BaseController {
         }
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             try {
 
@@ -285,8 +286,8 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayImageNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             ImageUtil.OrientationInformation tmpOrientationInformation = ImageUtil.getOrientationInformation(aFile);
             double tmpImageRotationCw = tmpOrientationInformation.getRotationCw();
@@ -342,8 +343,8 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayHeicImageNodeAssembler extends DisplayImageNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController,
-                               File aFile, App anApp, double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             // We only support HEIC on Macs
             if (Platform.isMac()) {
@@ -353,8 +354,8 @@ public class DisplayFilePaneController extends BaseController {
                     // Create JPG from HEIC
                     File tmpTempFile = ProcessesUtil.createTempJpg(aFile);
 
-                    Region tmpReturn =
-                            super.assemble(aDisplayFilePaneController, tmpTempFile, anApp, aPrefWidth, aPrefHeight);
+                    Region tmpReturn = super.assemble(
+                            aDisplayFilePaneController, tmpTempFile, anApplicationContext, aPrefWidth, aPrefHeight);
 
                     Files.delete(tmpTempFile.toPath());
 
@@ -368,7 +369,7 @@ public class DisplayFilePaneController extends BaseController {
             else {
 
                 return ((new DisplayUnsupportedFiletypeNodeAssembler())
-                        .assemble(aDisplayFilePaneController, aFile, anApp, aPrefWidth, aPrefHeight));
+                        .assemble(aDisplayFilePaneController, aFile, anApplicationContext, aPrefWidth, aPrefHeight));
             }
         }
     }
@@ -376,15 +377,15 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayAudioNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             try {
 
                 FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioPane.fxml"));
                 VBox tmpMediaTypeAudioPane = tmpLoader.load();
                 MediaTypeAudioPaneController tmpMediaTypeAudioPaneController = tmpLoader.getController();
-                tmpMediaTypeAudioPaneController.rampUp(anApp);
+                tmpMediaTypeAudioPaneController.rampUp(anApplicationContext);
 
                 setupMediaView(tmpMediaTypeAudioPaneController, tmpMediaTypeAudioPane, aFile, aPrefWidth, aPrefHeight);
 
@@ -428,15 +429,15 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayVideoNodeAssembler extends DisplayAudioNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             try {
 
                 FXMLLoader tmpLoader = new FXMLLoader(App.class.getResource("view/MediaTypeAudioVideoPane.fxml"));
                 VBox tmpMediaTypeAudioVideoPane = tmpLoader.load();
                 MediaTypeAudioVideoPaneController tmpMediaTypeAudioVideoPaneController = tmpLoader.getController();
-                tmpMediaTypeAudioVideoPaneController.rampUp(anApp);
+                tmpMediaTypeAudioVideoPaneController.rampUp(anApplicationContext);
 
                 setupMediaView(tmpMediaTypeAudioVideoPaneController, tmpMediaTypeAudioVideoPane, aFile, aPrefWidth,
                         aPrefHeight);
@@ -460,8 +461,8 @@ public class DisplayFilePaneController extends BaseController {
     protected abstract static class AbstractAsciiBasedNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             try (BufferedInputStream tmpInputStream = new BufferedInputStream(new FileInputStream(aFile))) {
 
@@ -477,7 +478,7 @@ public class DisplayFilePaneController extends BaseController {
 
                 // Assemble the view
                 return assemble(aDisplayFilePaneController, tmpByteArrayOutputStream.toString(
-                        Charset.defaultCharset().toString()), anApp, aPrefWidth, aPrefHeight);
+                        Charset.defaultCharset().toString()), anApplicationContext, aPrefWidth, aPrefHeight);
             }
             catch (Exception e) {
 
@@ -486,14 +487,14 @@ public class DisplayFilePaneController extends BaseController {
         }
 
         protected abstract Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent,
-                                           App anApp, double aPrefWidth, double aPrefHeight);
+                                           ApplicationContext anApplicationCtx, double aPrefWidth, double aPrefHeight);
     }
 
     protected static class DisplayTextNodeAssembler extends AbstractAsciiBasedNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             // Creating a TextArea for the text
             TextArea tmpTextAreaView = new TextArea();
@@ -511,8 +512,8 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplaySvgNodeAssembler extends AbstractAsciiBasedNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, String aFileContent,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             // Creating a WebView for the SVG
             WebView tmpWebView = new WebView();
@@ -536,8 +537,8 @@ public class DisplayFilePaneController extends BaseController {
     protected abstract static class AbstractDisplayDocNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             try {
 
@@ -617,11 +618,11 @@ public class DisplayFilePaneController extends BaseController {
     protected static class DisplayZipNodeAssembler implements DisplayFileNodeAssembler {
 
         @Override
-        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile, App anApp,
-                               double aPrefWidth, double aPrefHeight) {
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             FXMLUtil.ControllerRegionPair<FileSystemViewPaneController, Pane> tmpDisplayFilePaneControllerRegionPair =
-                    FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", anApp);
+                    FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", anApplicationContext);
             Pane tmpFileSystemViewPane = tmpDisplayFilePaneControllerRegionPair.getRegion();
             FileSystemViewPaneController tmpFileSystemViewPaneController =
                     tmpDisplayFilePaneControllerRegionPair.getController();

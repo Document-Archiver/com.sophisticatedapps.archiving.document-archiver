@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.StringUtil;
@@ -33,9 +33,9 @@ public class PreferencesPaneController extends BaseController {
     private TextArea quickDescriptionWordsTextArea;
 
     @Override
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         archivingFolderTextField.setText(DirectoryUtil.getCoreArchivingFolder().getPath());
         quickDescriptionWordsTextArea.setText(PropertiesUtil.QUICK_DESCRIPTION_WORDS);

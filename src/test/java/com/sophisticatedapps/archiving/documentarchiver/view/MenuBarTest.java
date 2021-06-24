@@ -74,7 +74,7 @@ class MenuBarTest extends BaseTest {
         tmpLoader.setControllerFactory(aParam -> Mockito.spy(new TestMenuBarController()));
         menuBar = tmpLoader.load();
         menuBarController = tmpLoader.getController();
-        menuBarController.rampUp(getApp(aStage));
+        menuBarController.rampUp(getApplicationContext(aStage));
 
         aStage.setScene(new Scene(menuBar));
         aStage.setHeight(250);

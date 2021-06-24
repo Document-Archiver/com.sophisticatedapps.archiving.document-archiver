@@ -54,7 +54,7 @@ class DocumentsPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<DocumentsPaneController,Pane> tmpDocumentsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", getApp(aStage));
+                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", getApplicationContext(aStage));
         documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         documentsPaneController = tmpDocumentsPaneControllerRegionPair.getController();
     }

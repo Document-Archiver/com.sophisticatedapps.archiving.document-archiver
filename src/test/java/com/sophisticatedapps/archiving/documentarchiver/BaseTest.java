@@ -16,7 +16,10 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
+import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
+import javafx.application.HostServices;
 import javafx.event.EventType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -89,7 +92,7 @@ public abstract class BaseTest {
     }
 
     protected static App getApp(
-            Stage aStage, ApplicationServices anApplicationServices, App.DialogProvider aDialogProvider) {
+            Stage aStage, ApplicationServices anApplicationServices, DialogProvider aDialogProvider) {
 
         App tmpApp = new App(anApplicationServices, aDialogProvider);
 
@@ -103,6 +106,28 @@ public abstract class BaseTest {
         }
 
         return tmpApp;
+    }
+
+    protected static ApplicationContext getApplicationContext(Stage aStage) {
+
+        return getApplicationContext(aStage, null);
+    }
+
+    protected static ApplicationContext getApplicationContext(Stage aStage, HostServices aHostServices) {
+
+        return getApplicationContext(aStage, aHostServices, null);
+    }
+
+    protected static ApplicationContext getApplicationContext(Stage aStage, HostServices aHostServices,
+                                                              ApplicationServices anApplicationServices) {
+
+        return getApplicationContext(aStage, aHostServices, anApplicationServices, null);
+    }
+
+    protected static ApplicationContext getApplicationContext(Stage aStage, HostServices aHostServices,
+            ApplicationServices anApplicationServices, DialogProvider aDialogProvider) {
+
+        return (new App.DefaultApplicationContext(anApplicationServices, aDialogProvider, aHostServices, aStage));
     }
 
 }

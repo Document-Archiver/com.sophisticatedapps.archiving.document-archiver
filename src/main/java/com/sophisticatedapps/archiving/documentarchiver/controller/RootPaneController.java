@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.sophisticatedapps.archiving.documentarchiver.App;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.LanguageUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.PropertiesUtil;
@@ -47,21 +47,21 @@ public class RootPaneController extends BaseController {
     private BorderPane rootPane;
 
     @Override
-    public void rampUp(App anApp) {
+    public void rampUp(ApplicationContext anApplicationContext) {
 
-        super.rampUp(anApp);
+        super.rampUp(anApplicationContext);
 
         // Load pane's sub-panes
         FXMLUtil.ControllerRegionPair<MenuBarController,MenuBar> tmpMenuBarControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/MenuBar.fxml", app);
+                FXMLUtil.loadAndRampUpRegion("view/MenuBar.fxml", applicationContext);
         FXMLUtil.ControllerRegionPair<DocumentsPaneController,Pane> tmpDocumentsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", app);
+                FXMLUtil.loadAndRampUpRegion("view/DocumentsPane.fxml", applicationContext);
         FXMLUtil.ControllerRegionPair<DisplayFilePaneController,Pane> tmpDisplayFilePaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", app);
+                FXMLUtil.loadAndRampUpRegion("view/DisplayFilePane.fxml", applicationContext);
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpInfoPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", app);
+                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", applicationContext);
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpDragAndDropPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/DragAndDropPane.fxml", app);
+                FXMLUtil.loadAndRampUpRegion("view/DragAndDropPane.fxml", applicationContext);
 
         documentsPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         displayFilePane = tmpDisplayFilePaneControllerRegionPair.getRegion();

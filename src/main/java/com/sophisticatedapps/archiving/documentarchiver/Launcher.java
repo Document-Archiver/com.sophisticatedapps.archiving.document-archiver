@@ -37,8 +37,7 @@ public class Launcher {
                 // Wait in case stage is not ready yet.
                 Awaitility.await().atMost(5, TimeUnit.SECONDS).until(Launcher::isStageReady);
 
-                App.setFilesListToStageProperties(
-                        App.externalPathStringToFilesList(aPath), primaryStage.getProperties());
+                App.setFilesListToStageProperties(App.externalPathStringToFilesList(aPath), primaryStage);
             }
             catch (IOException e) {
 

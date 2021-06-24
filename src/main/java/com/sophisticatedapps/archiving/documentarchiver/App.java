@@ -17,9 +17,12 @@
 package com.sophisticatedapps.archiving.documentarchiver;
 
 import com.restart4j.ApplicationRestart;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
+import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
@@ -68,7 +71,7 @@ public class App extends Application {
 
         this.applicationServices =
                 (Objects.isNull(anApplicationServices) ? (new DefaultApplicationServices()) : anApplicationServices);
-        this.dialogProvider = (Objects.isNull(aDialogProvider) ? (new DialogProvider()) : aDialogProvider);
+        this.dialogProvider = (Objects.isNull(aDialogProvider) ? (new DefaultDialogProvider()) : aDialogProvider);
     }
 
     /**
@@ -99,13 +102,10 @@ public class App extends Application {
         aPrimaryStage.setWidth(tmpBounds.getWidth());
         aPrimaryStage.setHeight(tmpBounds.getHeight());
 
-        // Set stage properties
-        ObservableMap<Object, Object> tmpStageProperties = aPrimaryStage.getProperties();
-        tmpStageProperties.put(GlobalConstants.HOST_SERVICES_PROPERTY_KEY, this.getHostServices());
-
         // Create root pane
-        BorderPane tmpRootPane =
-                (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", this).getRegion();
+        BorderPane tmpRootPane = (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml",
+                (new DefaultApplicationContext(applicationServices, dialogProvider, this.getHostServices(),
+                        aPrimaryStage))).getRegion();
 
         // Check if we received a file to use via command line parameter
         String tmpFirstParameter = getFirstParameter();
@@ -115,7 +115,7 @@ public class App extends Application {
             // Set files from args to stage properties (will trigger the panes)
             try {
 
-                setFilesListToStageProperties(externalPathStringToFilesList(tmpFirstParameter), tmpStageProperties);
+                setFilesListToStageProperties(externalPathStringToFilesList(tmpFirstParameter), aPrimaryStage);
             }
             catch (IOException e) {
 
@@ -137,16 +137,6 @@ public class App extends Application {
 
             scheduleWelcomeDialog();
         }
-    }
-
-    public Stage getPrimaryStage() {
-
-        return primaryStage;
-    }
-
-    public ApplicationServices getApplicationServices() {
-
-        return applicationServices;
     }
 
     private String getFirstParameter() {
@@ -230,7 +220,7 @@ public class App extends Application {
                 if (!tmpWrapperList.isEmpty()) {
 
                     tmpWrapperList.sort(Comparator.naturalOrder());
-                    setFilesListToStageProperties(tmpWrapperList, primaryStage.getProperties());
+                    setFilesListToStageProperties(tmpWrapperList, primaryStage);
                 }
                 else {
 
@@ -247,7 +237,7 @@ public class App extends Application {
                 // We have to wrap the result in a new List, since the given List may not be modifiable.
                 List<File> tmpWrapperList = new ArrayList<>(tmpFilesList);
                 tmpWrapperList.sort(Comparator.naturalOrder());
-                setFilesListToStageProperties(tmpWrapperList, primaryStage.getProperties());
+                setFilesListToStageProperties(tmpWrapperList, primaryStage);
             }
         }
     }
@@ -278,14 +268,15 @@ public class App extends Application {
         }
     }
 
-    protected static void setFilesListToStageProperties(List<File> aFilesList, ObservableMap<Object, Object> aStageProperties) {
+    protected static void setFilesListToStageProperties(List<File> aFilesList, Stage aStage) {
 
         if (!CollectionUtil.isNullOrEmpty(aFilesList)) {
 
             runLaterOrNowIfOnFXThread(() -> {
 
-                aStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aFilesList);
-                aStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aFilesList.get(0));
+                ObservableMap<Object,Object> tmpStageProperties = aStage.getProperties();
+                tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aFilesList);
+                tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aFilesList.get(0));
             });
         }
     }
@@ -318,8 +309,9 @@ public class App extends Application {
         }
     }
 
-    protected static class DialogProvider {
+    protected static class DefaultDialogProvider implements DialogProvider {
 
+        @Override
         public Dialog<ButtonType> provideWelcomeDialog() {
 
             ImageView tmpImageView = new ImageView(GlobalConstants.APP_ICON);
@@ -343,6 +335,7 @@ public class App extends Application {
             return tmpDialog;
         }
 
+        @Override
         public Alert provideDirectoryDoesNotContainFilesAlert() {
 
             return (new Alert(Alert.AlertType.WARNING,
@@ -350,13 +343,55 @@ public class App extends Application {
                     ButtonType.CLOSE));
         }
 
+        @Override
         public Alert provideExceptionAlert(String aMsg) {
 
             return (new Alert(Alert.AlertType.ERROR, aMsg, ButtonType.CLOSE));
         }
     }
 
-    private static class DefaultApplicationServices implements ApplicationServices {
+    protected static class DefaultApplicationContext implements ApplicationContext {
+
+        private final ApplicationServices applicationServices;
+        private final DialogProvider dialogProvider;
+        private final HostServices hostServices;
+        private final Stage primaryStage;
+
+        public DefaultApplicationContext(ApplicationServices anApplicationServices, DialogProvider aDialogProvider,
+                                         HostServices aHostServices, Stage aPrimaryStage) {
+
+            applicationServices = anApplicationServices;
+            dialogProvider = aDialogProvider;
+            hostServices = aHostServices;
+            primaryStage = aPrimaryStage;
+        }
+
+        @Override
+        public ApplicationServices getApplicationServices() {
+
+            return applicationServices;
+        }
+
+        @Override
+        public DialogProvider getDialogProvider() {
+
+            return dialogProvider;
+        }
+
+        @Override
+        public HostServices getHostServices() {
+
+            return hostServices;
+        }
+
+        @Override
+        public Stage getPrimaryStage() {
+
+            return primaryStage;
+        }
+    }
+
+    protected static class DefaultApplicationServices implements ApplicationServices {
 
         private static final DirectoryChooser DIRECTORY_CHOOSER = new DirectoryChooser();
         private static final FileChooser FILE_CHOOSER = new FileChooser();

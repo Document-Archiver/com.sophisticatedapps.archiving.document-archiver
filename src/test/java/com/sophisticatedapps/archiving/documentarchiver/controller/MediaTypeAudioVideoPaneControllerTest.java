@@ -54,7 +54,7 @@ class MediaTypeAudioVideoPaneControllerTest extends BaseTest {
 
         FXMLUtil.ControllerRegionPair<MediaTypeAudioVideoPaneController, Pane>
                 tmpMediaTypeAudioVideoPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioVideoPane.fxml", getApp(aStage));
+                FXMLUtil.loadAndRampUpRegion("view/MediaTypeAudioVideoPane.fxml", getApplicationContext(aStage));
         //mediaTypeAudioVideoPane = tmpMediaTypeAudioVideoPaneControllerRegionPair.getRegion();
         mediaTypeAudioVideoPaneController = tmpMediaTypeAudioVideoPaneControllerRegionPair.getController();
     }

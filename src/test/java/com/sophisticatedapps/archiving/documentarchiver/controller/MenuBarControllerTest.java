@@ -85,7 +85,8 @@ class MenuBarControllerTest extends BaseTest {
         //menuBar =
         tmpLoader.load();
         menuBarController = tmpLoader.getController();
-        menuBarController.rampUp(getApp(aStage, tmpMockedApplicationServices));
+        menuBarController.rampUp(
+                getApplicationContext(aStage, Mockito.mock(HostServices.class), tmpMockedApplicationServices));
     }
 
     @AfterEach
@@ -117,9 +118,6 @@ class MenuBarControllerTest extends BaseTest {
     @Test
     void handleCheckForUpdatesMenuItemAction() throws IllegalAccessException, IOException {
 
-        HostServices tmpMockedHostServices = Mockito.mock(HostServices.class);
-        menuBarController.stage.getProperties().put(GlobalConstants.HOST_SERVICES_PROPERTY_KEY, tmpMockedHostServices);
-
         Alert tmpMockedUpdateCheckDialog = Mockito.mock(Alert.class);
         BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
         when(tmpMockedDialogProvider.provideUpdateCheckDialog()).thenReturn(tmpMockedUpdateCheckDialog);
@@ -129,14 +127,16 @@ class MenuBarControllerTest extends BaseTest {
         when(tmpMockedUpdateCheckDialog.showAndWait()).thenReturn(Optional.of(ButtonType.CANCEL));
         menuBarController.handleCheckForUpdatesMenuItemAction();
         verify(tmpMockedUpdateCheckDialog, Mockito.times(1)).showAndWait();
-        verify(tmpMockedHostServices, Mockito.times(0)).showDocument(any(String.class));
+        verify(menuBarController.applicationContext.getHostServices(),
+                Mockito.times(0)).showDocument(any(String.class));
 
         // Second run with "open download site" button
         when(tmpMockedUpdateCheckDialog.showAndWait()).thenReturn(
                 Optional.of(new ButtonType("Foo", ButtonBar.ButtonData.LEFT)));
         menuBarController.handleCheckForUpdatesMenuItemAction();
         verify(tmpMockedUpdateCheckDialog, Mockito.times(2)).showAndWait();
-        verify(tmpMockedHostServices, Mockito.times(1)).showDocument(any(String.class));
+        verify(menuBarController.applicationContext.getHostServices(),
+                Mockito.times(1)).showDocument(any(String.class));
     }
 
     @Test
@@ -184,7 +184,7 @@ class MenuBarControllerTest extends BaseTest {
         Platform.runLater(() -> menuBarController.handlePreferencesMenuItemAction());
         WaitForAsyncUtils.waitForFxEvents();
 
-        verify(menuBarController.app.getApplicationServices(), Mockito.times(1)).restartApp();
+        verify(menuBarController.applicationContext.getApplicationServices(), Mockito.times(1)).restartApp();
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
@@ -272,7 +272,7 @@ class MenuBarControllerTest extends BaseTest {
         Platform.runLater(() -> menuBarController.handleChangeTenantMenuItemAction(tmpMockedActionEvent));
         WaitForAsyncUtils.waitForFxEvents();
 
-        verify(menuBarController.app.getApplicationServices(), Mockito.times(1)).restartApp();
+        verify(menuBarController.applicationContext.getApplicationServices(), Mockito.times(1)).restartApp();
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
@@ -434,12 +434,10 @@ class MenuBarControllerTest extends BaseTest {
     @Test
     void handleHelpMenuItemAction() {
 
-        HostServices tmpMockedHostServices = Mockito.mock(HostServices.class);
-        menuBarController.stage.getProperties().put(GlobalConstants.HOST_SERVICES_PROPERTY_KEY, tmpMockedHostServices);
-
         menuBarController.handleHelpMenuItemAction();
 
-        verify(tmpMockedHostServices, Mockito.times(1)).showDocument(any(String.class));
+        verify(menuBarController.applicationContext.getHostServices(),
+                Mockito.times(1)).showDocument(any(String.class));
     }
 
     @Test
@@ -498,7 +496,7 @@ class MenuBarControllerTest extends BaseTest {
         Platform.runLater(() -> menuBarController.handleChangeLanguageMenuItemAction(tmpMockedActionEvent));
         WaitForAsyncUtils.waitForFxEvents();
 
-        verify(menuBarController.app.getApplicationServices(), Mockito.times(1)).restartApp();
+        verify(menuBarController.applicationContext.getApplicationServices(), Mockito.times(1)).restartApp();
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",

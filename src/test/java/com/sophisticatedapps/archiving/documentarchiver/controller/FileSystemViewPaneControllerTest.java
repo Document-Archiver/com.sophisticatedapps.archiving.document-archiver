@@ -45,7 +45,7 @@ class FileSystemViewPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
         FXMLUtil.ControllerRegionPair<FileSystemViewPaneController, Pane> tmpDocumentsPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", getApp(aStage));
+                FXMLUtil.loadAndRampUpRegion("view/FileSystemViewPane.fxml", getApplicationContext(aStage));
         fileSystemViewPane = tmpDocumentsPaneControllerRegionPair.getRegion();
         fileSystemViewPaneController = tmpDocumentsPaneControllerRegionPair.getController();
     }
