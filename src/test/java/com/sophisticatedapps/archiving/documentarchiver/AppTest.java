@@ -32,7 +32,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -433,55 +432,6 @@ class AppTest extends BaseTest {
         IOException tmpException = new IOException("File not good.", (new IOException("Path invalid.")));
         (new App()).showError(Thread.currentThread(), tmpException);
         assertEquals("File not good. (Path invalid.)", outputStreamCaptor.toString().trim());
-    }
-
-    @Test
-    void testDialogProvider_provideWelcomeDialog() {
-
-        DialogProvider tmpDialogProvider = new App.DefaultDialogProvider();
-        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideWelcomeDialog()));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
-        assertNotNull(tmpDialog);
-        assertSame(GlobalConstants.APP_ICON, ((ImageView)tmpDialog.getGraphic()).getImage());
-        assertEquals("Welcome to Document Archiver", tmpDialog.getTitle());
-        assertEquals("Thanks for using Document Archiver!", tmpDialog.getHeaderText());
-        assertTrue(tmpDialog.getContentText().startsWith("Next you will have to choose what you want to archive."));
-    }
-
-
-    @Test
-    void testDialogProvider_provideDirectoryDoesNotContainFilesAlert() {
-
-        DialogProvider tmpDialogProvider = new App.DefaultDialogProvider();
-        final List<Alert> tmpAlertList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideDirectoryDoesNotContainFilesAlert()));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Alert tmpAlert = tmpAlertList.get(0);
-        assertNotNull(tmpAlert);
-        assertEquals("The chosen directory doesn't contain files.", tmpAlert.getContentText());
-    }
-
-    @Test
-    void testDialogProvider_provideExceptionAlert() {
-
-        DialogProvider tmpDialogProvider = new App.DefaultDialogProvider();
-        final List<Alert> tmpAlertList = new ArrayList<>();
-
-        Platform.runLater(() -> tmpAlertList.add(tmpDialogProvider.provideExceptionAlert("This is a test")));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Alert tmpAlert = tmpAlertList.get(0);
-        assertNotNull(tmpAlert);
-        assertEquals("This is a test", tmpAlert.getContentText());
     }
 
 }

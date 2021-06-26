@@ -19,6 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -304,7 +305,10 @@ public class MenuBarController extends BaseController {
         }
 
         Stage tmpPluginStage = assembleSubStage(0.9);
-        PluginUtil.fireArchiveBrowsingPlugin(tmpPluginStage);
+        ApplicationContext tmpApplicationContext = new DefaultApplicationContext(
+                applicationContext.getApplicationServices(), applicationContext.getDialogProvider(),
+                applicationContext.getHostServices(), tmpPluginStage);
+        PluginUtil.fireArchiveBrowsingPlugin(tmpApplicationContext);
         tmpPluginStage.show();
     }
 

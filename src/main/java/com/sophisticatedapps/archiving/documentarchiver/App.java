@@ -16,25 +16,20 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.restart4j.ApplicationRestart;
-import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationContext;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationServices;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultDialogProvider;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.Application;
-import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -306,112 +301,6 @@ public class App extends Application {
         else {
 
             System.err.println(tmpMsg); // NOSONAR
-        }
-    }
-
-    protected static class DefaultDialogProvider implements DialogProvider {
-
-        @Override
-        public Dialog<ButtonType> provideWelcomeDialog() {
-
-            ImageView tmpImageView = new ImageView(GlobalConstants.APP_ICON);
-            tmpImageView.setFitWidth(80);
-            tmpImageView.setFitHeight(80);
-
-            ButtonType tmpOpenFilesButtonType = new ButtonType(
-                    LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.open-files-button.text"),
-                    ButtonBar.ButtonData.YES);
-            ButtonType tmpOpenDirectoryButtonType = new ButtonType(
-                    LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.open-directory-button.text"),
-                    ButtonBar.ButtonData.NO);
-
-            Dialog<ButtonType> tmpDialog = new Dialog<>();
-            tmpDialog.setGraphic(tmpImageView);
-            tmpDialog.setTitle(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.title"));
-            tmpDialog.setHeaderText(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.header-text"));
-            tmpDialog.setContentText(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.content-text"));
-            tmpDialog.getDialogPane().getButtonTypes().addAll(tmpOpenFilesButtonType, tmpOpenDirectoryButtonType);
-
-            return tmpDialog;
-        }
-
-        @Override
-        public Alert provideDirectoryDoesNotContainFilesAlert() {
-
-            return (new Alert(Alert.AlertType.WARNING,
-                    LanguageUtil.i18n("menu-bar-controller.dialog-provider.directory-does-not-contain-files-alert"),
-                    ButtonType.CLOSE));
-        }
-
-        @Override
-        public Alert provideExceptionAlert(String aMsg) {
-
-            return (new Alert(Alert.AlertType.ERROR, aMsg, ButtonType.CLOSE));
-        }
-    }
-
-    protected static class DefaultApplicationContext implements ApplicationContext {
-
-        private final ApplicationServices applicationServices;
-        private final DialogProvider dialogProvider;
-        private final HostServices hostServices;
-        private final Stage primaryStage;
-
-        public DefaultApplicationContext(ApplicationServices anApplicationServices, DialogProvider aDialogProvider,
-                                         HostServices aHostServices, Stage aPrimaryStage) {
-
-            applicationServices = anApplicationServices;
-            dialogProvider = aDialogProvider;
-            hostServices = aHostServices;
-            primaryStage = aPrimaryStage;
-        }
-
-        @Override
-        public ApplicationServices getApplicationServices() {
-
-            return applicationServices;
-        }
-
-        @Override
-        public DialogProvider getDialogProvider() {
-
-            return dialogProvider;
-        }
-
-        @Override
-        public HostServices getHostServices() {
-
-            return hostServices;
-        }
-
-        @Override
-        public Stage getPrimaryStage() {
-
-            return primaryStage;
-        }
-    }
-
-    protected static class DefaultApplicationServices implements ApplicationServices {
-
-        private static final DirectoryChooser DIRECTORY_CHOOSER = new DirectoryChooser();
-        private static final FileChooser FILE_CHOOSER = new FileChooser();
-
-        @Override
-        public File requestDirectorySelection(Stage aStage) {
-
-            return DIRECTORY_CHOOSER.showDialog(aStage);
-        }
-
-        @Override
-        public List<File> requestMultipleFilesSelection(Stage aStage) {
-
-            return FILE_CHOOSER.showOpenMultipleDialog(aStage);
-        }
-
-        @Override
-        public void restartApp() {
-
-            ApplicationRestart.builder().build().restartApp();
         }
     }
 

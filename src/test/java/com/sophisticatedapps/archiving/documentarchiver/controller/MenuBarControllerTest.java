@@ -19,8 +19,10 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -427,7 +429,10 @@ class MenuBarControllerTest extends BaseTest {
         ReadOnlyDoubleProperty tmpMockedReadOnlyDoubleProperty = Mockito.mock(ReadOnlyDoubleProperty.class);
         when(tmpMockedStage.widthProperty()).thenReturn(tmpMockedReadOnlyDoubleProperty);
         when(tmpMockedStage.heightProperty()).thenReturn(tmpMockedReadOnlyDoubleProperty);
-        PluginUtil.fireArchiveBrowsingPlugin(tmpMockedStage);
+
+        ApplicationContext tmpApplicationContext = new DefaultApplicationContext(null, null, null, tmpMockedStage);
+        PluginUtil.fireArchiveBrowsingPlugin(tmpApplicationContext);
+
         verify(tmpMockedStage, Mockito.times(1)).setScene(any(Scene.class));
     }
 

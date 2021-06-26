@@ -16,16 +16,14 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.api;
 
-import javafx.stage.Stage;
-
 public interface ArchiveBrowsingService {
 
     /**
      * Called to start the browsing.
      *
-     * @param   aStage  Stage to use by the plugin.
+     * @param   anApplicationContext  ApplicationContext to use by the plugin.
      */
-    void assemble(Stage aStage);
+    void assemble(ApplicationContext anApplicationContext);
 
     /**
      * Return the service's version.

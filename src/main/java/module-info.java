@@ -28,6 +28,7 @@ module DocumentArchiver {
     opens com.sophisticatedapps.archiving.documentarchiver.type;
     opens com.sophisticatedapps.archiving.documentarchiver.util;
     opens com.sophisticatedapps.archiving.documentarchiver.view;
+    opens com.sophisticatedapps.archiving.documentarchiver.api.impl;
 
     exports com.sophisticatedapps.archiving.documentarchiver;
     exports com.sophisticatedapps.archiving.documentarchiver.api;
@@ -35,6 +36,7 @@ module DocumentArchiver {
     exports com.sophisticatedapps.archiving.documentarchiver.model;
     exports com.sophisticatedapps.archiving.documentarchiver.type;
 	exports com.sophisticatedapps.archiving.documentarchiver.util;
+    exports com.sophisticatedapps.archiving.documentarchiver.api.impl;
 
     uses com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 }

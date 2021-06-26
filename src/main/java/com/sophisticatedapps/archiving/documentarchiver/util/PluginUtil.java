@@ -17,9 +17,9 @@
 package com.sophisticatedapps.archiving.documentarchiver.util;
 
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 import io.github.g00fy2.versioncompare.Version;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -150,13 +150,13 @@ public class PluginUtil {
         return (new Version(service.getVersion())).isAtLeast(GlobalConstants.ARCHIVE_BROWSER_PLUGIN_CURRENT_VERSION);
     }
 
-    public static void fireArchiveBrowsingPlugin(Stage aStage) {
+    public static void fireArchiveBrowsingPlugin(ApplicationContext anApplicationContext) {
 
         Thread.currentThread().setContextClassLoader(pluginClassLoader);
         ServiceLoader<ArchiveBrowsingService> loader =
                 ServiceLoader.load(pluginModuleLayer, ArchiveBrowsingService.class);
         ArchiveBrowsingService service = loader.iterator().next();
-        service.assemble(aStage);
+        service.assemble(anApplicationContext);
     }
 
 }

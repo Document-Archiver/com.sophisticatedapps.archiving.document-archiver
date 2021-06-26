@@ -19,6 +19,7 @@ package com.sophisticatedapps.archiving.documentarchiver;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationContext;
 import javafx.application.HostServices;
 import javafx.event.EventType;
 import javafx.scene.input.KeyCode;
@@ -81,11 +82,13 @@ public abstract class BaseTest {
 
     protected static final String NUL_CHARACTER_STRING = String.valueOf('\0');
 
+    @SuppressWarnings("unused")
     protected static App getApp(Stage aStage) {
 
         return getApp(aStage, null);
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected static App getApp(Stage aStage, ApplicationServices anApplicationServices) {
 
         return getApp(aStage, anApplicationServices, null);
@@ -127,7 +130,7 @@ public abstract class BaseTest {
     protected static ApplicationContext getApplicationContext(Stage aStage, HostServices aHostServices,
             ApplicationServices anApplicationServices, DialogProvider aDialogProvider) {
 
-        return (new App.DefaultApplicationContext(anApplicationServices, aDialogProvider, aHostServices, aStage));
+        return (new DefaultApplicationContext(anApplicationServices, aDialogProvider, aHostServices, aStage));
     }
 
 }
