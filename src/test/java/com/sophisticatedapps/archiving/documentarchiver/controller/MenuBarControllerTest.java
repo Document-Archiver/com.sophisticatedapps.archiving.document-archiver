@@ -393,8 +393,8 @@ class MenuBarControllerTest extends BaseTest {
         assertFalse(tmpFullScreenInformationList.get(0));
     }
 
-    //@Test
-    void xhandleArchiveBrowserMenuItemAction() throws IllegalAccessException {
+    @Test
+    void handleArchiveBrowserMenuItemAction() throws IllegalAccessException {
 
         // First round with download denied
         BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
