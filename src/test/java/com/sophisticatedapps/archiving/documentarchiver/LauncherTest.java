@@ -2,7 +2,6 @@ package com.sophisticatedapps.archiving.documentarchiver;
 
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -17,20 +16,27 @@ class LauncherTest {
     void testIsStageReady() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         Stage tmpMockedStage = Mockito.mock(Stage.class);
-        Launcher tmpLauncher = new Launcher();
+        TestLauncher tmpTestLauncher = new TestLauncher();
 
-        Object tmpResult = MethodUtils.invokeStaticMethod(Launcher.class, "isStageReady");
-        assertFalse(((Boolean)tmpResult).booleanValue());
+        assertFalse(tmpTestLauncher.callIsStageReady());
 
         FieldUtils.writeStaticField(Launcher.class, "primaryStage", tmpMockedStage, true);
 
-        tmpResult = MethodUtils.invokeStaticMethod(Launcher.class, "isStageReady");
-        assertFalse(((Boolean)tmpResult).booleanValue());
+        assertFalse(tmpTestLauncher.callIsStageReady());
 
         when(tmpMockedStage.isShowing()).thenReturn(true);
 
-        tmpResult = MethodUtils.invokeStaticMethod(Launcher.class, "isStageReady");
-        assertTrue(((Boolean)tmpResult).booleanValue());
+        assertTrue(tmpTestLauncher.callIsStageReady());
+
+        FieldUtils.writeStaticField(Launcher.class, "primaryStage", null, true);
+    }
+
+    private static class TestLauncher extends Launcher {
+
+        private boolean callIsStageReady() {
+
+            return Launcher.isStageReady();
+        }
     }
 
 }

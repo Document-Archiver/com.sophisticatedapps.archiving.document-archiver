@@ -48,7 +48,7 @@ public class Launcher {
         (new LaunchApp()).fireUp(args);
     }
 
-    public static boolean isStageReady() {
+    protected static boolean isStageReady() {
 
         return ((!Objects.isNull(primaryStage)) && primaryStage.isShowing());
     }
