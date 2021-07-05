@@ -16,8 +16,8 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
-import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.controller.ApplicationController;
 import javafx.application.Application;
 import javafx.application.HostServices;
@@ -214,8 +214,8 @@ class AppTest extends BaseTest {
             return tmpMockedExceptionAlert;
         }).when(tmpMockedDialogProvider).provideExceptionAlert(anyString());
 
-        ApplicationController tmpApplicationController = new ApplicationController(new DefaultApplicationServices(),
-                tmpMockedDialogProvider, null);
+        ApplicationController tmpApplicationController = new ApplicationController(
+                Mockito.mock(ApplicationServices.class), tmpMockedDialogProvider, null);
 
         // Start the App
         Platform.runLater(() -> {
