@@ -1,43 +1,24 @@
 package com.sophisticatedapps.archiving.documentarchiver.api.impl;
 
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
-import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
-import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
-import javafx.application.HostServices;
+import com.sophisticatedapps.archiving.documentarchiver.controller.ApplicationController;
 import javafx.stage.Stage;
 
 public class DefaultApplicationContext implements ApplicationContext {
 
-    private final ApplicationServices applicationServices;
-    private final DialogProvider dialogProvider;
-    private final HostServices hostServices;
+    private final ApplicationController applicationController;
     private final Stage primaryStage;
 
-    public DefaultApplicationContext(ApplicationServices anApplicationServices, DialogProvider aDialogProvider,
-                                     HostServices aHostServices, Stage aPrimaryStage) {
+    public DefaultApplicationContext(ApplicationController anApplicationController, Stage aPrimaryStage) {
 
-        applicationServices = anApplicationServices;
-        dialogProvider = aDialogProvider;
-        hostServices = aHostServices;
+        applicationController = anApplicationController;
         primaryStage = aPrimaryStage;
     }
 
     @Override
-    public ApplicationServices getApplicationServices() {
+    public ApplicationController getApplicationController() {
 
-        return applicationServices;
-    }
-
-    @Override
-    public DialogProvider getDialogProvider() {
-
-        return dialogProvider;
-    }
-
-    @Override
-    public HostServices getHostServices() {
-
-        return hostServices;
+        return applicationController;
     }
 
     @Override

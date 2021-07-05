@@ -5,7 +5,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 
 public interface DialogProvider {
-    Dialog<ButtonType> provideWelcomeDialog();
+
+    Dialog<ButtonType> provideDecideWhatToOpenDialog(boolean aShowWelcomeMessage);
 
     Alert provideDirectoryDoesNotContainFilesAlert();
 

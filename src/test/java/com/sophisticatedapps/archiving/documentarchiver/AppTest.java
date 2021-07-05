@@ -16,8 +16,9 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationServices;
+import com.sophisticatedapps.archiving.documentarchiver.controller.ApplicationController;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -34,7 +35,6 @@ import javafx.scene.control.Dialog;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -205,19 +204,25 @@ class AppTest extends BaseTest {
         doReturn(tmpMockedWidthProperty).when(tmpMockedStage).widthProperty();
         doReturn(tmpMockedHeightProperty).when(tmpMockedStage).heightProperty();
 
-        Alert tmpMockedAlert = Mockito.mock(Alert.class);
         DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
+        Dialog<ButtonType> tmpMockedDwtoDialog = Mockito.mock(Dialog.class);
+        when(tmpMockedDwtoDialog.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
+        when(tmpMockedDialogProvider.provideDecideWhatToOpenDialog(anyBoolean())).thenReturn(tmpMockedDwtoDialog);
+        Alert tmpMockedExceptionAlert = Mockito.mock(Alert.class);
         doAnswer(anInvocationOnMock -> {
             tmpPropertiesMap.put("theErrorMsg", anInvocationOnMock.getArgument(0));
-            return tmpMockedAlert;
+            return tmpMockedExceptionAlert;
         }).when(tmpMockedDialogProvider).provideExceptionAlert(anyString());
+
+        ApplicationController tmpApplicationController = new ApplicationController(new DefaultApplicationServices(),
+                tmpMockedDialogProvider, null);
 
         // Start the App
         Platform.runLater(() -> {
 
             Application.Parameters tmpMockedParameters = Mockito.mock(Application.Parameters.class);
             when(tmpMockedParameters.getRaw()).thenReturn(Collections.singletonList(aParameter));
-            App tmpMockedApp = Mockito.spy(new App(tmpMockedDialogProvider));
+            App tmpMockedApp = Mockito.spy(new App(tmpApplicationController));
             when(tmpMockedApp.getParameters()).thenReturn(tmpMockedParameters);
             HostServices tmpMockedHostServices = Mockito.mock(HostServices.class);
             when(tmpMockedApp.getHostServices()).thenReturn(tmpMockedHostServices);
@@ -228,188 +233,16 @@ class AppTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         if (aShouldShowError) {
-            verify(tmpMockedAlert, Mockito.times(1)).showAndWait();
+            verify(tmpMockedExceptionAlert, Mockito.times(1)).showAndWait();
         }
         else {
-            verify(tmpMockedAlert, Mockito.times(0)).showAndWait();
+            verify(tmpMockedExceptionAlert, Mockito.times(0)).showAndWait();
         }
 
         tmpPropertiesMap.put("theStage", tmpMockedStage);
         tmpPropertiesMap.put("theIconsList", tmpIconsList);
 
         return tmpPropertiesMap;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    void testShowWelcomeDialog_selection_files() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-
-        Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
-        when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
-        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
-        when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
-
-        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
-        when(tmpMockedApplicationServices.requestMultipleFilesSelection(any(Stage.class)))
-                .thenReturn(ALL_DOCUMENTS_LIST);
-
-        HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
-        ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
-        doAnswer(anInvocationOnMock -> {
-            tmpPropertiesMap.put(anInvocationOnMock.getArgument(0), anInvocationOnMock.getArgument(1)); return null;
-        }).when(tmpMockedPropertiesMap).put(any(), any());
-
-        Stage tmpMockedStage = Mockito.mock(Stage.class);
-        doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
-
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
-        verify(tmpMockedWelcomeDialog, Mockito.times(1)).showAndWait();
-
-        List<File> tmpSortedAllDocumentsList = new ArrayList<>(ALL_DOCUMENTS_LIST);
-        tmpSortedAllDocumentsList.sort(Comparator.naturalOrder());
-        assertEquals(tmpSortedAllDocumentsList, tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
-        assertEquals(tmpSortedAllDocumentsList.get(0),
-                tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    void testShowWelcomeDialog_selection_files_and_cancel() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-
-        Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
-        when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
-        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
-        when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
-
-        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
-        when(tmpMockedApplicationServices.requestMultipleFilesSelection(any(Stage.class))).thenReturn(null);
-
-        HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
-        ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
-        doAnswer(anInvocationOnMock -> {
-            tmpPropertiesMap.put(anInvocationOnMock.getArgument(0), anInvocationOnMock.getArgument(1)); return null;
-        }).when(tmpMockedPropertiesMap).put(any(), any());
-
-        Stage tmpMockedStage = Mockito.mock(Stage.class);
-        doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
-
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
-        verify(tmpMockedWelcomeDialog, Mockito.times(1)).showAndWait();
-
-        assertNull(tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
-        assertNull(tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    void testShowWelcomeDialog_selection_directory() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-
-        Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
-        when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
-        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
-        when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
-
-        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
-        when(tmpMockedApplicationServices.requestDirectorySelection(any(Stage.class))).thenReturn(TEST_SOURCE_FOLDER2);
-
-        HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
-        ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
-        doAnswer(anInvocationOnMock -> {
-            tmpPropertiesMap.put(anInvocationOnMock.getArgument(0), anInvocationOnMock.getArgument(1)); return null;
-        }).when(tmpMockedPropertiesMap).put(any(), any());
-
-        Stage tmpMockedStage = Mockito.mock(Stage.class);
-        doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
-
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
-        verify(tmpMockedWelcomeDialog, Mockito.times(1)).showAndWait();
-
-        List<File> tmpExpectedDocumentsList = List.of(TEST_JPG_FILE2, TEST_TEXT_FILE2);
-        assertEquals(tmpExpectedDocumentsList, tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
-        assertEquals(TEST_JPG_FILE2, tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    void testShowWelcomeDialog_selection_empty_directory() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-
-        Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
-        when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
-        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
-        when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
-        Alert tmpMockedEmptyDirectoryAlert = Mockito.mock(Alert.class);
-        when(tmpMockedDialogProvider.provideDirectoryDoesNotContainFilesAlert())
-                .thenReturn(tmpMockedEmptyDirectoryAlert);
-
-        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
-        when(tmpMockedApplicationServices
-                .requestDirectorySelection(any(Stage.class))).thenReturn(TEST_EMPTY_SOURCE_FOLDER);
-
-        HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
-        ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
-        doAnswer(anInvocationOnMock -> {
-            tmpPropertiesMap.put(anInvocationOnMock.getArgument(0), anInvocationOnMock.getArgument(1)); return null;
-        }).when(tmpMockedPropertiesMap).put(any(), any());
-
-        Stage tmpMockedStage = Mockito.mock(Stage.class);
-        doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
-
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
-        verify(tmpMockedWelcomeDialog, Mockito.times(1)).showAndWait();
-
-        verify(tmpMockedDialogProvider, Mockito.times(1)).provideDirectoryDoesNotContainFilesAlert();
-        verify(tmpMockedEmptyDirectoryAlert, Mockito.times(1)).showAndWait();
-
-        assertNull(tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
-        assertNull(tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    void testShowWelcomeDialog_selection_directory_and_cancel() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-
-        Dialog<ButtonType> tmpMockedWelcomeDialog = Mockito.mock(Dialog.class);
-        when(tmpMockedWelcomeDialog.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
-        DialogProvider tmpMockedDialogProvider = Mockito.mock(DialogProvider.class);
-        when(tmpMockedDialogProvider.provideWelcomeDialog()).thenReturn(tmpMockedWelcomeDialog);
-
-        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
-        when(tmpMockedApplicationServices.requestDirectorySelection(any(Stage.class))).thenReturn(null);
-
-        HashMap<Object,Object> tmpPropertiesMap = new HashMap<>();
-        ObservableMap<Object,Object> tmpMockedPropertiesMap = Mockito.mock(ObservableMap.class);
-        doAnswer(anInvocationOnMock -> {
-            tmpPropertiesMap.put(anInvocationOnMock.getArgument(0), anInvocationOnMock.getArgument(1)); return null;
-        }).when(tmpMockedPropertiesMap).put(any(), any());
-
-        Stage tmpMockedStage = Mockito.mock(Stage.class);
-        doReturn(tmpMockedPropertiesMap).when(tmpMockedStage).getProperties();
-        App tmpApp = getApp(tmpMockedStage, tmpMockedApplicationServices, tmpMockedDialogProvider);
-
-        MethodUtils.invokeMethod(tmpApp, true, "showWelcomeDialog");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        verify(tmpMockedDialogProvider, Mockito.times(1)).provideWelcomeDialog();
-        verify(tmpMockedWelcomeDialog, Mockito.times(1)).showAndWait();
-
-        assertNull(tmpPropertiesMap.get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY));
-        assertNull(tmpPropertiesMap.get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY));
     }
 
     @Test

@@ -148,7 +148,7 @@ public class MenuBarController extends BaseController {
             // Open download site?
             if (ButtonBar.ButtonData.LEFT == tmpResult.get().getButtonData()) { // NOSONAR
 
-                applicationContext.getHostServices().showDocument(GlobalConstants.DOWNLOAD_SITE_URL);
+                applicationContext.getApplicationController().showExternalResource(GlobalConstants.DOWNLOAD_SITE_URL);
             }
         }
         catch (IOException e) {
@@ -249,13 +249,13 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleOpenFilesMenuItemAction() {
 
-        importFreshFilesList(applicationContext.getApplicationServices().requestMultipleFilesSelection(stage));
+        importFreshFilesList(applicationContext.getApplicationController().requestMultipleFilesSelection(stage));
     }
 
     @FXML
     protected void handleOpenDirectoryMenuItemAction() {
 
-        importFreshDirectory(applicationContext.getApplicationServices().requestDirectorySelection(stage));
+        importFreshDirectory(applicationContext.getApplicationController().requestDirectorySelection(stage));
     }
 
     @FXML
@@ -279,7 +279,6 @@ public class MenuBarController extends BaseController {
     @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
     protected void handleArchiveBrowserMenuItemAction() {
 
-        // TODO - Upgrade Browser-Plugin for new FXMLUtil API
         if ((!PluginUtil.isPluginAvailable(ArchiveBrowsingService.class)) ||
                 (!PluginUtil.isArchiveBrowsingPluginUpToDate())) {
 
@@ -305,9 +304,8 @@ public class MenuBarController extends BaseController {
         }
 
         Stage tmpPluginStage = assembleSubStage(0.9);
-        ApplicationContext tmpApplicationContext = new DefaultApplicationContext(
-                applicationContext.getApplicationServices(), applicationContext.getDialogProvider(),
-                applicationContext.getHostServices(), tmpPluginStage);
+        ApplicationContext tmpApplicationContext =
+                new DefaultApplicationContext(applicationContext.getApplicationController(), tmpPluginStage);
         PluginUtil.fireArchiveBrowsingPlugin(tmpApplicationContext);
         tmpPluginStage.show();
     }
@@ -315,7 +313,7 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleHelpMenuItemAction() {
 
-        applicationContext.getHostServices().showDocument(GlobalConstants.WIKI_URL);
+        applicationContext.getApplicationController().showExternalResource(GlobalConstants.WIKI_URL);
     }
 
     @FXML
@@ -351,7 +349,7 @@ public class MenuBarController extends BaseController {
         // Should App be restarted?
         if (ButtonBar.ButtonData.YES == tmpRestartResult.get().getButtonData()) { // NOSONAR
 
-            applicationContext.getApplicationServices().restartApp();
+            applicationContext.getApplicationController().restartApp();
         }
     }
 

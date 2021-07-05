@@ -109,7 +109,8 @@ public class FileSystemViewPaneController extends BaseController {
 
     private void openZipEntryInExternalViewer(ZipEntry aZipEntry) {
 
-        try (FileSystem tmpZipFileSystem = FileSystems.newFileSystem(getCurrentDocument().toPath(), null)) {
+        try (FileSystem tmpZipFileSystem =
+                     FileSystems.newFileSystem(getCurrentDocument().toPath(), (ClassLoader)null)) {
 
             // Check if ZipEntry is faulty (file names can contain path traversal attacks (eg: ../../../etc/password))
             File tmpFileToExtract = new File(aZipEntry.getName());

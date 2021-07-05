@@ -20,7 +20,6 @@ import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
-import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.api.ArchiveBrowsingService;
 import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
@@ -39,7 +38,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
@@ -55,10 +56,14 @@ import static org.mockito.Mockito.*;
  * Unit test for "com.sophisticatedapps.archiving.documentarchiver.controller.MenuBarController".
  */
 @ExtendWith(ApplicationExtension.class)
+@ExtendWith(MockitoExtension.class)
 class MenuBarControllerTest extends BaseTest {
 
     @TempDir
     File tempDir;
+
+    @Mock
+    HostServices hostServices;
 
     //private MenuBar menuBar;
     private MenuBarController menuBarController;
@@ -74,9 +79,9 @@ class MenuBarControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
-        ApplicationServices tmpMockedApplicationServices = Mockito.mock(ApplicationServices.class);
-        when(tmpMockedApplicationServices.requestDirectorySelection(any(Stage.class))).thenReturn(TEST_SOURCE_FOLDER);
-        when(tmpMockedApplicationServices.requestMultipleFilesSelection(any(Stage.class)))
+        ApplicationController tmpMockedApplicationController = Mockito.mock(ApplicationController.class);
+        when(tmpMockedApplicationController.requestDirectorySelection(any(Stage.class))).thenReturn(TEST_SOURCE_FOLDER);
+        when(tmpMockedApplicationController.requestMultipleFilesSelection(any(Stage.class)))
                 .thenReturn(ALL_DOCUMENTS_LIST);
 
         // Set the test archiving folder as core archiving folder, so the reading of tenants delivers something.
@@ -87,8 +92,7 @@ class MenuBarControllerTest extends BaseTest {
         //menuBar =
         tmpLoader.load();
         menuBarController = tmpLoader.getController();
-        menuBarController.rampUp(
-                getApplicationContext(aStage, Mockito.mock(HostServices.class), tmpMockedApplicationServices));
+        menuBarController.rampUp(new DefaultApplicationContext(tmpMockedApplicationController, aStage));
     }
 
     @AfterEach
@@ -129,16 +133,16 @@ class MenuBarControllerTest extends BaseTest {
         when(tmpMockedUpdateCheckDialog.showAndWait()).thenReturn(Optional.of(ButtonType.CANCEL));
         menuBarController.handleCheckForUpdatesMenuItemAction();
         verify(tmpMockedUpdateCheckDialog, Mockito.times(1)).showAndWait();
-        verify(menuBarController.applicationContext.getHostServices(),
-                Mockito.times(0)).showDocument(any(String.class));
+        verify(menuBarController.applicationContext.getApplicationController(),
+                Mockito.times(0)).showExternalResource(any(String.class));
 
         // Second run with "open download site" button
         when(tmpMockedUpdateCheckDialog.showAndWait()).thenReturn(
                 Optional.of(new ButtonType("Foo", ButtonBar.ButtonData.LEFT)));
         menuBarController.handleCheckForUpdatesMenuItemAction();
         verify(tmpMockedUpdateCheckDialog, Mockito.times(2)).showAndWait();
-        verify(menuBarController.applicationContext.getHostServices(),
-                Mockito.times(1)).showDocument(any(String.class));
+        verify(menuBarController.applicationContext.getApplicationController(),
+                Mockito.times(1)).showExternalResource(any(String.class));
     }
 
     @Test
@@ -186,7 +190,7 @@ class MenuBarControllerTest extends BaseTest {
         Platform.runLater(() -> menuBarController.handlePreferencesMenuItemAction());
         WaitForAsyncUtils.waitForFxEvents();
 
-        verify(menuBarController.applicationContext.getApplicationServices(), Mockito.times(1)).restartApp();
+        verify(menuBarController.applicationContext.getApplicationController(), Mockito.times(1)).restartApp();
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
@@ -204,10 +208,6 @@ class MenuBarControllerTest extends BaseTest {
                 tmpTempLocalPropertiesDirectory, true);
 
         BaseController.DialogProvider tmpMockedDialogProvider = Mockito.mock(BaseController.DialogProvider.class);
-
-        Alert tmpMockedPreferencesChangedAlert = Mockito.mock(Alert.class);
-        when(tmpMockedDialogProvider.providePreferencesChangedAlert(any(Locale.class)))
-                .thenReturn(tmpMockedPreferencesChangedAlert);
 
         @SuppressWarnings("unchecked")
         Dialog<ButtonType> tmpMockedDialog = Mockito.mock(Dialog.class);
@@ -274,7 +274,7 @@ class MenuBarControllerTest extends BaseTest {
         Platform.runLater(() -> menuBarController.handleChangeTenantMenuItemAction(tmpMockedActionEvent));
         WaitForAsyncUtils.waitForFxEvents();
 
-        verify(menuBarController.applicationContext.getApplicationServices(), Mockito.times(1)).restartApp();
+        verify(menuBarController.applicationContext.getApplicationController(), Mockito.times(1)).restartApp();
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",
@@ -430,7 +430,8 @@ class MenuBarControllerTest extends BaseTest {
         when(tmpMockedStage.widthProperty()).thenReturn(tmpMockedReadOnlyDoubleProperty);
         when(tmpMockedStage.heightProperty()).thenReturn(tmpMockedReadOnlyDoubleProperty);
 
-        ApplicationContext tmpApplicationContext = new DefaultApplicationContext(null, null, null, tmpMockedStage);
+        ApplicationContext tmpApplicationContext = new DefaultApplicationContext(
+                menuBarController.applicationContext.getApplicationController(), tmpMockedStage);
         PluginUtil.fireArchiveBrowsingPlugin(tmpApplicationContext);
 
         verify(tmpMockedStage, Mockito.times(1)).setScene(any(Scene.class));
@@ -441,8 +442,8 @@ class MenuBarControllerTest extends BaseTest {
 
         menuBarController.handleHelpMenuItemAction();
 
-        verify(menuBarController.applicationContext.getHostServices(),
-                Mockito.times(1)).showDocument(any(String.class));
+        verify(menuBarController.applicationContext.getApplicationController(),
+                Mockito.times(1)).showExternalResource(any(String.class));
     }
 
     @Test
@@ -501,7 +502,7 @@ class MenuBarControllerTest extends BaseTest {
         Platform.runLater(() -> menuBarController.handleChangeLanguageMenuItemAction(tmpMockedActionEvent));
         WaitForAsyncUtils.waitForFxEvents();
 
-        verify(menuBarController.applicationContext.getApplicationServices(), Mockito.times(1)).restartApp();
+        verify(menuBarController.applicationContext.getApplicationController(), Mockito.times(1)).restartApp();
 
         // Change local properties directory back
         FieldUtils.writeStaticField(PropertiesUtil.class,"localPropertiesDirectory",

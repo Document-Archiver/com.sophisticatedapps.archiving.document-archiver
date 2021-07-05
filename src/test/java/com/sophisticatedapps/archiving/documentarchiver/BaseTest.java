@@ -20,12 +20,14 @@ import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
 import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationContext;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationServices;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultDialogProvider;
+import com.sophisticatedapps.archiving.documentarchiver.controller.ApplicationController;
 import javafx.application.HostServices;
 import javafx.event.EventType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -82,55 +84,27 @@ public abstract class BaseTest {
 
     protected static final String NUL_CHARACTER_STRING = String.valueOf('\0');
 
-    @SuppressWarnings("unused")
-    protected static App getApp(Stage aStage) {
-
-        return getApp(aStage, null);
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    protected static App getApp(Stage aStage, ApplicationServices anApplicationServices) {
-
-        return getApp(aStage, anApplicationServices, null);
-    }
-
-    protected static App getApp(
-            Stage aStage, ApplicationServices anApplicationServices, DialogProvider aDialogProvider) {
-
-        App tmpApp = new App(anApplicationServices, aDialogProvider);
-
-        try {
-
-            FieldUtils.writeField(tmpApp, "primaryStage", aStage, true);
-        }
-        catch (IllegalAccessException e) {
-
-            throw (new RuntimeException(e));
-        }
-
-        return tmpApp;
-    }
 
     protected static ApplicationContext getApplicationContext(Stage aStage) {
 
-        return getApplicationContext(aStage, null);
+        return (new DefaultApplicationContext(getApplicationController(null), aStage));
     }
 
-    protected static ApplicationContext getApplicationContext(Stage aStage, HostServices aHostServices) {
+    protected static ApplicationController getApplicationController(HostServices aHostServices) {
 
-        return getApplicationContext(aStage, aHostServices, null);
+        return getApplicationController(aHostServices, (new DefaultApplicationServices()));
     }
 
-    protected static ApplicationContext getApplicationContext(Stage aStage, HostServices aHostServices,
+    protected static ApplicationController getApplicationController(HostServices aHostServices,
                                                               ApplicationServices anApplicationServices) {
 
-        return getApplicationContext(aStage, aHostServices, anApplicationServices, null);
+        return getApplicationController(aHostServices, anApplicationServices, (new DefaultDialogProvider()));
     }
 
-    protected static ApplicationContext getApplicationContext(Stage aStage, HostServices aHostServices,
+    protected static ApplicationController getApplicationController(HostServices aHostServices,
             ApplicationServices anApplicationServices, DialogProvider aDialogProvider) {
 
-        return (new DefaultApplicationContext(anApplicationServices, aDialogProvider, aHostServices, aStage));
+        return new ApplicationController(anApplicationServices, aDialogProvider, aHostServices);
     }
 
 }

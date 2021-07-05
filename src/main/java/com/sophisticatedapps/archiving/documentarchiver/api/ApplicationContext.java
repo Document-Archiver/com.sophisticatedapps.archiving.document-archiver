@@ -1,30 +1,16 @@
 package com.sophisticatedapps.archiving.documentarchiver.api;
 
-import javafx.application.HostServices;
+import com.sophisticatedapps.archiving.documentarchiver.controller.ApplicationController;
 import javafx.stage.Stage;
 
 public interface ApplicationContext {
 
     /**
-     * Get an ApplicationServices instance.
+     * Get an ApplicationController instance.
      *
-     * @return  An ApplicationServices instance
+     * @return  An ApplicationController instance
      */
-    ApplicationServices getApplicationServices();
-
-    /**
-     * Get an DialogProvider instance.
-     *
-     * @return  An DialogProvider instance
-     */
-    DialogProvider getDialogProvider();
-
-    /**
-     * Get the application's HostServices.
-     *
-     * @return  The application's HostServices
-     */
-    HostServices getHostServices();
+    ApplicationController getApplicationController();
 
     /**
      * Get the application's primary Stage.

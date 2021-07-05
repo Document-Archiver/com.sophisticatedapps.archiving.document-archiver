@@ -12,24 +12,29 @@ import javafx.scene.image.ImageView;
 public class DefaultDialogProvider implements DialogProvider {
 
     @Override
-    public Dialog<ButtonType> provideWelcomeDialog() {
+    public Dialog<ButtonType> provideDecideWhatToOpenDialog(boolean aShowWelcomeMessage) {
 
         ImageView tmpImageView = new ImageView(GlobalConstants.APP_ICON);
         tmpImageView.setFitWidth(80);
         tmpImageView.setFitHeight(80);
 
         ButtonType tmpOpenFilesButtonType = new ButtonType(
-                LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.open-files-button.text"),
+                LanguageUtil.i18n("dialog-provider.decide-what-to-open-dialog.open-files-button.text"),
                 ButtonBar.ButtonData.YES);
         ButtonType tmpOpenDirectoryButtonType = new ButtonType(
-                LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.open-directory-button.text"),
+                LanguageUtil.i18n("dialog-provider.decide-what-to-open-dialog.open-directory-button.text"),
                 ButtonBar.ButtonData.NO);
+
+        String tmpContentTextKey = "dialog-provider.decide-what-to-open-dialog.content-text.welcome-message-"
+                .concat(String.valueOf(aShowWelcomeMessage));
+        String tmpTitleKey = "dialog-provider.decide-what-to-open-dialog.title.welcome-message-"
+                .concat(String.valueOf(aShowWelcomeMessage));
 
         Dialog<ButtonType> tmpDialog = new Dialog<>();
         tmpDialog.setGraphic(tmpImageView);
-        tmpDialog.setTitle(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.title"));
-        tmpDialog.setHeaderText(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.header-text"));
-        tmpDialog.setContentText(LanguageUtil.i18n("base-controller.dialog-provider.welcome-dialog.content-text"));
+        tmpDialog.setTitle(LanguageUtil.i18n(tmpTitleKey));
+        tmpDialog.setHeaderText(LanguageUtil.i18n("dialog-provider.decide-what-to-open-dialog.header-text"));
+        tmpDialog.setContentText(LanguageUtil.i18n(tmpContentTextKey));
         tmpDialog.getDialogPane().getButtonTypes().addAll(tmpOpenFilesButtonType, tmpOpenDirectoryButtonType);
 
         return tmpDialog;

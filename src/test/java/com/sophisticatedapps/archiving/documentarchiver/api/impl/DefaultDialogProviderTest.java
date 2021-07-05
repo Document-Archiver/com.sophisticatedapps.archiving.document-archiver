@@ -21,12 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class DefaultDialogProviderTest {
 
     @Test
-    void provideWelcomeDialog() {
+    void provideDecideWhatToOpenDialog_with_welcome_message() {
 
         DialogProvider tmpDialogProvider = new DefaultDialogProvider();
         final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
 
-        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideWelcomeDialog()));
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideDecideWhatToOpenDialog(true)));
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -36,6 +36,24 @@ class DefaultDialogProviderTest {
         assertEquals("Welcome to Document Archiver", tmpDialog.getTitle());
         assertEquals("Thanks for using Document Archiver!", tmpDialog.getHeaderText());
         assertTrue(tmpDialog.getContentText().startsWith("Next you will have to choose what you want to archive."));
+    }
+
+    @Test
+    void provideDecideWhatToOpenDialog_without_welcome_message() {
+
+        DialogProvider tmpDialogProvider = new DefaultDialogProvider();
+        final List<Dialog<ButtonType>> tmpDialogList = new ArrayList<>();
+
+        Platform.runLater(() -> tmpDialogList.add(tmpDialogProvider.provideDecideWhatToOpenDialog(false)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Dialog<ButtonType> tmpDialog = tmpDialogList.get(0);
+        assertNotNull(tmpDialog);
+        assertSame(GlobalConstants.APP_ICON, ((ImageView)tmpDialog.getGraphic()).getImage());
+        assertEquals("Open file(s) or a directory", tmpDialog.getTitle());
+        assertEquals("Thanks for using Document Archiver!", tmpDialog.getHeaderText());
+        assertEquals("How would you like to proceed?", tmpDialog.getContentText());
     }
 
     @Test

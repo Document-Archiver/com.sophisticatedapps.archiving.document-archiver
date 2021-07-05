@@ -16,57 +16,41 @@
 
 package com.sophisticatedapps.archiving.documentarchiver;
 
-import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
-import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationServices;
 import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultDialogProvider;
+import com.sophisticatedapps.archiving.documentarchiver.controller.ApplicationController;
 import com.sophisticatedapps.archiving.documentarchiver.util.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
 
 public class App extends Application {
 
-    private final ApplicationServices applicationServices;
-    private final DialogProvider dialogProvider;
-
-    private Stage primaryStage;
+    private final ApplicationController applicationController;
 
     public App() {
 
-        this(null, null);
+        this.applicationController = new ApplicationController((new DefaultApplicationServices()),
+                (new DefaultDialogProvider()), getHostServices());
     }
 
-    public App(ApplicationServices anApplicationServices) {
+    public App(ApplicationController anApplicationController) {
 
-        this(anApplicationServices, null);
-    }
-
-    public App(DialogProvider aDialogProvider) {
-
-        this(null, aDialogProvider);
-    }
-
-    public App(ApplicationServices anApplicationServices, DialogProvider aDialogProvider) {
-
-        this.applicationServices =
-                (Objects.isNull(anApplicationServices) ? (new DefaultApplicationServices()) : anApplicationServices);
-        this.dialogProvider = (Objects.isNull(aDialogProvider) ? (new DefaultDialogProvider()) : aDialogProvider);
+        this.applicationController = anApplicationController;
     }
 
     /**
@@ -87,8 +71,8 @@ public class App extends Application {
     @Override
     public void start(Stage aPrimaryStage) {
 
-        primaryStage = aPrimaryStage;
         Thread.setDefaultUncaughtExceptionHandler(this::showError);
+        ApplicationContext tmpApplicationContext = new DefaultApplicationContext(applicationController, aPrimaryStage);
 
         // Set dimensions
         Rectangle2D tmpBounds = Screen.getPrimary().getVisualBounds();
@@ -98,9 +82,8 @@ public class App extends Application {
         aPrimaryStage.setHeight(tmpBounds.getHeight());
 
         // Create root pane
-        BorderPane tmpRootPane = (BorderPane)FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml",
-                (new DefaultApplicationContext(applicationServices, dialogProvider, this.getHostServices(),
-                        aPrimaryStage))).getRegion();
+        BorderPane tmpRootPane = (BorderPane)
+                FXMLUtil.loadAndRampUpRegion("view/RootPane.fxml", tmpApplicationContext).getRegion();
 
         // Check if we received a file to use via command line parameter
         String tmpFirstParameter = getFirstParameter();
@@ -119,7 +102,7 @@ public class App extends Application {
         }
 
         // Place icons
-        placeIcons();
+        applicationController.placeIcons(aPrimaryStage);
 
         // Show
         Scene tmpScene = new Scene(tmpRootPane);
@@ -130,7 +113,7 @@ public class App extends Application {
         // If we didn't receive a file to use via command line parameter, we will show a welcome dialog.
         if (Objects.isNull(tmpFirstParameter)) {
 
-            scheduleWelcomeDialog();
+            scheduleWelcomeDialog(aPrimaryStage);
         }
     }
 
@@ -151,29 +134,7 @@ public class App extends Application {
         return null;
     }
 
-    private void placeIcons() {
-
-        // Set stage icon
-        primaryStage.getIcons().add(GlobalConstants.APP_ICON);
-
-        // Set taskbar icon (may not be supported on all systems (e.g. Linux))
-        try {
-
-            // AWT Image
-            final URL imageResource =
-                    Thread.currentThread().getContextClassLoader().getResource("binder-icon.png");
-            final java.awt.Image tmpAwtImage = Toolkit.getDefaultToolkit().getImage(imageResource);
-
-            final Taskbar taskbar = Taskbar.getTaskbar();
-            taskbar.setIconImage(tmpAwtImage);
-        }
-        catch (UnsupportedOperationException | UnsatisfiedLinkError e) {
-
-            // never mind.
-        }
-    }
-
-    private void scheduleWelcomeDialog() {
+    private void scheduleWelcomeDialog(Stage aStage) {
 
         // We start a new Tread, since we do not want to put the FX-Thread to sleep.
         (new Thread(() -> {
@@ -189,52 +150,11 @@ public class App extends Application {
             }
 
             // Still no current document set? (StartupListener called?) If not show dialog.
-            if (Objects.isNull(primaryStage.getProperties().get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY))) {
+            if (Objects.isNull(aStage.getProperties().get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY))) {
 
-                Platform.runLater(this::showWelcomeDialog);
+                Platform.runLater(() -> applicationController.showDecideWhatToOpenDialog(aStage, true));
             }
         })).start();
-    }
-
-    @SuppressWarnings("idea: OptionalGetWithoutIsPresent")
-    private void showWelcomeDialog() {
-
-        Optional<ButtonType> tmpResult = dialogProvider.provideWelcomeDialog().showAndWait();
-
-        // ButtonData.NO means open a directory, YES means open (multiple) file(s).
-        if (ButtonBar.ButtonData.NO == tmpResult.get().getButtonData()) { // NOSONAR
-
-            File tmpDirectory = applicationServices.requestDirectorySelection(primaryStage);
-
-            if (!Objects.isNull(tmpDirectory)) {
-
-                List<File> tmpWrapperList = new ArrayList<>();
-                DirectoryUtil.readDirectoryRecursive(
-                        tmpDirectory, tmpWrapperList, DirectoryUtil.NO_HIDDEN_FILES_FILE_FILTER);
-
-                if (!tmpWrapperList.isEmpty()) {
-
-                    tmpWrapperList.sort(Comparator.naturalOrder());
-                    setFilesListToStageProperties(tmpWrapperList, primaryStage);
-                }
-                else {
-
-                    dialogProvider.provideDirectoryDoesNotContainFilesAlert().showAndWait();
-                }
-            }
-        }
-        else {
-
-            List<File> tmpFilesList = applicationServices.requestMultipleFilesSelection(primaryStage);
-
-            if (!CollectionUtil.isNullOrEmpty(tmpFilesList)) {
-
-                // We have to wrap the result in a new List, since the given List may not be modifiable.
-                List<File> tmpWrapperList = new ArrayList<>(tmpFilesList);
-                tmpWrapperList.sort(Comparator.naturalOrder());
-                setFilesListToStageProperties(tmpWrapperList, primaryStage);
-            }
-        }
     }
 
     protected static List<File> externalPathStringToFilesList(String anExternalPathString) throws IOException {
@@ -296,7 +216,7 @@ public class App extends Application {
 
         if (Platform.isFxApplicationThread()) {
 
-            dialogProvider.provideExceptionAlert(tmpMsg).showAndWait();
+            applicationController.getDialogProvider().provideExceptionAlert(tmpMsg).showAndWait();
         }
         else {
 
