@@ -18,6 +18,10 @@ package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
+import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationServices;
+import com.sophisticatedapps.archiving.documentarchiver.api.DialogProvider;
+import com.sophisticatedapps.archiving.documentarchiver.api.impl.DefaultApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeGroupEnum;
 import com.sophisticatedapps.archiving.documentarchiver.util.DirectoryUtil;
 import com.sophisticatedapps.archiving.documentarchiver.util.FXMLUtil;
@@ -52,6 +56,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +68,9 @@ class InfoPaneControllerTest extends BaseTest {
 
     @TempDir
     File tempDir;
+
+    DialogProvider mockedDialogProvider;
+    ApplicationServices mockedApplicationServices;
 
     private Pane infoPane;
     private InfoPaneController infoPaneController;
@@ -78,8 +86,13 @@ class InfoPaneControllerTest extends BaseTest {
         aStage.getProperties().put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, null);
         aStage.getProperties().put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, null);
 
+        mockedDialogProvider = Mockito.mock(DialogProvider.class);
+        mockedApplicationServices = Mockito.mock(ApplicationServices.class);
+        ApplicationContext tmpApplicationContext = new DefaultApplicationContext(new
+                ApplicationController(mockedApplicationServices, mockedDialogProvider, null), aStage);
+
         FXMLUtil.ControllerRegionPair<InfoPaneController,Pane> tmpInfoPaneControllerRegionPair =
-                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", getApplicationContext(aStage));
+                FXMLUtil.loadAndRampUpRegion("view/InfoPane.fxml", tmpApplicationContext);
         infoPane = tmpInfoPaneControllerRegionPair.getRegion();
         infoPaneController = tmpInfoPaneControllerRegionPair.getController();
     }
@@ -354,6 +367,11 @@ class InfoPaneControllerTest extends BaseTest {
     @Test
     void testHandleArchiveButtonAction() throws IOException, IllegalAccessException {
 
+        Dialog<ButtonType> tmpMockedDecideWhatToOpenDialog = Mockito.mock(Dialog.class);
+        when(tmpMockedDecideWhatToOpenDialog.showAndWait()).thenReturn(Optional.of(ButtonType.YES));
+        when(mockedDialogProvider.provideDecideWhatToOpenDialog(anyBoolean()))
+                .thenReturn(tmpMockedDecideWhatToOpenDialog);
+
         DirectoryUtil.setArchivingRootFolder(TEST_ARCHIVING_FOLDER);
         File tmpNewCurrentDocument = new File(tempDir, "foobar.txt");
         List<File> tmpNewAllDocuments = new ArrayList<>();
@@ -367,11 +385,9 @@ class InfoPaneControllerTest extends BaseTest {
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
         @SuppressWarnings("unchecked")
         ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
-
         WaitForAsyncUtils.waitForFxEvents();
 
         tmpSelectedTagsListView.getItems().addAll("Java", "Swift");
-
         WaitForAsyncUtils.waitForFxEvents();
 
         Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
@@ -383,8 +399,10 @@ class InfoPaneControllerTest extends BaseTest {
 
         // "Click" archive button
         Platform.runLater(() -> infoPaneController.handleArchiveButtonAction());
-
         WaitForAsyncUtils.waitForFxEvents();
+
+        // Check if file selection dialog was requested
+        verify(mockedApplicationServices, Mockito.times(1)).requestMultipleFilesSelection(any(Stage.class));
 
         // File should be moved, so not be existing on the original path any more.
         assertFalse(tmpNewCurrentDocument.exists());
@@ -426,11 +444,9 @@ class InfoPaneControllerTest extends BaseTest {
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
         @SuppressWarnings("unchecked")
         ListView<String> tmpSelectedTagsListView = (ListView<String>)infoPane.lookup("#selectedTagsListView");
-
         WaitForAsyncUtils.waitForFxEvents();
 
         tmpSelectedTagsListView.getItems().addAll("Java", "Swift");
-
         WaitForAsyncUtils.waitForFxEvents();
 
         Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
@@ -442,7 +458,6 @@ class InfoPaneControllerTest extends BaseTest {
 
         // "Click" archive button
         Platform.runLater(() -> infoPaneController.handleArchiveButtonAction());
-
         WaitForAsyncUtils.waitForFxEvents();
 
         // File should be moved, so not be existing on the original path any more.
@@ -483,7 +498,6 @@ class InfoPaneControllerTest extends BaseTest {
         FieldUtils.writeField(infoPaneController, "dialogProvider", tmpMockedDialogProvider, true);
 
         infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpNewAllDocuments, tmpNewCurrentDocument);
-
         WaitForAsyncUtils.waitForFxEvents();
 
         DatePicker tmpDatePicker = (DatePicker)infoPane.lookup("#datePicker");
@@ -492,7 +506,6 @@ class InfoPaneControllerTest extends BaseTest {
 
         tmpDatePicker.setValue(LocalDate.from(GlobalConstants.DD_MM_YYYY_DATE_TIME_FORMATTER.parse("01.07.2021")));
         tmpSelectedTagsListView.getItems().addAll("sna", "fu");
-
         WaitForAsyncUtils.waitForFxEvents();
 
         // "Click" archive button
@@ -548,6 +561,8 @@ class InfoPaneControllerTest extends BaseTest {
         List<File> tmpNewAllDocuments = new ArrayList<>();
         tmpNewAllDocuments.add(tmpNewCurrentDocument);
 
+        File tmpTrashDirectory = getTrashDirectory();
+
         // Write some stuff to the new file
         try (FileWriter tmpFileWriter = new FileWriter(tmpNewCurrentDocument)) {
             tmpFileWriter.write("text");
@@ -566,7 +581,9 @@ class InfoPaneControllerTest extends BaseTest {
                 .thenReturn(tmpMockedConfirmDeletionAlert);
 
         Alert tmpMockedExceptionAlert = Mockito.mock(Alert.class);
-        when(tmpMockedDialogProvider.provideExceptionAlert(any(Exception.class))).thenReturn(tmpMockedExceptionAlert);
+        if (!tmpTrashDirectory.exists()) {
+            when(tmpMockedDialogProvider.provideExceptionAlert(any(Exception.class))).thenReturn(tmpMockedExceptionAlert);
+        }
 
         Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
         when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.FINISH));
@@ -580,7 +597,6 @@ class InfoPaneControllerTest extends BaseTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // File should be found in trash. If trash not available, the Exception alert should have been triggered.
-        File tmpTrashDirectory = getTrashDirectory();
         if (tmpTrashDirectory.exists()) {
             // File should be removed from its original place.
             assertFalse(tmpNewCurrentDocument.exists());

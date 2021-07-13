@@ -425,30 +425,26 @@ public class InfoPaneController extends BaseController {
 
         List<File> tmpAllDocuments = getAllDocuments();
         tmpAllDocuments.remove(aProcessedFile);
+        boolean tmpLastDocumentDone = tmpAllDocuments.isEmpty();
 
-        boolean tmpContinueWithNext = true;
+        // Trigger listeners by first setting the all documents List to null and reset it
+        // (just removing a file from the list will not trigger listeners).
+        setNewAllDocuments(null);
+        setNewAllDocumentsAndCurrentDocument(tmpAllDocuments, (tmpLastDocumentDone ? null : tmpAllDocuments.get(0)));
 
-        // All done? Show dialog asking the user to continue.
-        if (tmpAllDocuments.isEmpty()) {
+        // All done? Show dialog asking the user if to continue.
+        if (tmpLastDocumentDone) {
 
             Optional<ButtonType> tmpChoice = infoPaneDialogProvider.provideAllDoneAlert().showAndWait();
-            tmpContinueWithNext = (ButtonBar.ButtonData.NEXT_FORWARD == tmpChoice.get().getButtonData()); // NOSONAR
-        }
 
-        if (tmpContinueWithNext) {
+            if (ButtonBar.ButtonData.NEXT_FORWARD == tmpChoice.get().getButtonData()) { // NOSONAR
 
-            // Trigger listeners by first setting the all documents List to null
-            // (just removing a file from the list will not trigger listeners).
-            setNewAllDocuments(null);
+                applicationContext.getApplicationController().showDecideWhatToOpenDialog(stage, false);
+            }
+            else {
 
-            setNewAllDocumentsAndCurrentDocument(tmpAllDocuments,
-                    (tmpAllDocuments.isEmpty() ? null : tmpAllDocuments.get(0)));
-
-            // TODO - open File Dialog again.
-        }
-        else {
-
-            stage.hide();
+                stage.hide();
+            }
         }
     }
 
