@@ -42,7 +42,7 @@ public class DragAndDropPaneController extends BaseController {
         }
 
         // Import all the files.
-        importFreshFilesList(tmpWrapperList);
+        applicationContext.getApplicationController().importFreshFilesList(stage, tmpWrapperList);
     }
 
 }

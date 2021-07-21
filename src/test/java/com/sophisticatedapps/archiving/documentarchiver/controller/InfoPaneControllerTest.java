@@ -671,6 +671,36 @@ class InfoPaneControllerTest extends BaseTest {
     }
 
     @Test
+    void testMoveOnAfterFileOperation() throws IOException, IllegalAccessException {
+
+        InfoPaneController.DialogProvider tmpMockedInfoPaneDialogProvider =
+                Mockito.mock(InfoPaneController.DialogProvider.class);
+        Alert tmpMockedAllDoneAlert = Mockito.mock(Alert.class);
+        when(tmpMockedAllDoneAlert.showAndWait()).thenReturn(Optional.of(ButtonType.NO));
+        when(tmpMockedInfoPaneDialogProvider.provideAllDoneAlert()).thenReturn(tmpMockedAllDoneAlert);
+        FieldUtils.writeField(infoPaneController, "infoPaneDialogProvider", tmpMockedInfoPaneDialogProvider, true);
+
+        List<File> tmpFilesList = new ArrayList<>(List.of(TEST_TEXT_FILE, TEST_TEXT_FILE2));
+        infoPaneController.setNewAllDocumentsAndCurrentDocument(tmpFilesList, TEST_TEXT_FILE);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        infoPaneController.moveOnAfterFileOperation(TEST_TEXT_FILE);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertEquals(1, infoPaneController.getAllDocuments().size());
+        assertEquals(TEST_TEXT_FILE2, infoPaneController.getCurrentDocument());
+        verify(tmpMockedInfoPaneDialogProvider, Mockito.times(0)).provideAllDoneAlert();
+
+        // Call it once again with the second file
+        Platform.runLater(() -> infoPaneController.moveOnAfterFileOperation(TEST_TEXT_FILE2));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertEquals(0, infoPaneController.getAllDocuments().size());
+        assertNull(infoPaneController.getCurrentDocument());
+        verify(tmpMockedInfoPaneDialogProvider, Mockito.times(1)).provideAllDoneAlert();
+    }
+
+    @Test
     void testGenericFileTimeAgentDetermineFileTime() throws IOException {
 
         // We will need the test file's date and time

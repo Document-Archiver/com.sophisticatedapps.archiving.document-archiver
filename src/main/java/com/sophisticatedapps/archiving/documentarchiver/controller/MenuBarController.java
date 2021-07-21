@@ -249,13 +249,16 @@ public class MenuBarController extends BaseController {
     @FXML
     protected void handleOpenFilesMenuItemAction() {
 
-        importFreshFilesList(applicationContext.getApplicationController().requestMultipleFilesSelection(stage));
+        ApplicationController tmpApplicationController = applicationContext.getApplicationController();
+        tmpApplicationController.importFreshFilesList(stage,
+                tmpApplicationController.requestMultipleFilesSelection(stage));
     }
 
     @FXML
     protected void handleOpenDirectoryMenuItemAction() {
 
-        importFreshDirectory(applicationContext.getApplicationController().requestDirectorySelection(stage));
+        ApplicationController tmpApplicationController = applicationContext.getApplicationController();
+        tmpApplicationController.importFreshDirectory(stage, tmpApplicationController.requestDirectorySelection(stage));
     }
 
     @FXML

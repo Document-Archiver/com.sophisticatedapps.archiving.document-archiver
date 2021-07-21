@@ -133,7 +133,7 @@ public class ApplicationController {
                 if (!tmpWrapperList.isEmpty()) {
 
                     tmpWrapperList.sort(Comparator.naturalOrder());
-                    setFilesListToStageProperties(tmpWrapperList, aStage);
+                    setNewAllDocumentsAndCurrentDocument(aStage, tmpWrapperList, tmpWrapperList.get(0));
                 }
                 else {
 
@@ -150,25 +150,12 @@ public class ApplicationController {
                 // We have to wrap the result in a new List, since the given List may not be modifiable.
                 List<File> tmpWrapperList = new ArrayList<>(tmpFilesList);
                 tmpWrapperList.sort(Comparator.naturalOrder());
-                setFilesListToStageProperties(tmpWrapperList, aStage);
+                setNewAllDocumentsAndCurrentDocument(aStage, tmpWrapperList, tmpWrapperList.get(0));
             }
         }
     }
 
-    protected static void setFilesListToStageProperties(List<File> aFilesList, Stage aStage) {
-
-        if (!CollectionUtil.isNullOrEmpty(aFilesList)) {
-
-            runLaterOrNowIfOnFXThread(() -> {
-
-                ObservableMap<Object,Object> tmpStageProperties = aStage.getProperties();
-                tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aFilesList);
-                tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aFilesList.get(0));
-            });
-        }
-    }
-
-    protected static void runLaterOrNowIfOnFXThread(Runnable aRunnable) {
+    protected void runLaterOrNowIfOnFXThread(Runnable aRunnable) {
 
         if (Platform.isFxApplicationThread()) {
 
@@ -177,6 +164,88 @@ public class ApplicationController {
         else {
 
             Platform.runLater(aRunnable);
+        }
+    }
+
+    protected void setNewAllDocumentsAndCurrentDocument(Stage aStage, List<File> aNewAllDocumentsList,
+                                                        File aNewCurrentDocument) {
+
+        runLaterOrNowIfOnFXThread(() -> {
+
+            ObservableMap<Object, Object> tmpStageProperties = aStage.getProperties();
+            tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aNewAllDocumentsList);
+            tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
+        });
+    }
+
+    protected void setNewAllDocuments(Stage aStage, List<File> aNewAllDocumentsList) {
+
+        runLaterOrNowIfOnFXThread(() -> {
+
+            ObservableMap<Object, Object> tmpStageProperties = aStage.getProperties();
+            tmpStageProperties.put(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY, aNewAllDocumentsList);
+        });
+    }
+
+    protected void setNewCurrentDocument(Stage aStage, File aNewCurrentDocument) {
+
+        runLaterOrNowIfOnFXThread(() -> {
+
+            ObservableMap<Object, Object> tmpStageProperties = aStage.getProperties();
+            tmpStageProperties.put(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY, aNewCurrentDocument);
+        });
+    }
+
+    /**
+     * Get the current document (from stage properties).
+     *
+     * @param   aStage  Stage to get the current document for.
+     * @return  Current document as File object.
+     */
+    protected File getCurrentDocument(Stage aStage) {
+
+        return (File)aStage.getProperties().get(GlobalConstants.CURRENT_DOCUMENT_PROPERTY_KEY);
+    }
+
+    /**
+     * Get the current all-documents List (from stage properties).
+     *
+     * @param   aStage  Stage to get the current document list for.
+     * @return  Current all-documents List.
+     */
+    @SuppressWarnings("unchecked")
+    protected List<File> getAllDocuments(Stage aStage) {
+
+        return (List<File>)aStage.getProperties().get(GlobalConstants.ALL_DOCUMENTS_PROPERTY_KEY);
+    }
+
+    protected void importFreshDirectory(Stage aStage, File aDirectory) {
+
+        if (!Objects.isNull(aDirectory)) {
+
+            List<File> tmpWrapperList = new ArrayList<>();
+            DirectoryUtil.readDirectoryRecursive(aDirectory, tmpWrapperList, DirectoryUtil.NO_HIDDEN_FILES_FILE_FILTER);
+
+            if (!tmpWrapperList.isEmpty()) {
+
+                tmpWrapperList.sort(Comparator.naturalOrder());
+                setNewAllDocumentsAndCurrentDocument(aStage, tmpWrapperList, tmpWrapperList.get(0));
+            }
+            else {
+
+                dialogProvider.provideDirectoryDoesNotContainFilesAlert().showAndWait();
+            }
+        }
+    }
+
+    protected void importFreshFilesList(Stage aStage, List<File> aFilesList) {
+
+        if (!CollectionUtil.isNullOrEmpty(aFilesList)) {
+
+            // We have to wrap the result in a new List, since the given List may not be modifiable.
+            List<File> tmpWrapperList = new ArrayList<>(aFilesList);
+            tmpWrapperList.sort(Comparator.naturalOrder());
+            setNewAllDocumentsAndCurrentDocument(aStage, tmpWrapperList, tmpWrapperList.get(0));
         }
     }
 
