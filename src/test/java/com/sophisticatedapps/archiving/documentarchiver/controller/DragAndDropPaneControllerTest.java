@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,6 +99,8 @@ class DragAndDropPaneControllerTest extends BaseTest {
         when(tmpMockedDragEvent.getDragboard()).thenReturn(tmpMockedDragboard);
 
         dragAndDropPaneController.handleDragDropped(tmpMockedDragEvent);
+        WaitForAsyncUtils.waitForFxEvents();
+
         verify(dragAndDropPaneController.applicationContext.getApplicationController(), Mockito.times(1))
                 .importFreshFilesList(any(Stage.class), any(List.class));
         List<File> tmpAllDocumentsList = dragAndDropPaneController.getAllDocuments();
