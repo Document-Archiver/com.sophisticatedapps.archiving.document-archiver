@@ -20,6 +20,7 @@ module DocumentArchiver {
     requires versioncompare;
     requires net.kurobako.gesturefx;
     requires awaitility;
+    requires sunitext.distribution;
 
     opens com.sophisticatedapps.archiving.documentarchiver;
     opens com.sophisticatedapps.archiving.documentarchiver.api;

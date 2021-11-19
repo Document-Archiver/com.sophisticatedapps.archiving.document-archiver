@@ -17,6 +17,7 @@
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
+import com.intechcore.sunitext.editor.embedded.EmbeddedEditor;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
@@ -44,6 +45,7 @@ import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import net.kurobako.gesturefx.GesturePane;
 import org.apache.poi.hwpf.HWPFDocumentCore;
 import org.apache.poi.hwpf.converter.AbstractWordUtils;
@@ -63,6 +65,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipFile;
 
@@ -84,7 +87,8 @@ public class DisplayFilePaneController extends BaseController {
 
         Map<FileTypeEnum, Class<? extends DisplayFileNodeAssembler>> tmpAssemblerMap =
                 new EnumMap<>(FileTypeEnum.class);
-        tmpAssemblerMap.put(FileTypeEnum.PDF, DisplayPDFNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.PDF, SUniTextNodeAssembler.class);
+        //tmpAssemblerMap.put(FileTypeEnum.PDF, DisplayPDFNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.TXT, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.JPG, DisplayImageNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.PNG, DisplayImageNodeAssembler.class);
@@ -99,7 +103,9 @@ public class DisplayFilePaneController extends BaseController {
         tmpAssemblerMap.put(FileTypeEnum.YAML, DisplayTextNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.PAGES, DisplayUnsupportedFiletypeNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.DOC, DisplayDocNodeAssembler.class);
-        tmpAssemblerMap.put(FileTypeEnum.DOCX, DisplayDocxNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.DOCX, SUniTextNodeAssembler.class);
+        tmpAssemblerMap.put(FileTypeEnum.RTF, SUniTextNodeAssembler.class);
+        //tmpAssemblerMap.put(FileTypeEnum.DOCX, DisplayDocxNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.MP3, DisplayAudioNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.M4A, DisplayAudioNodeAssembler.class);
         tmpAssemblerMap.put(FileTypeEnum.WAV, DisplayAudioNodeAssembler.class);
@@ -228,6 +234,30 @@ public class DisplayFilePaneController extends BaseController {
 
         Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
                         ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight);
+    }
+
+    //demo code only
+    protected static class SUniTextNodeAssembler implements DisplayFileNodeAssembler {
+        private EmbeddedEditor editor;
+
+        @Override
+        public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
+                               ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
+
+            try {
+                if (editor == null) {
+                    Stage stage = (Stage) Stage.getWindows().stream().filter(w -> w.isShowing()).findFirst().get();
+                    editor = new EmbeddedEditor(stage);
+                }
+
+                byte[] data = Files.readAllBytes(Paths.get(aFile.getAbsolutePath()));
+                editor.getController().setDocument(data, aFile.getAbsolutePath());
+                return editor;
+            } catch (Throwable e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     protected static class DisplayUnsupportedFiletypeNodeAssembler implements DisplayFileNodeAssembler {
