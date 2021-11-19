@@ -36,6 +36,7 @@ public enum FileTypeEnum {
     PAGES(FileTypeGroupEnum.OFFICE, false, "pages"),
     DOC(FileTypeGroupEnum.OFFICE, false, "doc"),
     DOCX(FileTypeGroupEnum.OFFICE, false, "docx"),
+    RTF(FileTypeGroupEnum.OFFICE, false, "rtf"),
     MP3(FileTypeGroupEnum.AUDIO, false, "mp3"),
     M4A(FileTypeGroupEnum.AUDIO, false, "m4a"),
     WAV(FileTypeGroupEnum.AUDIO, false, "wav", "wave"),

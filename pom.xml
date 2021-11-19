@@ -521,6 +521,11 @@
       <version>3.12.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
+      <version>11.0.2</version>
+    </dependency>
   </dependencies>
 
   <build>
