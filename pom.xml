@@ -6,7 +6,7 @@
 
   <groupId>com.sophisticatedapps.archiving</groupId>
   <artifactId>document-archiver</artifactId>
-  <version>2.3.0-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
 
   <name>DocumentArchiver</name>
   <url>https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver</url>
@@ -37,6 +37,19 @@
       <id>ej-technologies</id>
       <url>https://maven.ej-technologies.com/repository</url>
     </repository>
+    <!--
+    <repository>
+      <id>SUniText-repo</id>
+      <url>https://nexus.intechcore.online/repository/maven-scomponents-releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <layout>default</layout>
+    </repository>
+    -->
   </repositories>
 
   <profiles>
@@ -64,6 +77,12 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-fxml</artifactId>
+          <version>15.0.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-swing -->
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-swing</artifactId>
           <version>15.0.1</version>
         </dependency>
       </dependencies>
@@ -169,6 +188,22 @@
             <exclusion>
               <groupId>org.openjfx</groupId>
               <artifactId>javafx-controls</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-swing</artifactId>
+          <version>15.0.1</version>
+          <classifier>mac</classifier>
+          <exclusions>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-swing</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-graphics</artifactId>
             </exclusion>
           </exclusions>
         </dependency>
@@ -278,6 +313,22 @@
             </exclusion>
           </exclusions>
         </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-swing</artifactId>
+          <version>15.0.1</version>
+          <classifier>linux</classifier>
+          <exclusions>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-swing</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-graphics</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
       </dependencies>
     </profile>
 
@@ -384,6 +435,22 @@
             </exclusion>
           </exclusions>
         </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-swing</artifactId>
+          <version>15.0.1</version>
+          <classifier>win</classifier>
+          <exclusions>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-swing</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-graphics</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
       </dependencies>
     </profile>
   </profiles>
@@ -401,15 +468,34 @@
     </dependency>
     <!--
     <dependency>
-      <groupId>com.intechcore.sunitext</groupId>
-      <artifactId>sunitext-for-distribution</artifactId>
-      <version>2.5.0</version>
+      <groupId>com.intechcore</groupId>
+      <artifactId>sunitext-editor-business</artifactId>
+      <version>JDK11-1.0.0</version>
     </dependency>
     -->
     <dependency>
-      <groupId>com.github.Dansoftowner</groupId>
-      <artifactId>PDFViewerFX</artifactId>
-      <version>0.8</version>
+      <groupId>com.dlsc.pdfviewfx</groupId>
+      <artifactId>pdfviewfx</artifactId>
+      <version>1.7.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-fxml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-controls</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-swing</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.12.0</version>
     </dependency>
     <dependency>
       <groupId>com.github.Dansoftowner</groupId>
@@ -441,7 +527,7 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-scratchpad</artifactId>
-      <version>5.0.0</version>
+      <version>5.2.2</version>
     </dependency>
     <dependency>
       <groupId>com.github.Dansoftowner</groupId>
@@ -512,13 +598,6 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>3.8.0</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

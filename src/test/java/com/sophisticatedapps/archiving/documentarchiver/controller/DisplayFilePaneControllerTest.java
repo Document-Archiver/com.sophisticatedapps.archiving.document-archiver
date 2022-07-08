@@ -16,6 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
+import com.dlsc.pdfviewfx.PDFView;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.BaseTest;
 import com.sophisticatedapps.archiving.documentarchiver.GlobalConstants;
@@ -162,7 +163,7 @@ class DisplayFilePaneControllerTest extends BaseTest {
 
         // Now there should be a TextArea on our display file Pane.
         Pane tmpPDFPane = (Pane)displayFilePane.getChildren().get(0);
-        assertEquals(WebView.class, tmpPDFPane.getChildren().get(0).getClass());
+        assertEquals(PDFView.class, tmpPDFPane.getChildren().get(0).getClass());
     }
 
     @Test

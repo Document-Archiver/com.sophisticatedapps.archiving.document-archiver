@@ -16,7 +16,7 @@
 
 package com.sophisticatedapps.archiving.documentarchiver.controller;
 
-import com.dansoftware.pdfdisplayer.PDFDisplayer;
+import com.dlsc.pdfviewfx.PDFView;
 import com.sophisticatedapps.archiving.documentarchiver.App;
 import com.sophisticatedapps.archiving.documentarchiver.api.ApplicationContext;
 import com.sophisticatedapps.archiving.documentarchiver.type.FileTypeEnum;
@@ -250,29 +250,23 @@ public class DisplayFilePaneController extends BaseController {
 
     protected static class DisplayPDFNodeAssembler implements DisplayFileNodeAssembler {
 
-        private static final PDFDisplayer PDF_VIEWER = new PDFDisplayer();
-
-        static {
-
-            PDF_VIEWER.setSecondaryToolbarToggleVisibility(false);
-        }
-
         @Override
         public Region assemble(DisplayFilePaneController aDisplayFilePaneController, File aFile,
                                ApplicationContext anApplicationContext, double aPrefWidth, double aPrefHeight) {
 
             try {
 
-                PDF_VIEWER.loadPDF(aFile);
-                WebView tmpWebView = (WebView)PDF_VIEWER.toNode();
-                tmpWebView.setPrefWidth(aPrefWidth);
-                tmpWebView.setPrefHeight(aPrefHeight);
+                PDFView tmpPDFView = new PDFView();
+                tmpPDFView.setShowThumbnails(false);
+                tmpPDFView.load(aFile);
+                tmpPDFView.setPrefWidth(aPrefWidth);
+                tmpPDFView.setPrefHeight(aPrefHeight);
 
-                Pane tmpPane = new Pane(tmpWebView);
+                Pane tmpPane = new Pane(tmpPDFView);
                 tmpPane.widthProperty().addListener((anObservable, anOldValue, aNewValue) ->
-                        tmpWebView.setPrefWidth(aNewValue.doubleValue()));
+                        tmpPDFView.setPrefWidth(aNewValue.doubleValue()));
                 tmpPane.heightProperty().addListener((anObservable, anOldValue, aNewValue) ->
-                        tmpWebView.setPrefHeight(aNewValue.doubleValue()));
+                        tmpPDFView.setPrefHeight(aNewValue.doubleValue()));
 
                 return (tmpPane);
             }

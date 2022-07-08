@@ -8,7 +8,8 @@ module DocumentArchiver {
     requires com.install4j.runtime;
     requires com.sun.jna;
     requires com.sun.jna.platform;
-    requires PDFViewerFX;
+    requires com.dlsc.pdfviewfx;
+    requires org.apache.commons.lang3;
     requires com.jthemedetector;
     requires java.desktop;
     requires org.apache.commons.imaging;
