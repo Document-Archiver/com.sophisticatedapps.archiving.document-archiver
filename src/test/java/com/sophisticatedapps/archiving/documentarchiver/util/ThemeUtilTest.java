@@ -34,7 +34,7 @@ class ThemeUtilTest extends BaseTest {
     @Test
     void getCurrentTheme() {
 
-        assertEquals(ThemeUtil.ThemeEnum.AUTO, ThemeUtil.getCurrentTheme());
+        assertEquals(ThemeUtil.ThemeEnum.DARK, ThemeUtil.getCurrentTheme());
     }
 
     @Test
