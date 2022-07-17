@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver.svg)](https://travis-ci.com/github/Document-Archiver/com.sophisticatedapps.archiving.document-archiver)
+[![Build Status](https://api.travis-ci.com/Document-Archiver/com.sophisticatedapps.archiving.document-archiver.svg)](https://travis-ci.com/github/Document-Archiver/com.sophisticatedapps.archiving.document-archiver)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.sophisticatedapps.archiving%3Adocument-archiver&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.sophisticatedapps.archiving%3Adocument-archiver)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.sophisticatedapps.archiving%3Adocument-archiver&metric=coverage)](https://sonarcloud.io/dashboard?id=com.sophisticatedapps.archiving%3Adocument-archiver)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.sophisticatedapps.archiving%3Adocument-archiver&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=com.sophisticatedapps.archiving%3Adocument-archiver)
@@ -137,10 +137,10 @@ https://github.com/Document-Archiver/com.sophisticatedapps.archiving.document-ar
 
 ---
 
-Copyright 2021 by Stephan Sann
+Copyright 2021 - 2022 by Stephan Sann
 
 Document Archiver makes grateful use of these libraries:
-- **PDFViewerFX** ([Dansoftowner/PDFViewerFX](https://github.com/Dansoftowner/PDFViewerFX "Dansoftowner/PDFViewerFX"))
+- **PDFViewerFX** ([dlsc-software-consulting-gmbh/PDFViewFX](https://github.com/dlsc-software-consulting-gmbh/PDFViewFX "dlsc-software-consulting-gmbh/PDFViewFX"))
 - **jSystemThemeDetector** ([Dansoftowner/jSystemThemeDetector](https://github.com/Dansoftowner/jSystemThemeDetector "Dansoftowner/jSystemThemeDetector"))
 - **Restart4j** ([Dansoftowner/Restart4j](https://github.com/Dansoftowner/Restart4j "Dansoftowner/Restart4j"))
 - **Apache POI** ([poi.apache.org](https://poi.apache.org "poi.apache.org"))
