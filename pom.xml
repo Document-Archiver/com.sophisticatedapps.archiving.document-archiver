@@ -213,7 +213,7 @@
     <profile>
       <id>mac-arm64-environment</id>
       <properties>
-        <javafx.version>17.0.2</javafx.version>
+        <javafx.version>17.0.18</javafx.version>
         <javafx.platform>mac-aarch64</javafx.platform>
         <daDependencyPluginClassifierName>mac-aarch64</daDependencyPluginClassifierName>
       </properties>
@@ -221,7 +221,7 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-controls</artifactId>
-          <version>17.0.2</version>
+          <version>17.0.18</version>
           <classifier>mac-aarch64</classifier>
           <exclusions>
             <exclusion>
@@ -237,7 +237,7 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-graphics</artifactId>
-          <version>17.0.2</version>
+          <version>17.0.18</version>
           <classifier>mac-aarch64</classifier>
           <exclusions>
             <exclusion>
@@ -253,7 +253,7 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-base</artifactId>
-          <version>17.0.2</version>
+          <version>17.0.18</version>
           <classifier>mac-aarch64</classifier>
           <exclusions>
             <exclusion>
@@ -265,7 +265,7 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-web</artifactId>
-          <version>17.0.2</version>
+          <version>17.0.18</version>
           <classifier>mac-aarch64</classifier>
           <exclusions>
             <exclusion>
@@ -285,7 +285,7 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-media</artifactId>
-          <version>17.0.2</version>
+          <version>17.0.18</version>
           <classifier>mac-aarch64</classifier>
           <exclusions>
             <exclusion>
@@ -301,7 +301,7 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-fxml</artifactId>
-          <version>17.0.2</version>
+          <version>17.0.18</version>
           <classifier>mac-aarch64</classifier>
           <exclusions>
             <exclusion>
@@ -317,7 +317,7 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-swing</artifactId>
-          <version>17.0.2</version>
+          <version>17.0.18</version>
           <classifier>mac-aarch64</classifier>
           <exclusions>
             <exclusion>
